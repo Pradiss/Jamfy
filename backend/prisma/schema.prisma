@@ -1,0 +1,284 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TipoUsuario {
+  MUSICO
+  BANDA
+  CONTRATANTE
+  ADMIN
+}
+
+enum TipoArtista {
+  MUSICO
+  BANDA
+}
+
+enum TipoPortfolio {
+  FOTO
+  VIDEO
+  AUDIO
+  YOUTUBE
+  OUTRO
+}
+
+enum StatusSolicitacao {
+  PENDENTE
+  ACEITA
+  RECUSADA
+  CANCELADA
+}
+
+enum StatusAgenda {
+  DISPONIVEL
+  INDISPONIVEL
+  PENDENTE
+  RESERVADO
+}
+
+enum OrigemAgenda {
+  ARTISTA
+  CONTRATACAO
+  ADMIN
+}
+
+model Usuario {
+  id             String      @id @db.Uuid
+  nome           String
+  email          String      @unique
+  telefone       String
+  whatsapp       String?
+  fotoUrl        String?
+  dataNascimento DateTime?
+  tipo           TipoUsuario
+  ativo          Boolean     @default(true)
+  criadoEm       DateTime    @default(now())
+  atualizadoEm   DateTime    @updatedAt
+
+  perfilArtista     PerfilArtista?
+  perfilContratante PerfilContratante?
+
+  solicitacoesEnviadas SolicitacaoContratacao[]
+
+  @@index([tipo])
+  @@index([ativo])
+}
+
+model PerfilArtista {
+  id            String      @id @default(cuid())
+  tipo          TipoArtista
+  nomeArtistico String
+  slug          String      @unique
+  biografia     String?
+  experiencia   String?
+  cache         Decimal?    @db.Decimal(10, 2)
+
+  fotoPerfilUrl String?
+  fotoCapaUrl   String?
+
+  telefoneContato String?
+  whatsappContato String?
+  emailContato    String?
+
+  cidade String
+  estado String
+  pais   String @default("Brasil")
+
+  instagramUrl String?
+  facebookUrl  String?
+  youtubeUrl   String?
+  spotifyUrl   String?
+  tiktokUrl    String?
+  siteUrl      String?
+
+  aceitaViagem Boolean @default(false)
+  disponivel   Boolean @default(true)
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  usuarioId String  @unique @db.Uuid
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  instrumentos ArtistaInstrumento[]
+  generos      ArtistaGenero[]
+  integrantes  IntegranteBanda[]
+  portfolio    Portfolio[]
+  solicitacoes SolicitacaoContratacao[]
+  agenda       AgendaArtista[]
+
+  @@index([tipo])
+  @@index([cidade, estado])
+  @@index([disponivel])
+  @@index([nomeArtistico])
+  @@index([cache])
+}
+
+model PerfilContratante {
+  id              String   @id @default(cuid())
+  nomeResponsavel String?
+  nomeEmpresa     String?
+  telefoneContato String?
+  whatsappContato String?
+  cidade          String?
+  estado          String?
+  criadoEm        DateTime @default(now())
+  atualizadoEm    DateTime @updatedAt
+
+  usuarioId String  @unique @db.Uuid
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([cidade, estado])
+}
+
+model Instrumento {
+  id    String  @id @default(cuid())
+  nome  String  @unique
+  ativo Boolean @default(true)
+
+  artistas ArtistaInstrumento[]
+}
+
+model ArtistaInstrumento {
+  artistaId     String
+  instrumentoId String
+  principal     Boolean @default(false)
+
+  artista     PerfilArtista @relation(fields: [artistaId], references: [id], onDelete: Cascade)
+  instrumento Instrumento   @relation(fields: [instrumentoId], references: [id], onDelete: Cascade)
+
+  @@id([artistaId, instrumentoId])
+  @@index([artistaId])
+  @@index([instrumentoId])
+}
+
+model GeneroMusical {
+  id    String  @id @default(cuid())
+  nome  String  @unique
+  ativo Boolean @default(true)
+
+  artistas ArtistaGenero[]
+}
+
+model ArtistaGenero {
+  artistaId String
+  generoId  String
+  principal Boolean @default(false)
+
+  artista PerfilArtista @relation(fields: [artistaId], references: [id], onDelete: Cascade)
+  genero  GeneroMusical @relation(fields: [generoId], references: [id], onDelete: Cascade)
+
+  @@id([artistaId, generoId])
+  @@index([artistaId])
+  @@index([generoId])
+}
+
+model IntegranteBanda {
+  id           String   @id @default(cuid())
+  nome         String
+  funcao       String?
+  instrumento  String?
+  telefone     String?
+  instagramUrl String?
+  fotoUrl      String?
+  ativo        Boolean  @default(true)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  bandaId String
+  banda   PerfilArtista @relation(fields: [bandaId], references: [id], onDelete: Cascade)
+
+  @@index([bandaId])
+  @@index([ativo])
+}
+
+model Portfolio {
+  id           String        @id @default(cuid())
+  titulo       String?
+  descricao    String?
+  arquivoUrl   String
+  miniaturaUrl String?
+  tipo         TipoPortfolio
+  destaque     Boolean       @default(false)
+  criadoEm     DateTime      @default(now())
+  atualizadoEm DateTime      @updatedAt
+
+  artistaId String
+  artista   PerfilArtista @relation(fields: [artistaId], references: [id], onDelete: Cascade)
+
+  @@index([artistaId])
+  @@index([tipo])
+  @@index([destaque])
+}
+
+model SolicitacaoContratacao {
+  id              String  @id @default(cuid())
+  nomeContratante String?
+  telefoneContato String?
+  whatsappContato String?
+
+  descricao     String
+  tipoEvento    String?
+  dataEvento    DateTime?
+  horarioEvento String?
+  nomeLocal     String?
+
+  cidade   String
+  estado   String
+  endereco String?
+
+  orcamento Decimal?          @db.Decimal(10, 2)
+  status    StatusSolicitacao @default(PENDENTE)
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  contratanteId String  @db.Uuid
+  contratante   Usuario @relation(fields: [contratanteId], references: [id], onDelete: Restrict)
+
+  artistaId String
+  artista   PerfilArtista @relation(fields: [artistaId], references: [id], onDelete: Restrict)
+
+  agenda AgendaArtista?
+
+  @@index([contratanteId])
+  @@index([artistaId])
+  @@index([status])
+  @@index([dataEvento])
+  @@index([cidade, estado])
+}
+
+model AgendaArtista {
+  id String @id @default(cuid())
+
+  dataInicio DateTime
+  dataFim    DateTime
+  diaInteiro Boolean  @default(false)
+
+  status StatusAgenda
+  origem OrigemAgenda @default(ARTISTA)
+
+  titulo     String?
+  observacao String?
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  artistaId String
+  artista   PerfilArtista @relation(fields: [artistaId], references: [id], onDelete: Cascade)
+
+  solicitacaoId String?                 @unique
+  solicitacao   SolicitacaoContratacao? @relation(fields: [solicitacaoId], references: [id], onDelete: SetNull)
+
+  @@index([artistaId])
+  @@index([dataInicio])
+  @@index([dataFim])
+  @@index([status])
+  @@index([origem])
+  @@index([artistaId, dataInicio, dataFim])
+}
