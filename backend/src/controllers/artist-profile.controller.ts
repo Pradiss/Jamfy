@@ -1,6 +1,10 @@
-import type { Request, Response } from "express";
-import { artistProfileService } from "../services/artist-profile.service.js";
-import type { AuthRequest } from "../types/auth-request.js";
+import type { Response } from "express";
+import { artistProfileService } from "../services/artist-profile.service";
+import type { AuthRequest } from "../types/auth-request";
+import {
+  createArtistProfileSchema,
+  updateArtistProfileSchema,
+} from "../validations/artist-profile.validation";
 
 class ArtistProfileController {
   async create(req: AuthRequest, res: Response) {
@@ -11,21 +15,18 @@ class ArtistProfileController {
         });
       }
 
-      const profile = await artistProfileService.create(
+      const data = createArtistProfileSchema.parse(req.body);
+
+      const artistProfile = await artistProfileService.create(
         req.user.id,
-        req.body,
+        data,
       );
 
-      return res.status(201).json({
-        message: "Artist profile created successfully.",
-        profile,
-      });
+      return res.status(201).json(artistProfile);
     } catch (error) {
       return res.status(400).json({
         message:
-          error instanceof Error
-            ? error.message
-            : "Internal server error.",
+          error instanceof Error ? error.message : "Internal server error.",
       });
     }
   }
@@ -38,15 +39,13 @@ class ArtistProfileController {
         });
       }
 
-      const profile = await artistProfileService.findMe(req.user.id);
+      const artistProfile = await artistProfileService.findMe(req.user.id);
 
-      return res.status(200).json(profile);
+      return res.status(200).json(artistProfile);
     } catch (error) {
       return res.status(404).json({
         message:
-          error instanceof Error
-            ? error.message
-            : "Internal server error.",
+          error instanceof Error ? error.message : "Artist profile not found.",
       });
     }
   }
@@ -59,25 +58,21 @@ class ArtistProfileController {
         });
       }
 
-      const profile = await artistProfileService.update(
+      const data = updateArtistProfileSchema.parse(req.body);
+
+      const artistProfile = await artistProfileService.update(
         req.user.id,
-        req.body,
+        data,
       );
 
-      return res.status(200).json({
-        message: "Artist profile updated successfully.",
-        profile,
-      });
+      return res.status(200).json(artistProfile);
     } catch (error) {
       return res.status(400).json({
         message:
-          error instanceof Error
-            ? error.message
-            : "Internal server error.",
+          error instanceof Error ? error.message : "Internal server error.",
       });
     }
   }
 }
 
-export const artistProfileController =
-  new ArtistProfileController();
+export const artistProfileController = new ArtistProfileController();

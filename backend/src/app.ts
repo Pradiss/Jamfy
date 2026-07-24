@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import { authRoutes } from "./routes/auth.routes.js";
+import { artistProfileRoutes  } from  "./routes/artist-profile.routes.js"
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 
 const app = express();
@@ -25,6 +26,7 @@ app.get("/health", (_, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/artist-profile", artistProfileRoutes);
 
 app.use(errorMiddleware);
 

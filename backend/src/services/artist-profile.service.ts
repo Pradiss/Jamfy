@@ -2,53 +2,14 @@ import { prisma } from "../config/prisma.js";
 import {
   TipoArtista,
   TipoUsuario,
-} from "../generated/prisma/client.js";
+} from "../../generated/prisma/client.js";
 
-interface CreateArtistProfileData {
-  artisticName: string;
-  biography?: string;
-  experience?: string;
-  fee?: number;
 
-  coverPhotoUrl?: string;
 
-  city: string;
-  state: string;
-  country?: string;
-
-  instagramUrl?: string;
-  facebookUrl?: string;
-  youtubeUrl?: string;
-  spotifyUrl?: string;
-  tiktokUrl?: string;
-  websiteUrl?: string;
-
-  acceptsTravel?: boolean;
-  available?: boolean;
-}
-
-interface UpdateArtistProfileData {
-  artisticName?: string;
-  biography?: string | null;
-  experience?: string | null;
-  fee?: number | null;
-
-  coverPhotoUrl?: string | null;
-
-  city?: string;
-  state?: string;
-  country?: string;
-
-  instagramUrl?: string | null;
-  facebookUrl?: string | null;
-  youtubeUrl?: string | null;
-  spotifyUrl?: string | null;
-  tiktokUrl?: string | null;
-  websiteUrl?: string | null;
-
-  acceptsTravel?: boolean;
-  available?: boolean;
-}
+import type {
+  CreateArtistProfileInput,
+  UpdateArtistProfileInput,
+} from "../validations/artist-profile.validation.js";
 
 class ArtistProfileService {
   private createSlug(name: string) {
@@ -62,12 +23,15 @@ class ArtistProfileService {
       .replace(/-+/g, "-");
   }
 
-  private async generateSlug(artisticName: string) {
-    const slugBase = this.createSlug(artisticName);
+  private async generateUniqueSlug(name: string) {
+    const slugBase = this.createSlug(name);
 
     const existingProfile = await prisma.perfilArtista.findUnique({
       where: {
         slug: slugBase,
+      },
+      select: {
+        id: true,
       },
     });
 
@@ -78,13 +42,19 @@ class ArtistProfileService {
     return `${slugBase}-${Date.now()}`;
   }
 
-  async create(userId: string, data: CreateArtistProfileData) {
+  async create(userId: string, data: CreateArtistProfileInput) {
     const user = await prisma.usuario.findUnique({
       where: {
         id: userId,
       },
-      include: {
-        perfilArtista: true,
+      select: {
+        tipo: true,
+        ativo: true,
+        perfilArtista: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
@@ -107,67 +77,40 @@ class ArtistProfileService {
       throw new Error("Artist profile already exists.");
     }
 
-    const artisticName = data.artisticName.trim();
-    const city = data.city.trim();
-    const state = data.state.trim();
-
-    if (!artisticName || !city || !state) {
-      throw new Error(
-        "Artistic name, city and state are required.",
-      );
-    }
-
-    if (data.fee !== undefined && data.fee < 0) {
-      throw new Error("Fee cannot be negative.");
-    }
-
     const artistType =
       user.tipo === TipoUsuario.BANDA
         ? TipoArtista.BANDA
         : TipoArtista.MUSICO;
 
-    const slug = await this.generateSlug(artisticName);
+    const slug = await this.generateUniqueSlug(data.artisticName);
 
     return prisma.perfilArtista.create({
       data: {
         tipo: artistType,
-        nomeArtistico: artisticName,
+        nomeArtistico: data.artisticName,
         slug,
 
-        biografia: data.biography?.trim() || null,
-        experiencia: data.experience?.trim() || null,
+        biografia: data.biography,
+        experiencia: data.experience,
         cache: data.fee,
 
-        fotoCapaUrl: data.coverPhotoUrl?.trim() || null,
+        fotoCapaUrl: data.coverPhotoUrl,
 
-        cidade: city,
-        estado: state,
-        pais: data.country?.trim() || "Brasil",
+        cidade: data.city,
+        estado: data.state,
+        pais: data.country,
 
-        instagramUrl: data.instagramUrl?.trim() || null,
-        facebookUrl: data.facebookUrl?.trim() || null,
-        youtubeUrl: data.youtubeUrl?.trim() || null,
-        spotifyUrl: data.spotifyUrl?.trim() || null,
-        tiktokUrl: data.tiktokUrl?.trim() || null,
-        siteUrl: data.websiteUrl?.trim() || null,
+        instagramUrl: data.instagramUrl,
+        facebookUrl: data.facebookUrl,
+        youtubeUrl: data.youtubeUrl,
+        spotifyUrl: data.spotifyUrl,
+        tiktokUrl: data.tiktokUrl,
+        siteUrl: data.websiteUrl,
 
-        aceitaViagem: data.acceptsTravel ?? false,
-        disponivel: data.available ?? true,
+        aceitaViagem: data.acceptsTravel,
+        disponivel: data.available,
 
         usuarioId: userId,
-      },
-      include: {
-        usuario: {
-          select: {
-            id: true,
-            nome: true,
-            email: true,
-            telefone: true,
-            whatsapp: true,
-            fotoUrl: true,
-            tipo: true,
-          },
-        },
       },
     });
   }
@@ -189,18 +132,6 @@ class ArtistProfileService {
             tipo: true,
           },
         },
-        instrumentos: {
-          include: {
-            instrumento: true,
-          },
-        },
-        generos: {
-          include: {
-            genero: true,
-          },
-        },
-        integrantes: true,
-        portfolio: true,
       },
     });
 
@@ -213,11 +144,15 @@ class ArtistProfileService {
 
   async update(
     userId: string,
-    data: UpdateArtistProfileData,
+    data: UpdateArtistProfileInput,
   ) {
     const profile = await prisma.perfilArtista.findUnique({
       where: {
         usuarioId: userId,
+      },
+      select: {
+        nomeArtistico: true,
+        slug: true,
       },
     });
 
@@ -225,26 +160,13 @@ class ArtistProfileService {
       throw new Error("Artist profile not found.");
     }
 
-    if (
-      data.fee !== undefined &&
-      data.fee !== null &&
-      data.fee < 0
-    ) {
-      throw new Error("Fee cannot be negative.");
-    }
-
     let slug = profile.slug;
 
-    if (data.artisticName !== undefined) {
-      data.artisticName = data.artisticName.trim();
-
-      if (!data.artisticName) {
-        throw new Error("Artistic name cannot be empty.");
-      }
-
-      if (data.artisticName !== profile.nomeArtistico) {
-        slug = await this.generateSlug(data.artisticName);
-      }
+    if (
+      data.artisticName &&
+      data.artisticName !== profile.nomeArtistico
+    ) {
+      slug = await this.generateUniqueSlug(data.artisticName);
     }
 
     return prisma.perfilArtista.update({
@@ -281,8 +203,3 @@ class ArtistProfileService {
 
 export const artistProfileService =
   new ArtistProfileService();
-
-export type {
-  CreateArtistProfileData,
-  UpdateArtistProfileData,
-};
