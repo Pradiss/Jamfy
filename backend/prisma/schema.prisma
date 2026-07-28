@@ -140,12 +140,13 @@ model PerfilArtista {
   usuarioId String  @unique @db.Uuid
   usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
-  instrumentos ArtistaInstrumento[]
-  generos      ArtistaGenero[]
-  integrantes  IntegranteBanda[]
-  portfolio    Portfolio[]
-  solicitacoes SolicitacaoContratacao[]
-  agenda       AgendaArtista[]
+  instrumentos   ArtistaInstrumento[]
+  generos        ArtistaGenero[]
+  integrantes    IntegranteBanda[]
+  portfolio      Portfolio[]
+  solicitacoes   SolicitacaoContratacao[]
+  agenda         AgendaArtista[]
+  artistaFuncaos ArtistaFuncao[]
 
   @@index([tipo])
   @@index([cidade, estado])
@@ -240,6 +241,31 @@ model IntegranteBanda {
   @@index([bandaId])
   @@index([ativo])
   @@index([funcao])
+}
+
+model FuncaoArtistica {
+  id    String  @id @default(uuid()) @db.Uuid
+  nome  String  @db.VarChar(80)
+  ativo Boolean @default(true)
+
+  artistas ArtistaFuncao[]
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@unique([nome])
+}
+
+model ArtistaFuncao {
+  artistaId String @db.Uuid
+  funcaoId  String @db.Uuid
+
+  artista PerfilArtista   @relation(fields: [artistaId], references: [id], onDelete: Cascade)
+  funcao  FuncaoArtistica @relation(fields: [funcaoId], references: [id], onDelete: Cascade)
+
+  principal Boolean @default(false)
+
+  @@id([artistaId, funcaoId])
 }
 
 model Portfolio {

@@ -2,9 +2,9 @@ import type { NextFunction, Request, Response } from "express";
 
 export function errorMiddleware(
   error: unknown,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) {
   console.error(error);
 
