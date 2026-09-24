@@ -1,0 +1,386 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TipoUsuario {
+  MUSICO
+  BANDA
+  CONTRATANTE
+  ADMIN
+}
+
+enum TipoArtista {
+  MUSICO
+  BANDA
+}
+
+enum TipoPortfolio {
+  FOTO
+  VIDEO
+  AUDIO
+  YOUTUBE
+  OUTRO
+}
+
+enum TipoEvento {
+  SHOW
+  CASAMENTO
+  FORMATURA
+  ANIVERSARIO
+  BAR
+  RESTAURANTE
+  CORPORATIVO
+  RELIGIOSO
+  FESTIVAL
+  EVENTO_PUBLICO
+  EVENTO_PRIVADO
+  OUTRO
+}
+
+enum FuncaoIntegrante {
+  VOCAL
+  GUITARRA
+  VIOLAO
+  BAIXO
+  BATERIA
+  TECLADO
+  PERCUSSAO
+  SAXOFONE
+  TROMPETE
+  ACORDEON
+  VIOLINO
+  DJ
+  PRODUTOR
+  OUTRO
+}
+
+enum StatusSolicitacao {
+  PENDENTE
+  ACEITA
+  RECUSADA
+  CANCELADA
+}
+
+enum StatusAgenda {
+  DISPONIVEL
+  INDISPONIVEL
+  PENDENTE
+  RESERVADO
+}
+
+enum OrigemAgenda {
+  ARTISTA
+  CONTRATACAO
+  ADMIN
+}
+
+enum TipoNotificacao {
+  SOLICITACAO_CRIADA
+  SOLICITACAO_ACEITA
+  SOLICITACAO_RECUSADA
+  SOLICITACAO_CANCELADA
+}
+
+model Usuario {
+  id             String      @id @db.Uuid
+  nome           String      @db.VarChar(120)
+  email          String      @unique @db.VarChar(255)
+  telefone       String      @db.VarChar(20)
+  whatsapp       String?     @db.VarChar(20)
+  fotoUrl        String?     @db.VarChar(500)
+  dataNascimento DateTime?
+  tipo           TipoUsuario
+  ativo          Boolean     @default(true)
+  ultimoLoginEm  DateTime?
+  criadoEm       DateTime    @default(now())
+  atualizadoEm   DateTime    @updatedAt
+
+  perfilArtista     PerfilArtista?
+  perfilContratante PerfilContratante?
+
+  solicitacoesEnviadas SolicitacaoContratacao[]
+  notificacoes         Notificacao[]
+
+  @@index([tipo])
+  @@index([ativo])
+  @@index([ultimoLoginEm])
+}
+
+model PerfilArtista {
+  id            String      @id @default(uuid()) @db.Uuid
+  tipo          TipoArtista
+  nomeArtistico String      @db.VarChar(120)
+  slug          String      @unique @db.VarChar(120)
+
+  biografia   String?  @db.Text
+  experiencia String?  @db.Text
+  cache       Decimal? @db.Decimal(10, 2)
+
+  fotoCapaUrl String? @db.VarChar(500)
+
+  cidade String @db.VarChar(120)
+  estado String @db.VarChar(2)
+  pais   String @default("Brasil") @db.VarChar(80)
+
+  instagramUrl String? @db.VarChar(500)
+  facebookUrl  String? @db.VarChar(500)
+  youtubeUrl   String? @db.VarChar(500)
+  spotifyUrl   String? @db.VarChar(500)
+  tiktokUrl    String? @db.VarChar(500)
+  siteUrl      String? @db.VarChar(500)
+
+  aceitaViagem Boolean @default(false)
+  disponivel   Boolean @default(true)
+  verificado   Boolean @default(false)
+
+  visualizacoes        Int      @default(0)
+  avaliacao            Decimal? @db.Decimal(2, 1)
+  quantidadeAvaliacoes Int      @default(0)
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  usuarioId String  @unique @db.Uuid
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  instrumentos   ArtistaInstrumento[]
+  generos        ArtistaGenero[]
+  integrantes    IntegranteBanda[]
+  portfolio      Portfolio[]
+  solicitacoes   SolicitacaoContratacao[]
+  agenda         AgendaArtista[]
+  artistaFuncaos ArtistaFuncao[]
+
+  @@index([tipo])
+  @@index([cidade, estado])
+  @@index([disponivel])
+  @@index([verificado])
+  @@index([nomeArtistico])
+  @@index([cache])
+  @@index([avaliacao])
+  @@index([visualizacoes])
+}
+
+model PerfilContratante {
+  id              String   @id @default(uuid()) @db.Uuid
+  nomeResponsavel String?  @db.VarChar(120)
+  nomeEmpresa     String?  @db.VarChar(160)
+  cidade          String?  @db.VarChar(120)
+  estado          String?  @db.VarChar(2)
+  criadoEm        DateTime @default(now())
+  atualizadoEm    DateTime @updatedAt
+
+  usuarioId String  @unique @db.Uuid
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([cidade, estado])
+  @@index([nomeEmpresa])
+}
+
+model Instrumento {
+  id    String  @id @default(uuid()) @db.Uuid
+  nome  String  @unique @db.VarChar(80)
+  ativo Boolean @default(true)
+
+  artistas ArtistaInstrumento[]
+
+  @@index([ativo])
+}
+
+model ArtistaInstrumento {
+  artistaId     String  @db.Uuid
+  instrumentoId String  @db.Uuid
+  principal     Boolean @default(false)
+
+  artista     PerfilArtista @relation(fields: [artistaId], references: [id], onDelete: Cascade)
+  instrumento Instrumento   @relation(fields: [instrumentoId], references: [id], onDelete: Cascade)
+
+  @@id([artistaId, instrumentoId])
+  @@index([artistaId])
+  @@index([instrumentoId])
+  @@index([principal])
+}
+
+model GeneroMusical {
+  id    String  @id @default(uuid()) @db.Uuid
+  nome  String  @unique @db.VarChar(80)
+  ativo Boolean @default(true)
+
+  artistas ArtistaGenero[]
+
+  @@index([ativo])
+}
+
+model ArtistaGenero {
+  artistaId String  @db.Uuid
+  generoId  String  @db.Uuid
+  principal Boolean @default(false)
+
+  artista PerfilArtista @relation(fields: [artistaId], references: [id], onDelete: Cascade)
+  genero  GeneroMusical @relation(fields: [generoId], references: [id], onDelete: Cascade)
+
+  @@id([artistaId, generoId])
+  @@index([artistaId])
+  @@index([generoId])
+  @@index([principal])
+}
+
+model IntegranteBanda {
+  id           String            @id @default(uuid()) @db.Uuid
+  nome         String            @db.VarChar(120)
+  funcao       FuncaoIntegrante?
+  outraFuncao  String?           @db.VarChar(80)
+  instrumento  String?           @db.VarChar(80)
+  telefone     String?           @db.VarChar(20)
+  instagramUrl String?           @db.VarChar(500)
+  fotoUrl      String?           @db.VarChar(500)
+  ativo        Boolean           @default(true)
+  criadoEm     DateTime          @default(now())
+  atualizadoEm DateTime          @updatedAt
+
+  bandaId String        @db.Uuid
+  banda   PerfilArtista @relation(fields: [bandaId], references: [id], onDelete: Cascade)
+
+  @@index([bandaId])
+  @@index([ativo])
+  @@index([funcao])
+}
+
+model FuncaoArtistica {
+  id    String  @id @default(uuid()) @db.Uuid
+  nome  String  @db.VarChar(80)
+  ativo Boolean @default(true)
+
+  artistas ArtistaFuncao[]
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@unique([nome])
+}
+
+model ArtistaFuncao {
+  artistaId String @db.Uuid
+  funcaoId  String @db.Uuid
+
+  artista PerfilArtista   @relation(fields: [artistaId], references: [id], onDelete: Cascade)
+  funcao  FuncaoArtistica @relation(fields: [funcaoId], references: [id], onDelete: Cascade)
+
+  principal Boolean @default(false)
+
+  @@id([artistaId, funcaoId])
+}
+
+model Portfolio {
+  id           String        @id @default(uuid()) @db.Uuid
+  titulo       String?       @db.VarChar(160)
+  descricao    String?       @db.Text
+  arquivoUrl   String        @db.VarChar(500)
+  miniaturaUrl String?       @db.VarChar(500)
+  tipo         TipoPortfolio
+  destaque     Boolean       @default(false)
+  ordem        Int           @default(0)
+  criadoEm     DateTime      @default(now())
+  atualizadoEm DateTime      @updatedAt
+
+  artistaId String        @db.Uuid
+  artista   PerfilArtista @relation(fields: [artistaId], references: [id], onDelete: Cascade)
+
+  @@index([artistaId])
+  @@index([tipo])
+  @@index([destaque])
+  @@index([ordem])
+  @@index([artistaId, ordem])
+}
+
+model SolicitacaoContratacao {
+  id String @id @default(uuid()) @db.Uuid
+
+  descricao  String      @db.Text
+  tipoEvento TipoEvento?
+  dataEvento DateTime?
+  nomeLocal  String?     @db.VarChar(160)
+
+  cidade   String  @db.VarChar(120)
+  estado   String  @db.VarChar(2)
+  endereco String? @db.VarChar(255)
+
+  orcamento Decimal?          @db.Decimal(10, 2)
+  status    StatusSolicitacao @default(PENDENTE)
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  contratanteId String  @db.Uuid
+  contratante   Usuario @relation(fields: [contratanteId], references: [id], onDelete: Restrict)
+
+  artistaId String        @db.Uuid
+  artista   PerfilArtista @relation(fields: [artistaId], references: [id], onDelete: Restrict)
+
+  agenda        AgendaArtista?
+  notificacoes  Notificacao[]
+
+  @@index([contratanteId])
+  @@index([artistaId])
+  @@index([status])
+  @@index([tipoEvento])
+  @@index([dataEvento])
+  @@index([cidade, estado])
+  @@index([artistaId, status])
+  @@index([contratanteId, status])
+}
+
+model AgendaArtista {
+  id String @id @default(uuid()) @db.Uuid
+
+  dataInicio DateTime
+  dataFim    DateTime
+  diaInteiro Boolean  @default(false)
+
+  status StatusAgenda
+  origem OrigemAgenda @default(ARTISTA)
+
+  titulo     String? @db.VarChar(120)
+  observacao String? @db.Text
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  artistaId String        @db.Uuid
+  artista   PerfilArtista @relation(fields: [artistaId], references: [id], onDelete: Cascade)
+
+  solicitacaoId String?                 @unique @db.Uuid
+  solicitacao   SolicitacaoContratacao? @relation(fields: [solicitacaoId], references: [id], onDelete: SetNull)
+
+  @@index([artistaId])
+  @@index([dataInicio])
+  @@index([dataFim])
+  @@index([status])
+  @@index([origem])
+  @@index([artistaId, dataInicio, dataFim])
+  @@index([artistaId, status])
+}
+
+model Notificacao {
+  id       String          @id @default(uuid()) @db.Uuid
+  tipo     TipoNotificacao
+  titulo   String          @db.VarChar(160)
+  mensagem String          @db.Text
+  lida     Boolean         @default(false)
+  criadoEm DateTime        @default(now())
+
+  usuarioId String  @db.Uuid
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  solicitacaoId String?                 @db.Uuid
+  solicitacao   SolicitacaoContratacao? @relation(fields: [solicitacaoId], references: [id], onDelete: SetNull)
+
+  @@index([usuarioId])
+  @@index([usuarioId, lida])
+  @@index([criadoEm])
+}
