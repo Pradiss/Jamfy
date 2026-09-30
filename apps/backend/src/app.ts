@@ -17,6 +17,8 @@ import { artistScheduleRoutes } from "./routes/artist-schedule.routes.js";
 import { bandMemberRoutes } from "./routes/band-member.routes.js";
 import { notificationRoutes } from "./routes/notification.routes.js";
 import { uploadRoutes } from "./routes/upload.routes.js";
+import { functionRoutes } from "./routes/function.routes.js";
+import { cidadeRoutes } from "./routes/cidade.routes.js";
 
 const app: Express = express();
 
@@ -52,6 +54,8 @@ app.use("/api/artist-profile", artistProfileRoutes);
 
 app.use("/api/instruments", instrumentRoutes);
 app.use("/api/genre", genreRoutes);
+app.use("/api/functions", functionRoutes);
+app.use("/api/cidades", cidadeRoutes);
 app.use("/api/hiring-requests", hiringRequestRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/uploads", uploadRoutes);

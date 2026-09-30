@@ -51,6 +51,51 @@ class AuthController {
     });
   }
 
+  async updateProfile(req: AuthRequest, res: Response) {
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Unauthorized.",
+      });
+    }
+
+    try {
+      const user = await authService.updateProfile({
+        userId: req.user.id,
+        ...req.body,
+      });
+
+      return res.status(200).json({
+        mensagem: "Perfil atualizado com sucesso.",
+        message: "Perfil atualizado com sucesso.",
+        user,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        message:
+          error instanceof Error ? error.message : "Internal server error.",
+      });
+    }
+  }
+
+  async forgotPassword(req: Request, res: Response) {
+    try {
+      await authService.forgotPassword(req.body.email);
+
+      const message =
+        "Se o e-mail informado existir, enviamos um link para redefinir a senha.";
+
+      return res.status(200).json({
+        mensagem: message,
+        message,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        message:
+          error instanceof Error ? error.message : "Internal server error.",
+      });
+    }
+  }
+
   async logout(_req: Request, res: Response) {
     clearAuthCookies(res);
 

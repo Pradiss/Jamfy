@@ -18,6 +18,15 @@ interface LoginInput {
   password: string;
 }
 
+interface UpdateProfileInput {
+  userId: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  whatsapp?: string;
+}
+
+
 class AuthService {
   async register(data: RegisterInput) {
     const name = data.name.trim();
@@ -171,6 +180,55 @@ class AuthService {
     }
 
     return user;
+  }
+
+  async updateProfile({ userId, name, email, phone, whatsapp }: UpdateProfileInput) {
+    const normalizedEmail = email?.trim().toLowerCase();
+
+    if (normalizedEmail) {
+      const existingUser = await prisma.usuario.findUnique({
+        where: { email: normalizedEmail },
+        select: { id: true },
+      });
+
+      if (existingUser && existingUser.id !== userId) {
+        throw new Error("Email already registered.");
+      }
+
+      const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(
+        userId,
+        { email: normalizedEmail },
+      );
+
+      if (authError) {
+        throw new Error(authError.message);
+      }
+    }
+
+    const user = await prisma.usuario.update({
+      where: { id: userId },
+      data: {
+        ...(name !== undefined && { nome: name.trim() }),
+        ...(normalizedEmail !== undefined && { email: normalizedEmail }),
+        ...(phone !== undefined && { telefone: phone.trim() }),
+        ...(whatsapp !== undefined && { whatsapp: whatsapp.trim() }),
+      },
+    });
+
+    return user;
+  }
+
+  async forgotPassword(email: string) {
+    const redirectTo = `${process.env.CORS_ORIGIN || "http://localhost:3000"}/redefinir-senha`;
+
+    const { error } = await supabaseAuth.auth.resetPasswordForEmail(
+      email.trim().toLowerCase(),
+      { redirectTo },
+    );
+
+    if (error) {
+      throw new Error(error.message);
+    }
   }
 
   private parseBirthDate(value: string) {

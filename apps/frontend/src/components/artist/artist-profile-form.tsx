@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { ApiError } from "@/lib/api";
 import { FormField, inputClass } from "@/components/ui/form-field";
+import { EstadoCidadeFields } from "@/components/ui/estado-cidade-fields";
 import { primaryButtonClass } from "@/lib/ui";
 
 export type ArtistProfileFormValues = {
@@ -44,6 +45,7 @@ export function ArtistProfileForm({
   });
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   function update<K extends keyof ArtistProfileFormValues>(
     key: K,
@@ -55,10 +57,12 @@ export function ArtistProfileForm({
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setError(null);
+    setSuccess(false);
     setSubmitting(true);
 
     try {
       await onSubmit(values);
+      setSuccess(true);
     } catch (err) {
       setError(
         err instanceof ApiError ? err.message : "Não foi possível salvar.",
@@ -77,25 +81,12 @@ export function ArtistProfileForm({
         onChange={(event) => update("artisticName", event.target.value)}
       />
 
-      <div className="grid grid-cols-3 gap-4">
-        <div className="col-span-2">
-          <FormField
-            label="Cidade"
-            required
-            value={values.city}
-            onChange={(event) => update("city", event.target.value)}
-          />
-        </div>
-        <FormField
-          label="Estado (UF)"
-          required
-          maxLength={2}
-          value={values.state}
-          onChange={(event) =>
-            update("state", event.target.value.toUpperCase())
-          }
-        />
-      </div>
+      <EstadoCidadeFields
+        state={values.state}
+        city={values.city}
+        onStateChange={(value) => update("state", value)}
+        onCityChange={(value) => update("city", value)}
+      />
 
       <label className="flex flex-col gap-1.5 text-sm">
         <span className="font-medium text-zinc-700 dark:text-zinc-300">
@@ -142,6 +133,12 @@ export function ArtistProfileForm({
 
       {error ? (
         <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+      ) : null}
+
+      {success ? (
+        <p className="text-sm text-emerald-600 dark:text-emerald-400">
+          Perfil salvo com sucesso.
+        </p>
       ) : null}
 
       <div className="flex items-center gap-3">

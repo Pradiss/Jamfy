@@ -7,7 +7,7 @@ import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { FormField } from "@/components/ui/form-field";
-import { primaryButtonClass } from "@/lib/ui";
+import { primaryButtonClass, containerClass } from "@/lib/ui";
 
 const TIPO_OPTIONS = [
   { value: "MUSICO", label: "Sou músico(a) solo" },
@@ -54,7 +54,10 @@ export default function CadastroPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-6 py-16">
+    <div
+      className={`${containerClass} flex flex-1 flex-col items-center justify-center px-6 py-16`}
+    >
+      <div className="w-full max-w-md">
       <h1 className="mb-8 text-3xl font-semibold tracking-tight">
         Criar conta
       </h1>
@@ -134,6 +137,21 @@ export default function CadastroPage() {
         >
           {submitting ? "Criando conta..." : "Criar conta"}
         </button>
+
+        <p className="text-center text-xs text-zinc-500 dark:text-zinc-400">
+          Ao criar uma conta, você concorda com os{" "}
+          <Link href="/termos" className="underline hover:text-zinc-700 dark:hover:text-zinc-300">
+            Termos de Uso
+          </Link>{" "}
+          e a{" "}
+          <Link
+            href="/privacidade"
+            className="underline hover:text-zinc-700 dark:hover:text-zinc-300"
+          >
+            Política de Privacidade
+          </Link>{" "}
+          do Jamfy.
+        </p>
       </form>
 
       <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">
@@ -142,6 +160,7 @@ export default function CadastroPage() {
           Entrar
         </Link>
       </p>
+      </div>
     </div>
   );
 }

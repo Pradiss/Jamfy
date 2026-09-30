@@ -7,7 +7,7 @@ import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { FormField } from "@/components/ui/form-field";
-import { primaryButtonClass } from "@/lib/ui";
+import { primaryButtonClass, containerClass } from "@/lib/ui";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -42,45 +42,56 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-6 py-16">
-      <h1 className="mb-8 text-3xl font-semibold tracking-tight">Entrar</h1>
+    <div
+      className={`${containerClass} flex flex-1 flex-col items-center justify-center px-6 py-16`}
+    >
+      <div className="w-full max-w-md">
+        <h1 className="mb-8 text-3xl font-semibold tracking-tight">Entrar</h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <FormField
-          label="E-mail"
-          type="email"
-          required
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-        />
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <FormField
+            label="E-mail"
+            type="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
 
-        <FormField
-          label="Senha"
-          type="password"
-          required
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-        />
+          <FormField
+            label="Senha"
+            type="password"
+            required
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
 
-        {error ? (
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-        ) : null}
+          {error ? (
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          ) : null}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className={`mt-2 ${primaryButtonClass}`}
-        >
-          {submitting ? "Entrando..." : "Entrar"}
-        </button>
-      </form>
+          <Link
+            href="/esqueci-senha"
+            className="-mt-2 self-end text-sm text-accent hover:underline"
+          >
+            Esqueci minha senha
+          </Link>
 
-      <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">
-        Não tem conta?{" "}
-        <Link href="/cadastro" className="font-medium text-accent underline">
-          Cadastre-se
-        </Link>
-      </p>
+          <button
+            type="submit"
+            disabled={submitting}
+            className={`mt-2 ${primaryButtonClass}`}
+          >
+            {submitting ? "Entrando..." : "Entrar"}
+          </button>
+        </form>
+
+        <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">
+          Não tem conta?{" "}
+          <Link href="/cadastro" className="font-medium text-accent underline">
+            Cadastre-se
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

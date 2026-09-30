@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { UF_SIGLAS } from "../constants/estados-brasil.js";
 
 const optionalUrl = z
   .string()
@@ -39,11 +40,7 @@ export const createArtistProfileSchema = z.object({
     .min(2, "City is required.")
     .max(100),
 
-  state: z
-    .string()
-    .trim()
-    .min(2, "State is required.")
-    .max(50),
+  state: z.enum(UF_SIGLAS, { message: "Invalid state." }),
 
   country: z
     .string()
@@ -83,7 +80,7 @@ export const listArtistProfilesQuerySchema = z.object({
   tipo: z.enum(["MUSICO", "BANDA"]).optional(),
 
   cidade: z.string().trim().min(1).optional(),
-  estado: z.string().trim().length(2).optional(),
+  estado: z.enum(UF_SIGLAS, { message: "UF inválida." }).optional(),
 
   generoId: z.string().uuid("Invalid genre ID.").optional(),
   instrumentoId: z.string().uuid("Invalid instrument ID.").optional(),

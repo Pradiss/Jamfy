@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 
 import { ArtistCard } from "@/components/artist/artist-card";
 import { GenreCategoryGrid } from "@/components/search/genre-category-grid";
@@ -9,6 +10,12 @@ import type { ArtistProfileListResponse } from "@/lib/types";
 import { toQueryString } from "@/lib/query";
 import { inputClass } from "@/components/ui/form-field";
 import { containerClass } from "@/lib/ui";
+
+export const metadata: Metadata = {
+  title: "Buscar artistas | Jamfy",
+  description:
+    "Encontre músicos e bandas por cidade, gênero e instrumento, veja a agenda e solicite a contratação para o seu evento.",
+};
 
 function getParam(
   searchParams: Awaited<PageProps<"/artistas">["searchParams"]>,
@@ -23,6 +30,7 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
 
   const busca = getParam(searchParams, "busca");
   const cidade = getParam(searchParams, "cidade");
+  const estado = getParam(searchParams, "estado");
   const tipo = getParam(searchParams, "tipo");
   const generoId = getParam(searchParams, "generoId");
   const instrumentoId = getParam(searchParams, "instrumentoId");
@@ -34,6 +42,7 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
   const allFilters = {
     busca,
     cidade,
+    estado,
     tipo,
     generoId,
     instrumentoId,
@@ -82,9 +91,14 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
     ),
   ]);
 
-  const activeAdvancedCount = [tipo, cidade, disponivel, precoMin, precoMax].filter(
-    Boolean,
-  ).length;
+  const activeAdvancedCount = [
+    tipo,
+    cidade,
+    estado,
+    disponivel,
+    precoMin,
+    precoMax,
+  ].filter(Boolean).length;
 
   return (
     <div className={`${containerClass} flex-1 px-6 py-8 sm:py-10`}>
@@ -103,6 +117,9 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
           {tipo ? <input type="hidden" name="tipo" value={tipo} /> : null}
           {cidade ? (
             <input type="hidden" name="cidade" value={cidade} />
+          ) : null}
+          {estado ? (
+            <input type="hidden" name="estado" value={estado} />
           ) : null}
           {disponivel ? (
             <input type="hidden" name="disponivel" value={disponivel} />
@@ -127,6 +144,7 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
           preserved={{ busca, generoId, instrumentoId }}
           initialTipo={tipo}
           initialCidade={cidade}
+          initialEstado={estado}
           initialDisponivel={disponivel}
           initialPrecoMin={precoMin}
           initialPrecoMax={precoMax}
@@ -138,7 +156,16 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
         instruments={instrumentos}
         activeId={instrumentoId}
         basePath="/artistas"
-        query={{ busca, cidade, tipo, generoId, disponivel, precoMin, precoMax }}
+        query={{
+          busca,
+          cidade,
+          estado,
+          tipo,
+          generoId,
+          disponivel,
+          precoMin,
+          precoMax,
+        }}
       />
 
       {!generoId ? <GenreCategoryGrid genres={generos} /> : null}
@@ -153,6 +180,7 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
             href={`/artistas?${toQueryString({
               busca,
               cidade,
+              estado,
               tipo,
               instrumentoId,
               disponivel,

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inputClass } from "@/components/ui/form-field";
+import { EstadoCidadeFields } from "@/components/ui/estado-cidade-fields";
 import { primaryButtonClass } from "@/lib/ui";
 import { toQueryString } from "@/lib/query";
 
@@ -33,6 +34,7 @@ export function FilterSheet({
   preserved,
   initialTipo,
   initialCidade,
+  initialEstado,
   initialDisponivel,
   initialPrecoMin,
   initialPrecoMax,
@@ -42,6 +44,7 @@ export function FilterSheet({
   preserved: Record<string, string | undefined>;
   initialTipo?: string;
   initialCidade?: string;
+  initialEstado?: string;
   initialDisponivel?: string;
   initialPrecoMin?: string;
   initialPrecoMax?: string;
@@ -51,6 +54,7 @@ export function FilterSheet({
   const [open, setOpen] = useState(false);
   const [tipo, setTipo] = useState(initialTipo ?? "");
   const [cidade, setCidade] = useState(initialCidade ?? "");
+  const [estado, setEstado] = useState(initialEstado ?? "");
   const [disponivel, setDisponivel] = useState(initialDisponivel === "true");
   const [precoMin, setPrecoMin] = useState(initialPrecoMin ?? "");
   const [precoMax, setPrecoMax] = useState(initialPrecoMax ?? "");
@@ -60,6 +64,7 @@ export function FilterSheet({
       ...preserved,
       tipo: tipo || undefined,
       cidade: cidade || undefined,
+      estado: estado || undefined,
       disponivel: disponivel ? "true" : undefined,
       precoMin: precoMin || undefined,
       precoMax: precoMax || undefined,
@@ -71,6 +76,7 @@ export function FilterSheet({
   function clear() {
     setTipo("");
     setCidade("");
+    setEstado("");
     setDisponivel(false);
     setPrecoMin("");
     setPrecoMax("");
@@ -139,17 +145,13 @@ export function FilterSheet({
                 </div>
               </div>
 
-              <label className="flex flex-col gap-1.5 text-sm">
-                <span className="font-medium text-zinc-700 dark:text-zinc-300">
-                  Cidade
-                </span>
-                <input
-                  value={cidade}
-                  onChange={(event) => setCidade(event.target.value)}
-                  placeholder="Ex: São Paulo"
-                  className={inputClass}
-                />
-              </label>
+              <EstadoCidadeFields
+                state={estado}
+                city={cidade}
+                onStateChange={setEstado}
+                onCityChange={setCidade}
+                required={false}
+              />
 
               <div className="grid grid-cols-2 gap-3">
                 <label className="flex flex-col gap-1.5 text-sm">

@@ -2,7 +2,12 @@ import { Router } from "express";
 import { authController } from "../controllers/auth.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validate.middleware.js";
-import { loginSchema, registerSchema } from "../validations/auth.validation.js";
+import {
+  loginSchema,
+  registerSchema,
+  updateProfileSchema,
+  forgotPasswordSchema,
+} from "../validations/auth.validation.js";
 
 const authRoutes: Router = Router();
 
@@ -19,6 +24,19 @@ authRoutes.post(
 );
 
 authRoutes.get("/me", authMiddleware, authController.me.bind(authController));
+
+authRoutes.patch(
+  "/me",
+  authMiddleware,
+  validate(updateProfileSchema),
+  authController.updateProfile.bind(authController),
+);
+
+authRoutes.post(
+  "/forgot-password",
+  validate(forgotPasswordSchema),
+  authController.forgotPassword.bind(authController),
+);
 
 authRoutes.post("/logout", authController.logout.bind(authController));
 

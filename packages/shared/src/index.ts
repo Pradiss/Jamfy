@@ -1,3 +1,4 @@
+export * from "./constants/estados-brasil.js";
 export * from "./validations/artist-function.validation.js";
 export * from "./validations/band-member.validation.js";
 export * from "./validations/artist-schedule.validation.js";
@@ -7,5 +8,6 @@ export * from "./validations/artist-profile.validation.js";
 export * from "./validations/genre.validation.js";
 export * from "./validations/hiring-request.validation.js";
 export * from "./validations/instrument.validation.js";
+export * from "./validations/localidade.validation.js";
 export * from "./validations/notification.validation.js";
 export * from "./validations/portfolio.validation.js";

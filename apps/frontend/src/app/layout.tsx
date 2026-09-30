@@ -7,6 +7,7 @@ import { AuthProvider } from "@/lib/auth-context";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { MobileTabBar } from "@/components/layout/mobile-tab-bar";
+import { RouteTransition } from "@/components/layout/route-transition";
 import { ThemeListener } from "@/components/layout/theme-listener";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 
@@ -32,7 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-white text-zinc-950 dark:bg-black dark:text-zinc-50">
+      <body className="flex min-h-full flex-col bg-background text-zinc-950 dark:text-zinc-50">
         <Script id="theme-init" strategy="beforeInteractive">
           {THEME_INIT_SCRIPT}
         </Script>
@@ -40,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <AuthProvider>
           <Header />
           <main className="flex flex-1 flex-col pb-16 sm:pb-0">
-            {children}
+            <RouteTransition>{children}</RouteTransition>
           </main>
           <Footer />
           <MobileTabBar />

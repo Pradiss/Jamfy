@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { UF_SIGLAS } from "../constants/estados-brasil.js";
 
 const eventTypeSchema = z.enum(
   [
@@ -46,10 +47,7 @@ export const createHiringRequestSchema = z.object({
       .min(2, "A cidade é obrigatória.")
       .max(120, "A cidade deve possuir no máximo 120 caracteres."),
 
-    estado: z
-      .string()
-      .trim()
-      .length(2, "Informe a UF com 2 letras."),
+    estado: z.enum(UF_SIGLAS, { message: "Informe uma UF válida." }),
 
     endereco: z
       .string()

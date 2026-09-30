@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { secondaryButtonClass, cardClass } from "@/lib/ui";
+import { secondaryButtonClass, cardClass, containerClass } from "@/lib/ui";
 import {
   getStoredTheme,
   setTheme as persistTheme,
@@ -60,36 +61,34 @@ export default function ConfiguracoesPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md flex-1 px-6 py-10">
+    <div className={`${containerClass} flex-1 px-6 py-10`}>
+      <div className="mx-auto w-full max-w-md">
       <h1 className="mb-7 text-3xl font-semibold tracking-tight">
         Configurações
       </h1>
 
-      <div className={`flex flex-col gap-4 p-5 ${cardClass}`}>
-        <div>
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-            Nome
-          </p>
-          <p className="text-sm">{user.nome}</p>
-        </div>
-        <div>
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-            E-mail
-          </p>
-          <p className="text-sm">{user.email}</p>
-        </div>
-        <div>
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-            Telefone
-          </p>
-          <p className="text-sm">{user.telefone}</p>
-        </div>
-        <div>
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-            Tipo de conta
-          </p>
-          <p className="text-sm">{TIPO_LABELS[user.tipo] ?? user.tipo}</p>
-        </div>
+      <div className={`flex flex-col gap-1 p-5 ${cardClass}`}>
+        <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+          Tipo de conta
+        </p>
+        <p className="text-sm">{TIPO_LABELS[user.tipo] ?? user.tipo}</p>
+      </div>
+
+      <div className={`mt-6 flex flex-col divide-y divide-black/5 p-1.5 ${cardClass} dark:divide-white/10`}>
+        <Link
+          href="/perfil/editar"
+          className="flex items-center justify-between rounded-xl px-3.5 py-3 text-sm font-medium transition hover:bg-black/[.03] dark:hover:bg-white/[.06]"
+        >
+          Editar perfil
+          <span className="text-zinc-400">›</span>
+        </Link>
+        <Link
+          href="/esqueci-senha"
+          className="flex items-center justify-between rounded-xl px-3.5 py-3 text-sm font-medium transition hover:bg-black/[.03] dark:hover:bg-white/[.06]"
+        >
+          Trocar senha
+          <span className="text-zinc-400">›</span>
+        </Link>
       </div>
 
       <div className={`mt-6 p-5 ${cardClass}`}>
@@ -136,6 +135,7 @@ export default function ConfiguracoesPage() {
       >
         Sair da conta
       </button>
+      </div>
     </div>
   );
 }

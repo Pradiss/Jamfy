@@ -230,6 +230,15 @@ model ArtistaGenero {
   @@index([principal])
 }
 
+model Cidade {
+  id   String @id @default(uuid()) @db.Uuid
+  nome String @db.VarChar(120)
+  uf   String @db.VarChar(2)
+
+  @@unique([nome, uf])
+  @@index([uf])
+}
+
 model IntegranteBanda {
   id           String            @id @default(uuid()) @db.Uuid
   nome         String            @db.VarChar(120)

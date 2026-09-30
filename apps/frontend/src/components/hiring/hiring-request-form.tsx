@@ -7,6 +7,7 @@ import { apiFetch, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { TIPO_EVENTO_LABELS, type TipoEvento } from "@/lib/types";
 import { inputClass } from "@/components/ui/form-field";
+import { EstadoCidadeFields } from "@/components/ui/estado-cidade-fields";
 import { primaryButtonClass, cardClass } from "@/lib/ui";
 
 export function HiringRequestForm({
@@ -157,31 +158,16 @@ export function HiringRequestForm({
         </label>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <label className="col-span-2 flex flex-col gap-1.5 text-sm">
-          <span className="font-medium text-zinc-700 dark:text-zinc-300">
-            Cidade do evento
-          </span>
-          <input
-            required
-            value={cidade}
-            onChange={(event) => setCidade(event.target.value)}
-            className={inputClass}
-          />
-        </label>
-
-        <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-medium text-zinc-700 dark:text-zinc-300">
-            UF
-          </span>
-          <input
-            required
-            maxLength={2}
-            value={estado}
-            onChange={(event) => setEstado(event.target.value.toUpperCase())}
-            className={inputClass}
-          />
-        </label>
+      <div>
+        <p className="mb-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          Cidade do evento
+        </p>
+        <EstadoCidadeFields
+          state={estado}
+          city={cidade}
+          onStateChange={setEstado}
+          onCityChange={setCidade}
+        />
       </div>
 
       <label className="flex flex-col gap-1.5 text-sm">

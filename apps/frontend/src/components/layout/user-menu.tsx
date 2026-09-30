@@ -4,23 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import type { AuthenticatedUser } from "@/lib/types";
-
-function profileHref(user: AuthenticatedUser) {
-  if (user.tipo === "MUSICO" || user.tipo === "BANDA") {
-    return user.perfilArtista
-      ? `/artistas/${user.perfilArtista.slug}`
-      : "/dashboard";
-  }
-
-  return "/dashboard";
-}
-
-function profileLabel(user: AuthenticatedUser) {
-  return user.tipo === "MUSICO" || user.tipo === "BANDA"
-    ? "Meu perfil"
-    : "Painel";
-}
+import { profileHref, profileLabel } from "@/lib/profile-link";
 
 export function UserMenu() {
   const { user, logout } = useAuth();
@@ -87,6 +71,20 @@ export function UserMenu() {
             className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] dark:hover:bg-white/[.06]"
           >
             {profileLabel(user)}
+          </Link>
+          <Link
+            href="/perfil/editar"
+            onClick={() => setOpen(false)}
+            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] dark:hover:bg-white/[.06]"
+          >
+            Editar perfil
+          </Link>
+          <Link
+            href="/esqueci-senha"
+            onClick={() => setOpen(false)}
+            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] dark:hover:bg-white/[.06]"
+          >
+            Trocar senha
           </Link>
           <Link
             href="/configuracoes"

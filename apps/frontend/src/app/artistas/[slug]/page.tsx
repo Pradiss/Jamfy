@@ -1,4 +1,6 @@
+import { cache } from "react";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 import { apiFetch, ApiError } from "@/lib/api";
 import type { ArtistProfileDetail } from "@/lib/types";
@@ -37,6 +39,48 @@ function Tag({ children }: { children: React.ReactNode }) {
   );
 }
 
+const getArtistBySlug = cache((slug: string) =>
+  apiFetch<ArtistProfileDetail>(`/api/artist-profile/${slug}`),
+);
+
+export async function generateMetadata(
+  props: PageProps<"/artistas/[slug]">,
+): Promise<Metadata> {
+  const { slug } = await props.params;
+
+  try {
+    const artist = await getArtistBySlug(slug);
+
+    const tipoLabel = artist.tipo === "BANDA" ? "Banda" : "Músico(a)";
+    const description = (
+      artist.biografia?.trim() ||
+      `${artist.nomeArtistico} — ${tipoLabel} em ${artist.cidade}, ${artist.estado}. Veja a agenda, o portfólio e solicite uma contratação pelo Jamfy.`
+    ).slice(0, 160);
+    const image = artist.fotoCapaUrl ?? artist.usuario.fotoUrl ?? undefined;
+
+    return {
+      title: `${artist.nomeArtistico} | Jamfy`,
+      description,
+      openGraph: {
+        title: artist.nomeArtistico,
+        description,
+        type: "profile",
+        images: image ? [{ url: image }] : undefined,
+      },
+      twitter: {
+        card: image ? "summary_large_image" : "summary",
+        title: artist.nomeArtistico,
+        description,
+        images: image ? [image] : undefined,
+      },
+    };
+  } catch {
+    return {
+      title: "Artista não encontrado | Jamfy",
+    };
+  }
+}
+
 export default async function ArtistaPage(
   props: PageProps<"/artistas/[slug]">,
 ) {
@@ -45,7 +89,7 @@ export default async function ArtistaPage(
   let artist: ArtistProfileDetail;
 
   try {
-    artist = await apiFetch<ArtistProfileDetail>(`/api/artist-profile/${slug}`);
+    artist = await getArtistBySlug(slug);
   } catch (err) {
     if (err instanceof ApiError && err.status === 404) {
       notFound();
