@@ -59,6 +59,29 @@ export const createHiringRequestSchema = z.object({
       .number()
       .nonnegative("O orçamento não pode ser negativo.")
       .optional(),
+
+    // How the show itself is structured — e.g. 2 sets of 1h30 with a 20min
+    // break between them, instead of one fixed block.
+    numeroSets: z
+      .number()
+      .int()
+      .min(1, "É preciso ao menos 1 set.")
+      .max(6, "No máximo 6 sets.")
+      .default(1),
+
+    duracaoSetMinutos: z
+      .number()
+      .int()
+      .min(15, "O set deve durar ao menos 15 minutos.")
+      .max(240, "O set deve durar no máximo 4 horas.")
+      .default(120),
+
+    intervaloMinutos: z
+      .number()
+      .int()
+      .min(0, "O intervalo não pode ser negativo.")
+      .max(120, "O intervalo deve durar no máximo 2 horas.")
+      .default(0),
   }),
 });
 

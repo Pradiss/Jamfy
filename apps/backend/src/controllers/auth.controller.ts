@@ -8,6 +8,15 @@ class AuthController {
     try {
       const result = await authService.register(req.body);
 
+      if (result.accessToken && result.refreshToken && result.expiresIn) {
+        setAuthCookies(
+          res,
+          result.accessToken,
+          result.refreshToken,
+          result.expiresIn,
+        );
+      }
+
       return res.status(201).json(result);
     } catch (error) {
       return res.status(400).json({

@@ -19,6 +19,11 @@ import { notificationRoutes } from "./routes/notification.routes.js";
 import { uploadRoutes } from "./routes/upload.routes.js";
 import { functionRoutes } from "./routes/function.routes.js";
 import { cidadeRoutes } from "./routes/cidade.routes.js";
+import { anuncioRoutes } from "./routes/anuncio.routes.js";
+import { contratanteProfileRoutes } from "./routes/contratante-profile.routes.js";
+import { avaliacaoRoutes } from "./routes/avaliacao.routes.js";
+import { denunciaRoutes } from "./routes/denuncia.routes.js";
+import { conversaRoutes } from "./routes/conversa.routes.js";
 
 const app: Express = express();
 
@@ -56,7 +61,12 @@ app.use("/api/instruments", instrumentRoutes);
 app.use("/api/genre", genreRoutes);
 app.use("/api/functions", functionRoutes);
 app.use("/api/cidades", cidadeRoutes);
+app.use("/api/anuncios", anuncioRoutes);
+app.use("/api/contratante-profile", contratanteProfileRoutes);
+app.use("/api/avaliacoes", avaliacaoRoutes);
+app.use("/api/denuncias", denunciaRoutes);
 app.use("/api/hiring-requests", hiringRequestRoutes);
+app.use("/api/conversas", conversaRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/uploads", uploadRoutes);
 

@@ -36,24 +36,54 @@ export type SimpleAgendaEntry = {
   dataInicio: string;
   dataFim: string;
   status: StatusAgenda;
+  diaInteiro?: boolean;
 };
 
-function getStatusForDay(
+const TIME_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: "America/Sao_Paulo",
+});
+
+// Brazil is fixed at UTC-3 year-round (DST was abolished in 2019). Whole-day
+// entries are stored as nominal UTC midnight-to-midnight (no real-world
+// instant attached — the artist just clicked "day N"), so they line up with
+// the UTC-midnight day cells as-is. Timed entries (from hiring requests) are
+// real UTC instants, so we shift them back 3h to find which Brazil calendar
+// day they actually fall on before checking overlap with the day cell.
+const BRAZIL_UTC_OFFSET_MS = 3 * 60 * 60 * 1000;
+
+export function getEntryForDay<T extends SimpleAgendaEntry>(
   day: Date,
-  entries: SimpleAgendaEntry[],
-): StatusAgenda | null {
-  const time = day.getTime();
+  entries: T[],
+): T | null {
+  const dayStart = day.getTime();
+  const dayEnd = dayStart + 24 * 60 * 60 * 1000;
 
   for (const entry of entries) {
-    const start = new Date(entry.dataInicio).getTime();
-    const end = new Date(entry.dataFim).getTime();
+    const offset = entry.diaInteiro ? 0 : BRAZIL_UTC_OFFSET_MS;
+    const start = new Date(entry.dataInicio).getTime() - offset;
+    const end = new Date(entry.dataFim).getTime() - offset;
 
-    if (time >= start && time < end) {
-      return entry.status;
+    if (start < dayEnd && end > dayStart) {
+      return entry;
     }
   }
 
   return null;
+}
+
+function entryTooltip(entry: SimpleAgendaEntry) {
+  const label = STATUS_LABELS[entry.status];
+
+  if (entry.diaInteiro) {
+    return label;
+  }
+
+  const start = TIME_FORMATTER.format(new Date(entry.dataInicio));
+  const end = TIME_FORMATTER.format(new Date(entry.dataFim));
+
+  return `${label} • ${start}–${end}`;
 }
 
 export function MonthCalendar({
@@ -93,7 +123,8 @@ export function MonthCalendar({
             return <div key={index} />;
           }
 
-          const status = getStatusForDay(day, entries);
+          const entry = getEntryForDay(day, entries);
+          const status = entry?.status ?? null;
           const clickable = Boolean(onDayClick) && !disabledDays?.(day);
 
           const className = `flex aspect-square items-center justify-center rounded-md text-xs transition ${
@@ -106,7 +137,7 @@ export function MonthCalendar({
             return (
               <div
                 key={index}
-                title={status ? STATUS_LABELS[status] : undefined}
+                title={entry ? entryTooltip(entry) : undefined}
                 className={className}
               >
                 {day.getUTCDate()}
@@ -119,7 +150,7 @@ export function MonthCalendar({
               key={index}
               type="button"
               onClick={() => onDayClick?.(day)}
-              title={status ? STATUS_LABELS[status] : "Marcar disponibilidade"}
+              title={entry ? entryTooltip(entry) : "Marcar disponibilidade"}
               className={className}
             >
               {day.getUTCDate()}

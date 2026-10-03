@@ -8,6 +8,10 @@ import { FilterSheet } from "@/components/search/filter-sheet";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { ArtistProfileListResponse } from "@/lib/types";
 import { toQueryString } from "@/lib/query";
+import {
+  sortGenresByPopularity,
+  sortInstrumentsByPopularity,
+} from "@/lib/popularity";
 import { inputClass } from "@/components/ui/form-field";
 import { containerClass } from "@/lib/ui";
 
@@ -82,13 +86,13 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
 
   const [generos, instrumentos] = await Promise.all([
     !generoId
-      ? apiFetch<{ id: string; nome: string }[]>("/api/genre").catch(
-          () => [] as { id: string; nome: string }[],
-        )
+      ? apiFetch<{ id: string; nome: string }[]>("/api/genre")
+          .then(sortGenresByPopularity)
+          .catch(() => [] as { id: string; nome: string }[])
       : Promise.resolve([] as { id: string; nome: string }[]),
-    apiFetch<{ id: string; nome: string }[]>("/api/instruments").catch(
-      () => [] as { id: string; nome: string }[],
-    ),
+    apiFetch<{ id: string; nome: string }[]>("/api/instruments")
+      .then(sortInstrumentsByPopularity)
+      .catch(() => [] as { id: string; nome: string }[]),
   ]);
 
   const activeAdvancedCount = [

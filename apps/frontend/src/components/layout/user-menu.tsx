@@ -80,6 +80,20 @@ export function UserMenu() {
             Editar perfil
           </Link>
           <Link
+            href="/anuncios/meus"
+            onClick={() => setOpen(false)}
+            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] dark:hover:bg-white/[.06]"
+          >
+            Meus anúncios
+          </Link>
+          <Link
+            href="/conversas"
+            onClick={() => setOpen(false)}
+            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] dark:hover:bg-white/[.06]"
+          >
+            Conversas
+          </Link>
+          <Link
             href="/esqueci-senha"
             onClick={() => setOpen(false)}
             className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] dark:hover:bg-white/[.06]"

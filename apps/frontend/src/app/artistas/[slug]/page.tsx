@@ -8,13 +8,13 @@ import { ArtistProfileOwnerControls } from "@/components/artist/artist-profile-o
 import { PortfolioManager } from "@/components/artist/portfolio-manager";
 import { ArtistAgendaSection } from "@/components/artist/artist-agenda-section";
 import { ArtistContactSection } from "@/components/artist/artist-contact-section";
+import { ArtistReviewsSection } from "@/components/artist/artist-reviews-section";
 import { AvatarUploader } from "@/components/artist/avatar-uploader";
 import { CoverUploader } from "@/components/artist/cover-uploader";
 import {
   InstagramIcon,
   FacebookIcon,
   YoutubeIcon,
-  SpotifyIcon,
   TiktokIcon,
 } from "@/components/artist/social-icons";
 import { containerClass } from "@/lib/ui";
@@ -27,7 +27,6 @@ const SOCIAL_LINKS: {
   { key: "instagramUrl", label: "Instagram", icon: InstagramIcon },
   { key: "facebookUrl", label: "Facebook", icon: FacebookIcon },
   { key: "youtubeUrl", label: "YouTube", icon: YoutubeIcon },
-  { key: "spotifyUrl", label: "Spotify", icon: SpotifyIcon },
   { key: "tiktokUrl", label: "TikTok", icon: TiktokIcon },
 ];
 
@@ -36,6 +35,23 @@ function Tag({ children }: { children: React.ReactNode }) {
     <span className="rounded-full bg-surface px-3.5 py-1 text-sm text-zinc-700 dark:bg-white/[.06] dark:text-zinc-300">
       {children}
     </span>
+  );
+}
+
+function TagGroup({ label, items }: { label: string; items: string[] }) {
+  if (items.length === 0) return null;
+
+  return (
+    <div>
+      <p className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+        {label}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {items.map((item) => (
+          <Tag key={item}>{item}</Tag>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -186,16 +202,21 @@ export default async function ArtistaPage(
       {artist.instrumentos.length ||
       artist.generos.length ||
       artist.artistaFuncaos.length ? (
-        <div className="mt-6 flex flex-wrap gap-2">
-          {artist.artistaFuncaos.map(({ funcao }) => (
-            <Tag key={funcao.id}>{funcao.nome}</Tag>
-          ))}
-          {artist.instrumentos.map(({ instrumento }) => (
-            <Tag key={instrumento.id}>{instrumento.nome}</Tag>
-          ))}
-          {artist.generos.map(({ genero }) => (
-            <Tag key={genero.id}>{genero.nome}</Tag>
-          ))}
+        <div className="mt-6 flex flex-wrap gap-6">
+          <TagGroup
+            label="Categoria"
+            items={artist.generos.map(({ genero }) => genero.nome)}
+          />
+          <TagGroup
+            label="Instrumentos"
+            items={artist.instrumentos.map(
+              ({ instrumento }) => instrumento.nome,
+            )}
+          />
+          <TagGroup
+            label="Funções"
+            items={artist.artistaFuncaos.map(({ funcao }) => funcao.nome)}
+          />
         </div>
       ) : null}
 
@@ -240,6 +261,12 @@ export default async function ArtistaPage(
       <PortfolioManager
         items={artist.portfolio}
         ownerUserId={artist.usuarioId}
+      />
+
+      <ArtistReviewsSection
+        artistId={artist.id}
+        avaliacao={artist.avaliacao}
+        quantidadeAvaliacoes={artist.quantidadeAvaliacoes}
       />
 
       <div id="agenda" className="scroll-mt-20">

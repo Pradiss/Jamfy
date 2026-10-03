@@ -5,7 +5,6 @@ import {
   OrigemAgenda,
   StatusSolicitacao,
   TipoNotificacao,
-  TipoUsuario,
 } from "../../generated/prisma/client.js";
 
 import type { CreateHiringRequestBody } from "@jamfy/shared";
@@ -19,6 +18,7 @@ const artistContactSelect = {
   nomeArtistico: true,
   slug: true,
   fotoCapaUrl: true,
+  instagramUrl: true,
   usuarioId: true,
   usuario: {
     select: {
@@ -45,6 +45,7 @@ function revealArtistContact(
     nomeArtistico: string;
     slug: string;
     fotoCapaUrl: string | null;
+    instagramUrl: string | null;
     usuarioId: string;
     usuario: { telefone: string; whatsapp: string | null };
   },
@@ -55,6 +56,7 @@ function revealArtistContact(
     nomeArtistico: artista.nomeArtistico,
     slug: artista.slug,
     fotoCapaUrl: artista.fotoCapaUrl,
+    instagramUrl: artista.instagramUrl,
     usuarioId: artista.usuarioId,
     telefone: revealed ? artista.usuario.telefone : null,
     whatsapp: revealed ? artista.usuario.whatsapp : null,
@@ -92,6 +94,9 @@ class HiringRequestService {
     estado,
     endereco,
     orcamento,
+    numeroSets,
+    duracaoSetMinutos,
+    intervaloMinutos,
   }: CreateHiringRequestInput) {
     const requester = await prisma.usuario.findUnique({
       where: {
@@ -111,12 +116,6 @@ class HiringRequestService {
       throw new Error("Usuário está inativo.");
     }
 
-    if (requester.tipo !== TipoUsuario.CONTRATANTE) {
-      throw new Error(
-        "Somente contratantes podem enviar solicitações de contratação.",
-      );
-    }
-
     const artistProfile = await prisma.perfilArtista.findUnique({
       where: {
         id: artistaId,
@@ -131,15 +130,28 @@ class HiringRequestService {
       throw new Error("Artista não encontrado.");
     }
 
+    if (artistProfile.usuarioId === userId) {
+      throw new Error(
+        "Você não pode enviar uma solicitação de contratação para o seu próprio perfil.",
+      );
+    }
+
     if (dataEvento) {
+      const { end } = this.eventWindow(
+        dataEvento,
+        numeroSets,
+        duracaoSetMinutos,
+        intervaloMinutos,
+      );
+
       const conflict = await prisma.agendaArtista.findFirst({
         where: {
           artistaId,
           status: {
             in: [StatusAgenda.RESERVADO, StatusAgenda.INDISPONIVEL],
           },
-          dataInicio: { lte: dataEvento },
-          dataFim: { gte: dataEvento },
+          dataInicio: { lt: end },
+          dataFim: { gt: dataEvento },
         },
         select: {
           id: true,
@@ -147,7 +159,9 @@ class HiringRequestService {
       });
 
       if (conflict) {
-        throw new Error("O artista não está disponível na data informada.");
+        throw new Error(
+          "O artista não está disponível nesse dia e horário.",
+        );
       }
     }
 
@@ -162,19 +176,27 @@ class HiringRequestService {
           estado,
           endereco,
           orcamento,
+          numeroSets,
+          duracaoSetMinutos,
+          intervaloMinutos,
           contratanteId: userId,
           artistaId,
         }),
       });
 
       if (dataEvento) {
-        const { start, end } = this.dayRange(dataEvento);
+        const { start, end } = this.eventWindow(
+          dataEvento,
+          numeroSets,
+          duracaoSetMinutos,
+          intervaloMinutos,
+        );
 
         await transaction.agendaArtista.create({
           data: {
             dataInicio: start,
             dataFim: end,
-            diaInteiro: true,
+            diaInteiro: false,
             status: StatusAgenda.PENDENTE,
             origem: OrigemAgenda.CONTRATACAO,
             titulo: nomeLocal ?? "Solicitação de contratação",
@@ -200,14 +222,23 @@ class HiringRequestService {
     });
   }
 
-  private dayRange(date: Date) {
-    const start = new Date(date);
-    start.setUTCHours(0, 0, 0, 0);
+  // The show is structured as N sets of a fixed length with a break between
+  // each one (e.g. 2 sets of 1h30 with a 20min break = 3h20 total), rather
+  // than a single fixed-length block — this is how it's actually negotiated
+  // informally, and it lets the agenda reflect the real occupied window.
+  private eventWindow(
+    date: Date,
+    numeroSets: number,
+    duracaoSetMinutos: number,
+    intervaloMinutos: number,
+  ) {
+    const totalMinutos =
+      numeroSets * duracaoSetMinutos + (numeroSets - 1) * intervaloMinutos;
 
-    const end = new Date(start);
-    end.setUTCDate(end.getUTCDate() + 1);
-
-    return { start, end };
+    return {
+      start: date,
+      end: new Date(date.getTime() + totalMinutos * 60 * 1000),
+    };
   }
 
   async listSent(userId: string) {
@@ -218,6 +249,9 @@ class HiringRequestService {
       include: {
         artista: {
           select: artistContactSelect,
+        },
+        avaliacao: {
+          select: { id: true },
         },
       },
       orderBy: {
@@ -381,6 +415,9 @@ class HiringRequestService {
         id: true,
         status: true,
         dataEvento: true,
+        numeroSets: true,
+        duracaoSetMinutos: true,
+        intervaloMinutos: true,
         contratanteId: true,
         artista: {
           select: {
@@ -401,7 +438,16 @@ class HiringRequestService {
       );
     }
 
+    let hirerArtistProfile: { id: string } | null = null;
+
     if (status === StatusSolicitacao.ACEITA && request.dataEvento) {
+      const { end } = this.eventWindow(
+        request.dataEvento,
+        request.numeroSets,
+        request.duracaoSetMinutos,
+        request.intervaloMinutos,
+      );
+
       const conflict = await prisma.agendaArtista.findFirst({
         where: {
           artistaId: request.artista.id,
@@ -409,8 +455,8 @@ class HiringRequestService {
           status: {
             in: [StatusAgenda.RESERVADO, StatusAgenda.INDISPONIVEL],
           },
-          dataInicio: { lte: request.dataEvento },
-          dataFim: { gte: request.dataEvento },
+          dataInicio: { lt: end },
+          dataFim: { gt: request.dataEvento },
         },
         select: {
           id: true,
@@ -419,8 +465,37 @@ class HiringRequestService {
 
       if (conflict) {
         throw new Error(
-          "Já existe uma reserva confirmada para essa data. Recuse esta solicitação para liberar a agenda.",
+          "Já existe uma reserva confirmada para esse dia e horário. Recuse esta solicitação para liberar a agenda.",
         );
+      }
+
+      // The person hiring may also be a musician/band with their own public
+      // agenda — if so, this gig occupies their calendar too, and we should
+      // not double-book them either.
+      hirerArtistProfile = await prisma.perfilArtista.findUnique({
+        where: { usuarioId: request.contratanteId },
+        select: { id: true },
+      });
+
+      if (hirerArtistProfile) {
+        const hirerConflict = await prisma.agendaArtista.findFirst({
+          where: {
+            artistaId: hirerArtistProfile.id,
+            solicitacaoId: { not: id },
+            status: {
+              in: [StatusAgenda.RESERVADO, StatusAgenda.INDISPONIVEL],
+            },
+            dataInicio: { lt: end },
+            dataFim: { gt: request.dataEvento },
+          },
+          select: { id: true },
+        });
+
+        if (hirerConflict) {
+          throw new Error(
+            "Você já tem um compromisso na sua própria agenda nesse dia e horário.",
+          );
+        }
       }
     }
 
@@ -443,6 +518,28 @@ class HiringRequestService {
             status: StatusAgenda.RESERVADO,
           },
         });
+
+        if (hirerArtistProfile && request.dataEvento) {
+          const { start, end } = this.eventWindow(
+            request.dataEvento,
+            request.numeroSets,
+            request.duracaoSetMinutos,
+            request.intervaloMinutos,
+          );
+
+          await transaction.agendaArtista.create({
+            data: {
+              dataInicio: start,
+              dataFim: end,
+              diaInteiro: false,
+              status: StatusAgenda.RESERVADO,
+              origem: OrigemAgenda.CONTRATACAO,
+              titulo: "Show contratado",
+              artistaId: hirerArtistProfile.id,
+              solicitacaoId: id,
+            },
+          });
+        }
       } else {
         await transaction.agendaArtista.deleteMany({
           where: {

@@ -12,19 +12,21 @@ const SECTIONS: { title: string; paragraphs: string[] }[] = [
     paragraphs: [
       "Ao criar uma conta, coletamos nome, e-mail, telefone/WhatsApp e tipo de conta (músico, banda ou contratante). Se você for artista, também coletamos informações de perfil que você optar por preencher: foto, foto de capa, biografia, cidade/estado, instrumentos, gêneros, cachê, portfólio (fotos e vídeos) e agenda de disponibilidade.",
       "Quando você envia ou recebe uma solicitação de contratação, guardamos os detalhes dessa solicitação (descrição do evento, data, cidade, orçamento) para que as partes envolvidas possam acompanhar o andamento.",
+      "Se você publicar um anúncio de compra, venda ou aluguel de instrumento/equipamento, guardamos o título, descrição, categoria, preço, cidade/estado e as fotos que você enviar.",
     ],
   },
   {
     title: "2. Para que usamos seus dados",
     paragraphs: [
-      "Usamos seus dados para: permitir a criação e o login na sua conta, exibir o perfil de artistas para contratantes (e vice-versa), viabilizar o envio e aceite de solicitações de contratação, liberar o contato entre as partes quando uma solicitação é aceita, e enviar notificações relacionadas a essas atividades.",
+      "Usamos seus dados para: permitir a criação e o login na sua conta, exibir o perfil de artistas para contratantes (e vice-versa), viabilizar o envio e aceite de solicitações de contratação, exibir os anúncios de compra/venda/aluguel que você publicar, liberar o contato entre as partes nesses fluxos, e enviar notificações relacionadas a essas atividades.",
       "Não vendemos seus dados pessoais para terceiros.",
     ],
   },
   {
     title: "3. Quando seus dados são compartilhados",
     paragraphs: [
-      "Seu telefone/WhatsApp só é compartilhado com a outra parte de uma solicitação de contratação depois que ela é aceita — nunca antes disso, e nunca publicamente. Seu nome, foto e informações de perfil público (para artistas) ficam visíveis a qualquer visitante do site, já que o objetivo da plataforma é divulgar seu trabalho.",
+      "Seu telefone/WhatsApp é compartilhado com outro usuário em dois casos, nunca publicamente e nunca com visitantes não cadastrados: (1) numa solicitação de contratação, só depois que ela é aceita; (2) num anúncio de compra/venda/aluguel que você publicar, para qualquer usuário logado que visualizar a página do anúncio — diferente da contratação, aqui não existe uma etapa de aceite antes da liberação do contato.",
+      "Seu nome, foto e informações de perfil público (para artistas) ficam visíveis a qualquer visitante do site, já que o objetivo da plataforma é divulgar seu trabalho. Da mesma forma, o conteúdo de um anúncio publicado (título, descrição, preço, fotos, cidade/estado) fica visível a qualquer visitante, mas sem o seu telefone/WhatsApp.",
       "Também compartilhamos dados com prestadores de serviço que operam a infraestrutura da plataforma (hospedagem, banco de dados e armazenamento de arquivos), estritamente para o funcionamento do serviço.",
     ],
   },
@@ -68,7 +70,7 @@ export default function PrivacidadePage() {
         Política de Privacidade
       </h1>
       <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
-        Última atualização: setembro de 2026
+        Última atualização: outubro de 2026
       </p>
 
       <div className="mt-10 flex max-w-2xl flex-col gap-8">

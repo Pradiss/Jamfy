@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Star } from "lucide-react";
 import type { ArtistProfileSummary } from "@/lib/types";
 
 function PinIcon() {
@@ -20,13 +21,7 @@ function PinIcon() {
 
 function StarIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className="h-3.5 w-3.5 shrink-0 text-amber-500"
-    >
-      <path d="M12 2.5l2.9 6.05 6.6.83-4.85 4.6 1.28 6.6L12 17.6l-5.93 3-1.28-6.6-4.85-4.6 6.6-.83L12 2.5Z" />
-    </svg>
+    <Star className="h-3.5 w-3.5 shrink-0 fill-amber-500 text-amber-500" />
   );
 }
 

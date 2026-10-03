@@ -84,6 +84,48 @@ enum TipoNotificacao {
   SOLICITACAO_ACEITA
   SOLICITACAO_RECUSADA
   SOLICITACAO_CANCELADA
+  CONVERSA_SOLICITADA
+  CONVERSA_ACEITA
+  CONVERSA_RECUSADA
+  MENSAGEM_RECEBIDA
+}
+
+enum StatusConversa {
+  PENDENTE
+  ACEITA
+  RECUSADA
+}
+
+enum TipoDenuncia {
+  SOLICITACAO
+  ANUNCIO
+  USUARIO
+}
+
+enum MotivoDenuncia {
+  GOLPE
+  CONTEUDO_INAPROPRIADO
+  SPAM
+  INFORMACAO_FALSA
+  OUTRO
+}
+
+enum StatusDenuncia {
+  PENDENTE
+  EM_ANALISE
+  RESOLVIDA
+}
+
+enum TipoAnuncio {
+  VENDA
+  COMPRA
+  ALUGUEL
+}
+
+enum StatusAnuncio {
+  ATIVO
+  CONCLUIDO
+  INATIVO
 }
 
 model Usuario {
@@ -105,10 +147,44 @@ model Usuario {
 
   solicitacoesEnviadas SolicitacaoContratacao[]
   notificacoes         Notificacao[]
+  anuncios             Anuncio[]
+  avaliacoesFeitas     Avaliacao[]
+  denunciasFeitas      Denuncia[]
+
+  conversasComoComprador Conversa[] @relation("ConversasComoComprador")
+  conversasComoVendedor  Conversa[] @relation("ConversasComoVendedor")
+  mensagensEnviadas      Mensagem[]
 
   @@index([tipo])
   @@index([ativo])
   @@index([ultimoLoginEm])
+}
+
+model Anuncio {
+  id            String        @id @default(uuid()) @db.Uuid
+  usuarioId     String        @db.Uuid
+  tipo          TipoAnuncio
+  titulo        String        @db.VarChar(160)
+  descricao     String        @db.Text
+  categoria     String        @db.VarChar(80)
+  preco         Decimal?      @db.Decimal(10, 2)
+  cidade        String        @db.VarChar(120)
+  estado        String        @db.VarChar(2)
+  fotos         String[]
+  status        StatusAnuncio @default(ATIVO)
+  visualizacoes Int           @default(0)
+  criadoEm      DateTime      @default(now())
+  atualizadoEm  DateTime      @updatedAt
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  conversas Conversa[]
+
+  @@index([tipo])
+  @@index([categoria])
+  @@index([cidade, estado])
+  @@index([status])
+  @@index([usuarioId])
 }
 
 model PerfilArtista {
@@ -155,6 +231,7 @@ model PerfilArtista {
   solicitacoes   SolicitacaoContratacao[]
   agenda         AgendaArtista[]
   artistaFuncaos ArtistaFuncao[]
+  avaliacoes     Avaliacao[]
 
   @@index([tipo])
   @@index([cidade, estado])
@@ -322,6 +399,13 @@ model SolicitacaoContratacao {
   orcamento Decimal?          @db.Decimal(10, 2)
   status    StatusSolicitacao @default(PENDENTE)
 
+  // How the show itself is structured — e.g. 2 sets of 1h30 with a 20min
+  // break between them — instead of a single fixed-length block. Mirrors
+  // how this is actually negotiated informally (WhatsApp groups, etc).
+  numeroSets        Int @default(1)
+  duracaoSetMinutos Int @default(120)
+  intervaloMinutos  Int @default(0)
+
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
 
@@ -331,8 +415,9 @@ model SolicitacaoContratacao {
   artistaId String        @db.Uuid
   artista   PerfilArtista @relation(fields: [artistaId], references: [id], onDelete: Restrict)
 
-  agenda        AgendaArtista?
+  agenda        AgendaArtista[]
   notificacoes  Notificacao[]
+  avaliacao     Avaliacao?
 
   @@index([contratanteId])
   @@index([artistaId])
@@ -342,6 +427,43 @@ model SolicitacaoContratacao {
   @@index([cidade, estado])
   @@index([artistaId, status])
   @@index([contratanteId, status])
+}
+
+model Avaliacao {
+  id         String   @id @default(uuid()) @db.Uuid
+  nota       Int
+  comentario String?  @db.Text
+  criadoEm   DateTime @default(now())
+
+  solicitacaoId String                 @unique @db.Uuid
+  solicitacao    SolicitacaoContratacao @relation(fields: [solicitacaoId], references: [id], onDelete: Cascade)
+
+  artistaId String        @db.Uuid
+  artista   PerfilArtista @relation(fields: [artistaId], references: [id], onDelete: Cascade)
+
+  contratanteId String  @db.Uuid
+  contratante   Usuario @relation(fields: [contratanteId], references: [id], onDelete: Cascade)
+
+  @@index([artistaId])
+  @@index([contratanteId])
+}
+
+model Denuncia {
+  id           String         @id @default(uuid()) @db.Uuid
+  tipo         TipoDenuncia
+  motivo       MotivoDenuncia
+  descricao    String?        @db.Text
+  referenciaId String         @db.Uuid
+  status       StatusDenuncia @default(PENDENTE)
+  criadoEm     DateTime       @default(now())
+
+  denuncianteId String  @db.Uuid
+  denunciante   Usuario @relation(fields: [denuncianteId], references: [id], onDelete: Cascade)
+
+  @@index([tipo])
+  @@index([referenciaId])
+  @@index([status])
+  @@index([denuncianteId])
 }
 
 model AgendaArtista {
@@ -363,7 +485,7 @@ model AgendaArtista {
   artistaId String        @db.Uuid
   artista   PerfilArtista @relation(fields: [artistaId], references: [id], onDelete: Cascade)
 
-  solicitacaoId String?                 @unique @db.Uuid
+  solicitacaoId String?                 @db.Uuid
   solicitacao   SolicitacaoContratacao? @relation(fields: [solicitacaoId], references: [id], onDelete: SetNull)
 
   @@index([artistaId])
@@ -371,6 +493,7 @@ model AgendaArtista {
   @@index([dataFim])
   @@index([status])
   @@index([origem])
+  @@index([solicitacaoId])
   @@index([artistaId, dataInicio, dataFim])
   @@index([artistaId, status])
 }
@@ -389,7 +512,53 @@ model Notificacao {
   solicitacaoId String?                 @db.Uuid
   solicitacao   SolicitacaoContratacao? @relation(fields: [solicitacaoId], references: [id], onDelete: SetNull)
 
+  conversaId String?   @db.Uuid
+  conversa   Conversa? @relation(fields: [conversaId], references: [id], onDelete: SetNull)
+
   @@index([usuarioId])
   @@index([usuarioId, lida])
   @@index([criadoEm])
+  @@index([conversaId])
+}
+
+model Conversa {
+  id     String         @id @default(uuid()) @db.Uuid
+  status StatusConversa @default(PENDENTE)
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  anuncioId String  @db.Uuid
+  anuncio   Anuncio @relation(fields: [anuncioId], references: [id], onDelete: Cascade)
+
+  compradorId String  @db.Uuid
+  comprador   Usuario @relation("ConversasComoComprador", fields: [compradorId], references: [id], onDelete: Cascade)
+
+  vendedorId String  @db.Uuid
+  vendedor   Usuario @relation("ConversasComoVendedor", fields: [vendedorId], references: [id], onDelete: Cascade)
+
+  mensagens    Mensagem[]
+  notificacoes Notificacao[]
+
+  @@unique([anuncioId, compradorId])
+  @@index([compradorId])
+  @@index([vendedorId])
+  @@index([status])
+}
+
+model Mensagem {
+  id       String   @id @default(uuid()) @db.Uuid
+  conteudo String   @db.Text
+  lida     Boolean  @default(false)
+  criadoEm DateTime @default(now())
+
+  conversaId String   @db.Uuid
+  conversa   Conversa @relation(fields: [conversaId], references: [id], onDelete: Cascade)
+
+  autorId String  @db.Uuid
+  autor   Usuario @relation(fields: [autorId], references: [id], onDelete: Cascade)
+
+  @@index([conversaId])
+  @@index([conversaId, criadoEm])
+  @@index([autorId])
 }

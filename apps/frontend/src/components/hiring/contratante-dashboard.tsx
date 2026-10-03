@@ -84,6 +84,7 @@ export function ContratanteDashboard() {
               request={request}
               perspective="contratante"
               onCancel={cancel}
+              onRated={load}
             />
           ))}
         </div>

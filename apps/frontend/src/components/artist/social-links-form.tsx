@@ -10,34 +10,77 @@ type SocialLinksData = {
   instagramUrl: string | null;
   facebookUrl: string | null;
   youtubeUrl: string | null;
-  spotifyUrl: string | null;
   tiktokUrl: string | null;
-  siteUrl: string | null;
 };
 
+type FieldKey = keyof SocialLinksData;
+
 const FIELDS: {
-  key: "instagramUrl" | "facebookUrl" | "youtubeUrl" | "spotifyUrl" | "tiktokUrl" | "websiteUrl";
+  key: FieldKey;
   label: string;
+  domain: string;
+  prefix: string;
   placeholder: string;
+  buildUrl: (handle: string) => string;
 }[] = [
-  { key: "instagramUrl", label: "Instagram", placeholder: "https://instagram.com/seu-perfil" },
-  { key: "facebookUrl", label: "Facebook", placeholder: "https://facebook.com/sua-pagina" },
-  { key: "youtubeUrl", label: "YouTube", placeholder: "https://youtube.com/@seu-canal" },
-  { key: "spotifyUrl", label: "Spotify", placeholder: "https://open.spotify.com/artist/..." },
-  { key: "tiktokUrl", label: "TikTok", placeholder: "https://tiktok.com/@seu-perfil" },
-  { key: "websiteUrl", label: "Site", placeholder: "https://seusite.com" },
+  {
+    key: "instagramUrl",
+    label: "Instagram",
+    domain: "instagram.com",
+    prefix: "instagram.com/",
+    placeholder: "seuusuario",
+    buildUrl: (handle) => `https://instagram.com/${handle}`,
+  },
+  {
+    key: "facebookUrl",
+    label: "Facebook",
+    domain: "facebook.com",
+    prefix: "facebook.com/",
+    placeholder: "suapagina",
+    buildUrl: (handle) => `https://facebook.com/${handle}`,
+  },
+  {
+    key: "youtubeUrl",
+    label: "YouTube",
+    domain: "youtube.com",
+    prefix: "youtube.com/@",
+    placeholder: "seucanal",
+    buildUrl: (handle) => `https://youtube.com/@${handle.replace(/^@/, "")}`,
+  },
+  {
+    key: "tiktokUrl",
+    label: "TikTok",
+    domain: "tiktok.com",
+    prefix: "tiktok.com/@",
+    placeholder: "seuusuario",
+    buildUrl: (handle) => `https://tiktok.com/@${handle.replace(/^@/, "")}`,
+  },
 ];
+
+// Links saved before were full URLs — show just the handle back in the
+// input so editing feels the same as creating.
+function extractHandle(url: string | null, domain: string) {
+  if (!url) return "";
+
+  try {
+    const parsed = new URL(url);
+    if (!parsed.hostname.includes(domain)) return url;
+    return parsed.pathname.replace(/^\/+/, "").replace(/^@/, "").replace(/\/+$/, "");
+  } catch {
+    return url;
+  }
+}
 
 export function SocialLinksForm({ artist }: { artist: SocialLinksData }) {
   const router = useRouter();
-  const [values, setValues] = useState({
-    instagramUrl: artist.instagramUrl ?? "",
-    facebookUrl: artist.facebookUrl ?? "",
-    youtubeUrl: artist.youtubeUrl ?? "",
-    spotifyUrl: artist.spotifyUrl ?? "",
-    tiktokUrl: artist.tiktokUrl ?? "",
-    websiteUrl: artist.siteUrl ?? "",
-  });
+  const [values, setValues] = useState(() =>
+    Object.fromEntries(
+      FIELDS.map((field) => [
+        field.key,
+        extractHandle(artist[field.key], field.domain),
+      ]),
+    ) as Record<FieldKey, string>,
+  );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -52,7 +95,12 @@ export function SocialLinksForm({ artist }: { artist: SocialLinksData }) {
       await apiFetch("/api/artist-profile", {
         method: "PUT",
         body: Object.fromEntries(
-          FIELDS.map(({ key }) => [key, values[key].trim() || null]),
+          FIELDS.map((field) => {
+            const raw = values[field.key].trim();
+            if (!raw) return [field.key, null];
+            const url = raw.startsWith("http") ? raw : field.buildUrl(raw);
+            return [field.key, url];
+          }),
         ),
       });
 
@@ -72,6 +120,9 @@ export function SocialLinksForm({ artist }: { artist: SocialLinksData }) {
   return (
     <form onSubmit={handleSubmit} className={`flex flex-col gap-4 p-5 ${cardClass}`}>
       <h3 className="font-semibold tracking-tight">Redes sociais</h3>
+      <p className="-mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+        Digite só o seu usuário em cada rede, sem precisar colar o link.
+      </p>
 
       <div className="grid gap-4 sm:grid-cols-2">
         {FIELDS.map((field) => (
@@ -79,18 +130,24 @@ export function SocialLinksForm({ artist }: { artist: SocialLinksData }) {
             <span className="font-medium text-zinc-700 dark:text-zinc-300">
               {field.label}
             </span>
-            <input
-              type="url"
-              placeholder={field.placeholder}
-              value={values[field.key]}
-              onChange={(event) =>
-                setValues((current) => ({
-                  ...current,
-                  [field.key]: event.target.value,
-                }))
-              }
-              className={inputClass}
-            />
+            <div
+              className={`flex items-center overflow-hidden p-0 ${inputClass}`}
+            >
+              <span className="shrink-0 border-r border-black/10 bg-surface px-3 py-2.5 text-sm text-zinc-500 dark:border-white/10 dark:text-zinc-400">
+                {field.prefix}
+              </span>
+              <input
+                value={values[field.key]}
+                placeholder={field.placeholder}
+                onChange={(event) =>
+                  setValues((current) => ({
+                    ...current,
+                    [field.key]: event.target.value,
+                  }))
+                }
+                className="w-full bg-transparent px-3 py-2.5 text-sm outline-none"
+              />
+            </div>
           </label>
         ))}
       </div>

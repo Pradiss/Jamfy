@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import type { Notification, NotificationListResponse } from "@/lib/types";
 
@@ -24,6 +25,7 @@ function BellIcon() {
 }
 
 export function NotificationBell() {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
@@ -90,6 +92,17 @@ export function NotificationBell() {
     }
   }
 
+  function handleNotificationClick(notification: Notification) {
+    setOpen(false);
+    markAsRead(notification.id);
+
+    if (notification.conversaId) {
+      router.push(`/conversas/${notification.conversaId}`);
+    } else if (notification.solicitacaoId) {
+      router.push("/dashboard");
+    }
+  }
+
   async function markAllAsRead() {
     setNotifications((current) =>
       current.map((item) => ({ ...item, lida: true })),
@@ -146,7 +159,7 @@ export function NotificationBell() {
                 <li key={notification.id}>
                   <button
                     type="button"
-                    onClick={() => markAsRead(notification.id)}
+                    onClick={() => handleNotificationClick(notification)}
                     className={`w-full rounded-xl px-2.5 py-2 text-left text-sm transition hover:bg-black/[.04] dark:hover:bg-white/[.06] ${
                       notification.lida ? "opacity-60" : ""
                     }`}

@@ -53,6 +53,16 @@ function extensionForMime(mimeType: string) {
   return EXTENSION_BY_MIME[mimeType] ?? mimeType.split("/")[1] ?? "bin";
 }
 
+function pathFromPublicUrl(url: string) {
+  const marker = `/object/public/${BUCKET}/`;
+  const withoutQuery = url.split("?")[0] ?? "";
+  const markerIndex = withoutQuery.indexOf(marker);
+
+  if (markerIndex === -1) return null;
+
+  return withoutQuery.slice(markerIndex + marker.length);
+}
+
 async function uploadBuffer(path: string, buffer: Buffer, mimeType: string) {
   await ensureBucket();
 
@@ -124,6 +134,30 @@ class UploadService {
     const url = await uploadBuffer(path, buffer, mimeType);
 
     return { url, tipo: tipo as "VIDEO" | "FOTO" };
+  }
+
+  async uploadAnuncioPhoto(userId: string, buffer: Buffer, mimeType: string) {
+    const path = `anuncios/${userId}/${randomUUID()}.${extensionForMime(mimeType)}`;
+
+    return uploadBuffer(path, buffer, mimeType);
+  }
+
+  async deleteFiles(urls: string[]) {
+    const paths = urls
+      .map(pathFromPublicUrl)
+      .filter((path): path is string => Boolean(path));
+
+    if (paths.length === 0) return;
+
+    await ensureBucket();
+
+    const { error } = await supabaseAdmin.storage.from(BUCKET).remove(paths);
+
+    if (error) {
+      // Not fatal — the DB record is still the source of truth, this is
+      // best-effort cleanup to avoid piling up orphaned files.
+      console.error("Não foi possível remover arquivos do armazenamento:", error.message);
+    }
   }
 }
 

@@ -7,6 +7,7 @@ import {
   AgendaLegend,
   startOfMonth,
   addMonths,
+  getEntryForDay,
   MONTH_FORMATTER,
 } from "@/components/artist/month-calendar";
 import type { AgendaEntry } from "@/lib/types";
@@ -15,21 +16,6 @@ import { primaryButtonClass, secondaryButtonClass, cardClass } from "@/lib/ui";
 
 function toUtcDayStart(value: string) {
   return new Date(`${value}T00:00:00.000Z`);
-}
-
-function findEntryForDay(day: Date, entries: AgendaEntry[]): AgendaEntry | null {
-  const time = day.getTime();
-
-  for (const entry of entries) {
-    const start = new Date(entry.dataInicio).getTime();
-    const end = new Date(entry.dataFim).getTime();
-
-    if (time >= start && time < end) {
-      return entry;
-    }
-  }
-
-  return null;
 }
 
 function formatRange(start: string, end: string) {
@@ -134,7 +120,7 @@ export function AgendaManager() {
   }
 
   async function handleDayClick(day: Date) {
-    const existing = findEntryForDay(day, entries ?? []);
+    const existing = getEntryForDay(day, entries ?? []);
     setActionError(null);
 
     const dayEnd = new Date(day);
@@ -173,7 +159,7 @@ export function AgendaManager() {
   }
 
   function isDayLocked(day: Date) {
-    const existing = findEntryForDay(day, entries ?? []);
+    const existing = getEntryForDay(day, entries ?? []);
     return Boolean(existing && existing.origem !== "ARTISTA");
   }
 

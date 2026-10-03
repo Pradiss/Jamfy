@@ -188,6 +188,7 @@ export type HiringRequestArtistSummary = {
   nomeArtistico: string;
   slug: string;
   fotoCapaUrl: string | null;
+  instagramUrl: string | null;
   usuarioId: string;
   // Only populated once the request is ACEITA.
   telefone: string | null;
@@ -213,17 +214,26 @@ export type HiringRequest = {
   estado: string;
   endereco: string | null;
   orcamento: string | null;
+  numeroSets: number;
+  duracaoSetMinutos: number;
+  intervaloMinutos: number;
   status: StatusSolicitacao;
   criadoEm: string;
   artista?: HiringRequestArtistSummary;
   contratante?: HiringRequestContratanteSummary;
+  // Only populated on "listSent" (contratante's own sent requests).
+  avaliacao?: { id: string } | null;
 };
 
 export type TipoNotificacao =
   | "SOLICITACAO_CRIADA"
   | "SOLICITACAO_ACEITA"
   | "SOLICITACAO_RECUSADA"
-  | "SOLICITACAO_CANCELADA";
+  | "SOLICITACAO_CANCELADA"
+  | "CONVERSA_SOLICITADA"
+  | "CONVERSA_ACEITA"
+  | "CONVERSA_RECUSADA"
+  | "MENSAGEM_RECEBIDA";
 
 export type Notification = {
   id: string;
@@ -233,6 +243,7 @@ export type Notification = {
   lida: boolean;
   criadoEm: string;
   solicitacaoId: string | null;
+  conversaId: string | null;
 };
 
 export type NotificationListResponse = {
@@ -244,4 +255,102 @@ export type NotificationListResponse = {
     total: number;
     totalPaginas: number;
   };
+};
+
+export type TipoAnuncio = "VENDA" | "COMPRA" | "ALUGUEL";
+
+export const TIPO_ANUNCIO_LABELS: Record<TipoAnuncio, string> = {
+  VENDA: "Venda",
+  COMPRA: "Compra",
+  ALUGUEL: "Aluguel",
+};
+
+export type StatusAnuncio = "ATIVO" | "CONCLUIDO" | "INATIVO";
+
+export type AnuncioSummary = {
+  id: string;
+  tipo: TipoAnuncio;
+  titulo: string;
+  categoria: string;
+  preco: string | null;
+  cidade: string;
+  estado: string;
+  fotos: string[];
+  status: StatusAnuncio;
+  criadoEm: string;
+  usuarioId: string;
+};
+
+export type AnuncioDetail = AnuncioSummary & {
+  descricao: string;
+  visualizacoes: number;
+  usuario: {
+    id: string;
+    nome: string;
+    fotoUrl: string | null;
+  };
+};
+
+export type AnuncioListResponse = {
+  anuncios: AnuncioSummary[];
+  paginacao: {
+    pagina: number;
+    limite: number;
+    total: number;
+    totalPaginas: number;
+  };
+};
+
+export type StatusConversa = "PENDENTE" | "ACEITA" | "RECUSADA";
+
+export const STATUS_CONVERSA_LABELS: Record<StatusConversa, string> = {
+  PENDENTE: "Aguardando resposta",
+  ACEITA: "Aceita",
+  RECUSADA: "Recusada",
+};
+
+export type ConversaCounterpart = {
+  id: string;
+  nome: string;
+  fotoUrl: string | null;
+};
+
+export type ConversaAnuncioSummary = {
+  id: string;
+  titulo: string;
+  fotos: string[];
+};
+
+export type ConversaPapel = "comprador" | "vendedor";
+
+export type ConversaSummary = {
+  id: string;
+  status: StatusConversa;
+  anuncio: ConversaAnuncioSummary;
+  counterpart: ConversaCounterpart;
+  papel: ConversaPapel;
+  ultimaMensagem: {
+    conteudo: string;
+    criadoEm: string;
+    autorId: string;
+  } | null;
+  naoLidas: number;
+};
+
+export type Mensagem = {
+  id: string;
+  conteudo: string;
+  autorId: string;
+  lida: boolean;
+  criadoEm: string;
+};
+
+export type ConversaDetail = {
+  id: string;
+  status: StatusConversa;
+  criadoEm: string;
+  anuncio: ConversaAnuncioSummary;
+  counterpart: ConversaCounterpart;
+  papel: ConversaPapel;
+  mensagens: Mensagem[];
 };

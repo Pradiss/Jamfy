@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { isChromelessRoute } from "@/lib/chromeless-routes";
 
 function HomeIcon({ className }: { className?: string }) {
   return (
@@ -34,6 +35,23 @@ function SearchIcon({ className }: { className?: string }) {
     >
       <circle cx="11" cy="11" r="6.5" />
       <path d="m20 20-4-4" />
+    </svg>
+  );
+}
+
+function TagIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M6 8h12l1 12H5L6 8Z" />
+      <path d="M9 8V6a3 3 0 0 1 6 0v2" />
     </svg>
   );
 }
@@ -76,6 +94,10 @@ export function MobileTabBar() {
   const pathname = usePathname();
   const { user } = useAuth();
 
+  if (isChromelessRoute(pathname)) {
+    return null;
+  }
+
   const isArtist = user?.tipo === "MUSICO" || user?.tipo === "BANDA";
 
   const profileHref = !user
@@ -105,6 +127,12 @@ export function MobileTabBar() {
       label: "Buscar",
       Icon: SearchIcon,
       active: pathname.startsWith("/artistas"),
+    },
+    {
+      href: "/anuncios",
+      label: "Anúncios",
+      Icon: TagIcon,
+      active: pathname.startsWith("/anuncios"),
     },
     {
       href: panelHref,

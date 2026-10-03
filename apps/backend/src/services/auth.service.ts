@@ -89,6 +89,7 @@ class AuthService {
         user,
         accessToken: authData.session?.access_token ?? null,
         refreshToken: authData.session?.refresh_token ?? null,
+        expiresIn: authData.session?.expires_in ?? null,
         expiresAt: authData.session?.expires_at ?? null,
         requireEmailConfirmation: authData.session === null,
       };

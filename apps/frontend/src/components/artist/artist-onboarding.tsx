@@ -7,6 +7,10 @@ import {
   ArtistProfileForm,
   type ArtistProfileFormValues,
 } from "@/components/artist/artist-profile-form";
+import { ArtistFunctionsForm } from "@/components/artist/artist-functions-form";
+import { ArtistInstrumentsForm } from "@/components/artist/artist-instruments-form";
+import { ArtistGenresForm } from "@/components/artist/artist-genres-form";
+import { primaryButtonClass } from "@/lib/ui";
 
 function toApiPayload(values: ArtistProfileFormValues) {
   return {
@@ -23,6 +27,7 @@ function toApiPayload(values: ArtistProfileFormValues) {
 export function ArtistOnboarding() {
   const router = useRouter();
   const [checked, setChecked] = useState(false);
+  const [slug, setSlug] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -45,12 +50,38 @@ export function ArtistOnboarding() {
       method: "POST",
       body: toApiPayload(values),
     });
-    router.replace(`/artistas/${created.slug}`);
+    setSlug(created.slug);
   }
 
   if (!checked) {
+    return <p className="text-zinc-500 dark:text-zinc-400">Carregando...</p>;
+  }
+
+  if (slug) {
     return (
-      <p className="text-zinc-500 dark:text-zinc-400">Carregando...</p>
+      <div>
+        <h1 className="mb-2 text-3xl font-semibold tracking-tight">
+          Quase lá! O que você toca?
+        </h1>
+        <p className="mb-6 text-zinc-500 dark:text-zinc-400">
+          Isso ajuda contratantes a te encontrar na busca por instrumento e
+          gênero. Dá pra editar isso depois também.
+        </p>
+
+        <div className="flex flex-col gap-4">
+          <ArtistFunctionsForm />
+          <ArtistInstrumentsForm />
+          <ArtistGenresForm />
+        </div>
+
+        <button
+          type="button"
+          onClick={() => router.replace(`/artistas/${slug}`)}
+          className={`mt-6 ${primaryButtonClass}`}
+        >
+          Ir para meu perfil
+        </button>
+      </div>
     );
   }
 

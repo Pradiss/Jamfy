@@ -4,9 +4,12 @@ import { apiFetch } from "@/lib/api";
 import type { ArtistProfileListResponse } from "@/lib/types";
 import { primaryButtonClass, secondaryButtonClass, containerClass } from "@/lib/ui";
 import { ArtistRow } from "@/components/artist/artist-row";
+import { AnuncioRow } from "@/components/anuncio/anuncio-row";
 import { GenreCategoryGrid } from "@/components/search/genre-category-grid";
 import { HeroSearch } from "@/components/home/hero-search";
 import { Reveal } from "@/components/ui/reveal";
+import { sortGenresByPopularity } from "@/lib/popularity";
+import type { AnuncioListResponse } from "@/lib/types";
 
 async function fetchArtists(query: string) {
   try {
@@ -19,19 +22,34 @@ async function fetchArtists(query: string) {
   }
 }
 
+async function fetchAnuncios() {
+  try {
+    const data = await apiFetch<AnuncioListResponse>(
+      "/api/anuncios?limit=10",
+    );
+    return data.anuncios;
+  } catch {
+    return [];
+  }
+}
+
 async function fetchGenres() {
   try {
-    return await apiFetch<{ id: string; nome: string }[]>("/api/genre");
+    const genres = await apiFetch<{ id: string; nome: string }[]>(
+      "/api/genre",
+    );
+    return sortGenresByPopularity(genres);
   } catch {
     return [];
   }
 }
 
 export default async function Home() {
-  const [musicos, bandas, generos] = await Promise.all([
+  const [musicos, bandas, generos, anuncios] = await Promise.all([
     fetchArtists("tipo=MUSICO&limit=10"),
     fetchArtists("tipo=BANDA&limit=10"),
     fetchGenres(),
+    fetchAnuncios(),
   ]);
 
   return (
@@ -113,6 +131,14 @@ export default async function Home() {
           title="Bandas"
           artists={bandas}
           viewAllHref="/artistas?tipo=BANDA"
+        />
+      </Reveal>
+
+      <Reveal>
+        <AnuncioRow
+          title="Comprar e vender"
+          anuncios={anuncios}
+          viewAllHref="/anuncios"
         />
       </Reveal>
 

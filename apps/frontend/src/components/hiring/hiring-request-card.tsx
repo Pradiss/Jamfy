@@ -8,7 +8,13 @@ import {
 } from "@/lib/types";
 import { primaryButtonClass, secondaryButtonClass, cardClass } from "@/lib/ui";
 import { whatsappLink } from "@/lib/whatsapp";
-import { WhatsappIcon, PhoneIcon } from "@/components/artist/social-icons";
+import {
+  WhatsappIcon,
+  PhoneIcon,
+  InstagramIcon,
+} from "@/components/artist/social-icons";
+import { ReportDialog } from "@/components/ui/report-dialog";
+import { RatingDialog } from "@/components/hiring/rating-dialog";
 
 const STATUS_STYLES: Record<HiringRequest["status"], string> = {
   PENDENTE:
@@ -19,9 +25,42 @@ const STATUS_STYLES: Record<HiringRequest["status"], string> = {
   CANCELADA: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
 };
 
+const HOUR_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: "America/Sao_Paulo",
+});
+
 function formatDate(value: string | null) {
   if (!value) return null;
-  return new Date(value).toLocaleDateString("pt-BR", { timeZone: "UTC" });
+  // dataEvento is a real moment (the event's start), not a nominal day, so
+  // it must be read back in Brazil's timezone (fixed UTC-3) — formatting it
+  // as UTC can show the wrong calendar day for evening events.
+  const date = new Date(value);
+  return `${date.toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })} às ${HOUR_FORMATTER.format(date)}`;
+}
+
+function formatMinutes(minutos: number) {
+  const horas = Math.floor(minutos / 60);
+  const resto = minutos % 60;
+  if (horas === 0) return `${resto}min`;
+  if (resto === 0) return `${horas}h`;
+  return `${horas}h${resto}`;
+}
+
+function formatSets(request: HiringRequest) {
+  const duracao = formatMinutes(request.duracaoSetMinutos);
+
+  if (request.numeroSets <= 1) {
+    return `1 set de ${duracao}`;
+  }
+
+  const intervalo =
+    request.intervaloMinutos > 0
+      ? `intervalo de ${formatMinutes(request.intervaloMinutos)}`
+      : "sem intervalo";
+
+  return `${request.numeroSets} sets de ${duracao} (${intervalo})`;
 }
 
 type HiringRequestCardProps = {
@@ -30,6 +69,7 @@ type HiringRequestCardProps = {
   onAccept?: (id: string) => Promise<void>;
   onDecline?: (id: string) => Promise<void>;
   onCancel?: (id: string) => Promise<void>;
+  onRated?: () => void;
 };
 
 export function HiringRequestCard({
@@ -38,6 +78,7 @@ export function HiringRequestCard({
   onAccept,
   onDecline,
   onCancel,
+  onRated,
 }: HiringRequestCardProps) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,6 +124,12 @@ export function HiringRequestCard({
         </span>
       </div>
 
+      {request.dataEvento ? (
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          {formatSets(request)}
+        </p>
+      ) : null}
+
       <p className="text-sm text-zinc-700 dark:text-zinc-300">
         {request.descricao}
       </p>
@@ -104,9 +151,13 @@ export function HiringRequestCard({
             </span>
           </span>
 
-          {counterpart.whatsapp ? (
+          {/* Most accounts never fill the separate "whatsapp" field (only
+              "telefone" is required at signup), but in Brazil the phone
+              number usually is the WhatsApp number — so fall back to it
+              instead of hiding the WhatsApp option for most reveals. */}
+          {counterpart.whatsapp || counterpart.telefone ? (
             <a
-              href={whatsappLink(counterpart.whatsapp)}
+              href={whatsappLink(counterpart.whatsapp || counterpart.telefone!)}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-700"
@@ -114,7 +165,9 @@ export function HiringRequestCard({
               <WhatsappIcon className="h-3.5 w-3.5" />
               Chamar no WhatsApp
             </a>
-          ) : counterpart.telefone ? (
+          ) : null}
+
+          {counterpart.telefone ? (
             <a
               href={`tel:${counterpart.telefone}`}
               className="flex items-center gap-1.5 rounded-full border border-black/10 px-3 py-1.5 text-xs font-medium transition hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06]"
@@ -122,6 +175,38 @@ export function HiringRequestCard({
               <PhoneIcon className="h-3.5 w-3.5" />
               Ligar
             </a>
+          ) : null}
+
+          {"instagramUrl" in counterpart && counterpart.instagramUrl ? (
+            <a
+              href={counterpart.instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 rounded-full border border-black/10 px-3 py-1.5 text-xs font-medium transition hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06]"
+            >
+              <InstagramIcon className="h-3.5 w-3.5" />
+              Instagram
+            </a>
+          ) : null}
+        </div>
+      ) : null}
+
+      {request.status === "ACEITA" ? (
+        <div className="flex flex-wrap items-center gap-3">
+          {perspective === "contratante" && !request.avaliacao ? (
+            <RatingDialog
+              solicitacaoId={request.id}
+              artistName={request.artista?.nomeArtistico ?? "o artista"}
+              onRated={() => onRated?.()}
+            />
+          ) : null}
+
+          {counterpart ? (
+            <ReportDialog
+              tipo="SOLICITACAO"
+              referenciaId={request.id}
+              triggerLabel="Denunciar"
+            />
           ) : null}
         </div>
       ) : null}

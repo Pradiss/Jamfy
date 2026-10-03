@@ -40,7 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeListener />
         <AuthProvider>
           <Header />
-          <main className="flex flex-1 flex-col pb-16 sm:pb-0">
+          <main className="flex flex-1 flex-col">
             <RouteTransition>{children}</RouteTransition>
           </main>
           <Footer />

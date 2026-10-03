@@ -1,7 +1,17 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { containerClass } from "@/lib/ui";
+import { isFooterlessRoute } from "@/lib/chromeless-routes";
 
 export function Footer() {
+  const pathname = usePathname();
+
+  if (isFooterlessRoute(pathname)) {
+    return null;
+  }
+
   return (
     <footer className="border-t border-black/5 px-6 py-8 dark:border-white/10">
       <div

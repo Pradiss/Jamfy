@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { EditProfileForm } from "@/components/account/edit-profile-form";
+import { ContratanteProfileForm } from "@/components/account/contratante-profile-form";
 import { ArtistSettingsTabs } from "@/components/artist/artist-settings-tabs";
 import { containerClass } from "@/lib/ui";
 
@@ -26,6 +27,7 @@ export default function EditarPerfilPage() {
   }
 
   const isArtist = user.tipo === "MUSICO" || user.tipo === "BANDA";
+  const isContratante = user.tipo === "CONTRATANTE";
 
   return (
     <div className={`${containerClass} flex-1 px-6 py-10`}>
@@ -35,7 +37,7 @@ export default function EditarPerfilPage() {
 
       <div
         className={
-          isArtist
+          isArtist || isContratante
             ? "grid grid-cols-1 gap-10 lg:grid-cols-2"
             : "mx-auto w-full max-w-md"
         }
@@ -53,6 +55,15 @@ export default function EditarPerfilPage() {
               Perfil público de artista
             </h2>
             <ArtistSettingsTabs />
+          </section>
+        ) : null}
+
+        {isContratante ? (
+          <section>
+            <h2 className="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+              Perfil de contratante
+            </h2>
+            <ContratanteProfileForm />
           </section>
         ) : null}
       </div>

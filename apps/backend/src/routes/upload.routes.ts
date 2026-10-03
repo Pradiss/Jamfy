@@ -35,4 +35,10 @@ uploadRoutes.post(
   uploadController.cover,
 );
 
+uploadRoutes.post(
+  "/anuncio-photo",
+  upload.single("file"),
+  uploadController.anuncioPhoto,
+);
+
 export { uploadRoutes };

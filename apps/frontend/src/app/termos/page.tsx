@@ -10,7 +10,7 @@ const SECTIONS: { title: string; paragraphs: string[] }[] = [
   {
     title: "1. O que é o Jamfy",
     paragraphs: [
-      "O Jamfy é uma plataforma que conecta músicos e bandas a pessoas e empresas que desejam contratar artistas para eventos (casamentos, festas, eventos corporativos, entre outros). O Jamfy atua apenas como um ponto de encontro entre as partes — não somos organizadores de eventos, produtora musical, nem parte do contrato firmado entre o contratante e o artista.",
+      "O Jamfy é uma plataforma que conecta músicos e bandas a pessoas e empresas que desejam contratar artistas para eventos (casamentos, festas, eventos corporativos, entre outros), e também permite anunciar compra, venda e aluguel de instrumentos e equipamentos musicais. O Jamfy atua apenas como um ponto de encontro entre as partes — não somos organizadores de eventos, produtora musical, loja, nem parte de qualquer negócio fechado entre os usuários.",
     ],
   },
   {
@@ -28,32 +28,40 @@ const SECTIONS: { title: string; paragraphs: string[] }[] = [
     ],
   },
   {
-    title: "4. Conteúdo enviado por você",
+    title: "4. Anúncios de compra, venda e aluguel",
     paragraphs: [
-      "Fotos, vídeos, biografia e demais informações de portfólio enviadas por artistas continuam de propriedade de quem as enviou. Ao publicá-las no Jamfy, você nos dá permissão para exibi-las na plataforma (perfil público, buscas, compartilhamento) com a finalidade de divulgar seu trabalho.",
-      "Você é responsável pelo conteúdo que publica e garante ter os direitos necessários sobre fotos, vídeos e músicas exibidos no seu portfólio.",
+      "Qualquer usuário pode publicar anúncios para comprar, vender ou alugar instrumentos e equipamentos musicais. Ao visualizar um anúncio estando logado, o contato (telefone/WhatsApp) de quem anunciou fica visível, para que o combinado seja feito diretamente entre as partes.",
+      "O Jamfy não participa da negociação, do pagamento, da entrega, nem garante a veracidade, qualidade, procedência ou estado de conservação dos itens anunciados. A responsabilidade pelo anúncio e pela transação é exclusiva de quem anuncia e de quem compra/aluga.",
+      "É proibido anunciar itens roubados, falsificados, ou obtidos de forma ilícita. Anúncios falsos, enganosos ou usados para golpe podem ser removidos e a conta responsável suspensa, a nosso critério.",
     ],
   },
   {
-    title: "5. Conduta esperada",
+    title: "5. Conteúdo enviado por você",
+    paragraphs: [
+      "Fotos, vídeos, biografia e demais informações de portfólio enviadas por artistas, assim como fotos e descrições de anúncios, continuam de propriedade de quem as enviou. Ao publicá-las no Jamfy, você nos dá permissão para exibi-las na plataforma (perfil público, buscas, compartilhamento) com a finalidade de divulgar seu trabalho ou seu anúncio.",
+      "Você é responsável pelo conteúdo que publica e garante ter os direitos necessários sobre fotos, vídeos e músicas exibidos no seu portfólio ou nos seus anúncios.",
+    ],
+  },
+  {
+    title: "6. Conduta esperada",
     paragraphs: [
       "Não é permitido usar o Jamfy para fraude, assédio, discriminação, cadastro de perfis falsos, ou qualquer conduta que prejudique outros usuários. Contas que descumprirem essas regras podem ser suspensas ou excluídas, a nosso critério.",
     ],
   },
   {
-    title: "6. Limitação de responsabilidade",
+    title: "7. Limitação de responsabilidade",
     paragraphs: [
-      "O Jamfy é fornecido \"como está\". Fazemos o possível para manter a plataforma no ar e funcionando, mas não garantimos disponibilidade ininterrupta, nem nos responsabilizamos por prejuízos decorrentes de shows cancelados, desentendimentos entre as partes, ou informações incorretas fornecidas por usuários.",
+      "O Jamfy é fornecido \"como está\". Fazemos o possível para manter a plataforma no ar e funcionando, mas não garantimos disponibilidade ininterrupta, nem nos responsabilizamos por prejuízos decorrentes de shows cancelados, negócios de compra/venda/aluguel malsucedidos, desentendimentos entre as partes, ou informações incorretas fornecidas por usuários.",
     ],
   },
   {
-    title: "7. Alterações nestes termos",
+    title: "8. Alterações nestes termos",
     paragraphs: [
       "Podemos atualizar estes termos de tempos em tempos. Caso haja mudanças relevantes, avisaremos pelos canais da plataforma. O uso contínuo do Jamfy após uma atualização representa aceite dos novos termos.",
     ],
   },
   {
-    title: "8. Contato",
+    title: "9. Contato",
     paragraphs: [
       "Dúvidas sobre estes termos podem ser enviadas para suporte@jamfy.com.br.",
     ],
@@ -67,7 +75,7 @@ export default function TermosPage() {
         Termos de Uso
       </h1>
       <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
-        Última atualização: setembro de 2026
+        Última atualização: outubro de 2026
       </p>
 
       <div className="mt-10 flex max-w-2xl flex-col gap-8">
