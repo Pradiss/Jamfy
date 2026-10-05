@@ -3,6 +3,10 @@ import { authController } from "../controllers/auth.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import {
+  loginRateLimit,
+  accountRateLimit,
+} from "../middlewares/rate-limit.middleware.js";
+import {
   loginSchema,
   registerSchema,
   updateProfileSchema,
@@ -13,12 +17,14 @@ const authRoutes: Router = Router();
 
 authRoutes.post(
   "/register",
+  accountRateLimit,
   validate(registerSchema),
   authController.register.bind(authController),
 );
 
 authRoutes.post(
   "/login",
+  loginRateLimit,
   validate(loginSchema),
   authController.login.bind(authController),
 );
@@ -34,6 +40,7 @@ authRoutes.patch(
 
 authRoutes.post(
   "/forgot-password",
+  accountRateLimit,
   validate(forgotPasswordSchema),
   authController.forgotPassword.bind(authController),
 );

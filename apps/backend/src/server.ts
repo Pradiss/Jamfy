@@ -10,6 +10,13 @@ import { app } from "./app.js";
 
 const PORT = Number(process.env.PORT) || 3002;
 
+if (process.env.NODE_ENV === "production" && !process.env.CORS_ORIGIN) {
+  console.warn(
+    "⚠️  CORS_ORIGIN não está definido em produção — a API vai cair para " +
+      "http://localhost:3000 e o site real não vai conseguir falar com ela.",
+  );
+}
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });

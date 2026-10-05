@@ -21,6 +21,10 @@ export function AuthSplitLayout({
   const [activeIndex, setActiveIndex] = useState(0);
   const active = categories[activeIndex];
 
+  function advance() {
+    setActiveIndex((current) => (current + 1) % categories.length);
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex overflow-hidden bg-background p-2">
       <div className="relative hidden h-full overflow-hidden rounded-3xl bg-zinc-950 lg:flex lg:w-1/2 lg:flex-col lg:justify-end">
@@ -64,11 +68,15 @@ export function AuthSplitLayout({
                 {category.label}
               </span>
               <span className="block h-1 w-full overflow-hidden rounded-full bg-white/15">
-                <span
-                  className={`block h-full bg-white transition-all duration-300 ${
-                    index === activeIndex ? "w-full" : "w-0"
-                  }`}
-                />
+                {index === activeIndex ? (
+                  <span
+                    key={activeIndex}
+                    onAnimationEnd={advance}
+                    className="animate-[hero-tab-fill_5000ms_linear_forwards] motion-reduce:w-full motion-reduce:animate-none block h-full w-0 bg-white"
+                  />
+                ) : (
+                  <span className="block h-full w-0 bg-white" />
+                )}
               </span>
             </button>
           ))}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Calendar, Clock, MapPin, Wallet } from "lucide-react";
 import {
   STATUS_SOLICITACAO_LABELS,
   TIPO_EVENTO_LABELS,
@@ -31,8 +32,7 @@ const HOUR_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "America/Sao_Paulo",
 });
 
-function formatDate(value: string | null) {
-  if (!value) return null;
+function formatDate(value: string) {
   // dataEvento is a real moment (the event's start), not a nominal day, so
   // it must be read back in Brazil's timezone (fixed UTC-3) — formatting it
   // as UTC can show the wrong calendar day for evening events.
@@ -100,21 +100,19 @@ export function HiringRequestCard({
   }
 
   return (
-    <div className={`flex flex-col gap-3 p-4 ${cardClass}`}>
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <p className="font-semibold tracking-tight">
+    <div className={`flex flex-col gap-4 p-4 ${cardClass}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate font-semibold tracking-tight">
             {perspective === "artist"
               ? (request.contratante?.nome ?? "Contratante")
               : (request.artista?.nomeArtistico ?? "Artista")}
           </p>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            {request.cidade}, {request.estado}
-            {request.tipoEvento
-              ? ` · ${TIPO_EVENTO_LABELS[request.tipoEvento]}`
-              : ""}
-            {request.dataEvento ? ` · ${formatDate(request.dataEvento)}` : ""}
-          </p>
+          {request.tipoEvento ? (
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              {TIPO_EVENTO_LABELS[request.tipoEvento]}
+            </p>
+          ) : null}
         </div>
 
         <span
@@ -124,21 +122,41 @@ export function HiringRequestCard({
         </span>
       </div>
 
-      {request.dataEvento ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          {formatSets(request)}
-        </p>
-      ) : null}
+      <div className="grid grid-cols-1 gap-x-4 gap-y-2 rounded-xl bg-black/[.02] p-3 text-sm sm:grid-cols-2 dark:bg-white/[.04]">
+        {request.dataEvento ? (
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 shrink-0 text-zinc-400" />
+            <span>{formatDate(request.dataEvento)}</span>
+          </div>
+        ) : null}
+
+        {request.dataEvento ? (
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 shrink-0 text-zinc-400" />
+            <span>{formatSets(request)}</span>
+          </div>
+        ) : null}
+
+        <div className="flex items-center gap-2">
+          <MapPin className="h-4 w-4 shrink-0 text-zinc-400" />
+          <span>
+            {request.cidade}, {request.estado}
+          </span>
+        </div>
+
+        {request.orcamento ? (
+          <div className="flex items-center gap-2">
+            <Wallet className="h-4 w-4 shrink-0 text-zinc-400" />
+            <span>
+              R$ {Number(request.orcamento).toLocaleString("pt-BR")}
+            </span>
+          </div>
+        ) : null}
+      </div>
 
       <p className="text-sm text-zinc-700 dark:text-zinc-300">
         {request.descricao}
       </p>
-
-      {request.orcamento ? (
-        <p className="text-sm font-medium">
-          Orçamento: R$ {Number(request.orcamento).toLocaleString("pt-BR")}
-        </p>
-      ) : null}
 
       {request.status === "ACEITA" && counterpart ? (
         <div className="flex flex-wrap items-center gap-3 rounded-xl bg-emerald-50 p-3 text-sm dark:bg-emerald-500/10">
@@ -191,61 +209,63 @@ export function HiringRequestCard({
         </div>
       ) : null}
 
-      {request.status === "ACEITA" ? (
-        <div className="flex flex-wrap items-center gap-3">
-          {perspective === "contratante" && !request.avaliacao ? (
-            <RatingDialog
-              solicitacaoId={request.id}
-              artistName={request.artista?.nomeArtistico ?? "o artista"}
-              onRated={() => onRated?.()}
-            />
-          ) : null}
+      {error ? (
+        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+      ) : null}
 
-          {counterpart ? (
+      {request.status === "PENDENTE" || request.status === "ACEITA" ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-black/5 pt-3 dark:border-white/10">
+          <div className="flex flex-wrap gap-2">
+            {request.status === "PENDENTE" ? (
+              perspective === "artist" ? (
+                <>
+                  <button
+                    type="button"
+                    disabled={pending}
+                    onClick={() => handleAction(onAccept)}
+                    className={primaryButtonClass}
+                  >
+                    Aceitar
+                  </button>
+                  <button
+                    type="button"
+                    disabled={pending}
+                    onClick={() => handleAction(onDecline)}
+                    className={secondaryButtonClass}
+                  >
+                    Recusar
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={() => handleAction(onCancel)}
+                  className={secondaryButtonClass}
+                >
+                  Cancelar solicitação
+                </button>
+              )
+            ) : null}
+
+            {request.status === "ACEITA" &&
+            perspective === "contratante" &&
+            !request.avaliacao ? (
+              <RatingDialog
+                solicitacaoId={request.id}
+                artistName={request.artista?.nomeArtistico ?? "o artista"}
+                onRated={() => onRated?.()}
+              />
+            ) : null}
+          </div>
+
+          {request.status === "ACEITA" && counterpart ? (
             <ReportDialog
               tipo="SOLICITACAO"
               referenciaId={request.id}
               triggerLabel="Denunciar"
             />
           ) : null}
-        </div>
-      ) : null}
-
-      {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-      ) : null}
-
-      {request.status === "PENDENTE" ? (
-        <div className="flex gap-3">
-          {perspective === "artist" ? (
-            <>
-              <button
-                type="button"
-                disabled={pending}
-                onClick={() => handleAction(onAccept)}
-                className={primaryButtonClass}
-              >
-                Aceitar
-              </button>
-              <button
-                type="button"
-                disabled={pending}
-                onClick={() => handleAction(onDecline)}
-                className={secondaryButtonClass}
-              >
-                Recusar
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              disabled={pending}
-              onClick={() => handleAction(onCancel)}
-              className={secondaryButtonClass}
-            >
-              Cancelar solicitação
-            </button>
-          )}
         </div>
       ) : null}
     </div>

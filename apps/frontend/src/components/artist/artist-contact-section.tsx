@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
-import { ReceivedHiringRequests } from "@/components/hiring/received-hiring-requests";
 import { HiringRequestForm } from "@/components/hiring/hiring-request-form";
 import { ReportDialog } from "@/components/ui/report-dialog";
+import { secondaryButtonClass } from "@/lib/ui";
 
 export function ArtistContactSection({
   artistId,
@@ -15,7 +16,13 @@ export function ArtistContactSection({
   const { user } = useAuth();
 
   if (user?.id === ownerUserId) {
-    return <ReceivedHiringRequests />;
+    return (
+      <div className="mt-10">
+        <Link href="/dashboard" className={secondaryButtonClass}>
+          Ver solicitações recebidas
+        </Link>
+      </div>
+    );
   }
 
   return (

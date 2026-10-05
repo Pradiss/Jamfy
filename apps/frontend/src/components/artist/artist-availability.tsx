@@ -63,10 +63,10 @@ export function ArtistAvailability({ artistId }: { artistId: string }) {
         </div>
       </div>
 
-      <MonthCalendar month={month} entries={entries} />
+      <MonthCalendar month={month} entries={entries} simplified />
 
       <div className="mt-3">
-        <AgendaLegend />
+        <AgendaLegend simplified />
       </div>
     </section>
   );

@@ -244,7 +244,7 @@ export function AgendaManager() {
             onSubmit={handleCreate}
             className={`flex flex-col gap-3 p-4 ${cardClass}`}
           >
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <label className="flex flex-col gap-1.5 text-sm">
                 <span className="font-medium text-zinc-700 dark:text-zinc-300">
                   De
@@ -328,9 +328,9 @@ export function AgendaManager() {
           {manualEntries.map((entry) => (
             <li
               key={entry.id}
-              className="flex items-center justify-between rounded-xl border border-black/5 bg-white px-3.5 py-2.5 text-sm shadow-sm dark:border-white/10 dark:bg-white/[.03]"
+              className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-black/5 bg-white px-3.5 py-2.5 text-sm shadow-sm dark:border-white/10 dark:bg-white/[.03]"
             >
-              <span>
+              <span className="min-w-0 break-words">
                 {formatRange(entry.dataInicio, entry.dataFim)} ·{" "}
                 {entry.status === "DISPONIVEL" ? "Disponível" : "Indisponível"}
                 {entry.titulo ? ` · ${entry.titulo}` : ""}
@@ -338,7 +338,7 @@ export function AgendaManager() {
               <button
                 type="button"
                 onClick={() => handleDelete(entry.id)}
-                className="text-zinc-500 hover:text-red-600 dark:text-zinc-400"
+                className="shrink-0 text-zinc-500 hover:text-red-600 dark:text-zinc-400"
               >
                 Remover
               </button>

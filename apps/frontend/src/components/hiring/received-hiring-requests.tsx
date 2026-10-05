@@ -54,11 +54,7 @@ export function ReceivedHiringRequests() {
   }
 
   return (
-    <section className="mt-10">
-      <h2 className="mb-4 text-xl font-semibold tracking-tight">
-        Solicitações recebidas
-      </h2>
-
+    <section>
       {error ? (
         <p className="text-red-600 dark:text-red-400">{error}</p>
       ) : requests === null ? (

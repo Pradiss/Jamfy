@@ -16,6 +16,22 @@ export const STATUS_LABELS: Record<StatusAgenda, string> = {
   INDISPONIVEL: "Indisponível",
 };
 
+// For visitors deciding whether to hire — they just need "can I book this
+// day or not", not the artist's internal pending-vs-confirmed distinction.
+const SIMPLE_STATUS_COLORS: Record<StatusAgenda, string> = {
+  DISPONIVEL: "bg-emerald-500",
+  PENDENTE: "bg-red-500",
+  RESERVADO: "bg-red-500",
+  INDISPONIVEL: "bg-red-500",
+};
+
+const SIMPLE_STATUS_LABELS: Record<StatusAgenda, string> = {
+  DISPONIVEL: "Livre",
+  PENDENTE: "Ocupado",
+  RESERVADO: "Ocupado",
+  INDISPONIVEL: "Ocupado",
+};
+
 export function startOfMonth(date: Date) {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
 }
@@ -73,8 +89,10 @@ export function getEntryForDay<T extends SimpleAgendaEntry>(
   return null;
 }
 
-function entryTooltip(entry: SimpleAgendaEntry) {
-  const label = STATUS_LABELS[entry.status];
+function entryTooltip(entry: SimpleAgendaEntry, simplified?: boolean) {
+  const label = simplified
+    ? SIMPLE_STATUS_LABELS[entry.status]
+    : STATUS_LABELS[entry.status];
 
   if (entry.diaInteiro) {
     return label;
@@ -91,12 +109,18 @@ export function MonthCalendar({
   entries,
   onDayClick,
   disabledDays,
+  simplified,
 }: {
   month: Date;
   entries: SimpleAgendaEntry[];
   onDayClick?: (day: Date) => void;
   disabledDays?: (day: Date) => boolean;
+  // Collapses the 4 internal statuses down to just Livre/Ocupado — meant
+  // for visitors deciding whether to hire, not the artist managing their
+  // own agenda.
+  simplified?: boolean;
 }) {
+  const colors = simplified ? SIMPLE_STATUS_COLORS : STATUS_COLORS;
   const year = month.getUTCFullYear();
   const monthIndex = month.getUTCMonth();
   const firstDay = new Date(Date.UTC(year, monthIndex, 1));
@@ -124,23 +148,35 @@ export function MonthCalendar({
           }
 
           const entry = getEntryForDay(day, entries);
-          const status = entry?.status ?? null;
+          // A timed entry only occupies part of the day — painting the
+          // whole cell would read as "fully unavailable" even though the
+          // rest of the day may still be free. Only whole-day entries get
+          // the solid fill; timed ones just get a small status dot.
+          const isFullDayBlock = Boolean(entry?.diaInteiro);
           const clickable = Boolean(onDayClick) && !disabledDays?.(day);
 
-          const className = `flex aspect-square items-center justify-center rounded-md text-xs transition ${
-            status
-              ? `${STATUS_COLORS[status]} text-white`
-              : "bg-black/[.03] dark:bg-white/[.06]"
+          const className = `relative flex aspect-square items-center justify-center rounded-md text-xs transition ${
+            isFullDayBlock
+              ? `${colors[entry!.status]} text-white`
+              : "bg-black/[.03] text-zinc-700 dark:bg-white/[.06] dark:text-zinc-300"
           } ${clickable ? "cursor-pointer hover:ring-2 hover:ring-accent" : ""}`;
+
+          const dot =
+            entry && !isFullDayBlock ? (
+              <span
+                className={`absolute bottom-1 h-1.5 w-1.5 rounded-full ${colors[entry.status]}`}
+              />
+            ) : null;
 
           if (!clickable) {
             return (
               <div
                 key={index}
-                title={entry ? entryTooltip(entry) : undefined}
+                title={entry ? entryTooltip(entry, simplified) : undefined}
                 className={className}
               >
                 {day.getUTCDate()}
+                {dot}
               </div>
             );
           }
@@ -150,10 +186,15 @@ export function MonthCalendar({
               key={index}
               type="button"
               onClick={() => onDayClick?.(day)}
-              title={entry ? entryTooltip(entry) : "Marcar disponibilidade"}
+              title={
+                entry
+                  ? entryTooltip(entry, simplified)
+                  : "Marcar disponibilidade"
+              }
               className={className}
             >
               {day.getUTCDate()}
+              {dot}
             </button>
           );
         })}
@@ -162,17 +203,27 @@ export function MonthCalendar({
   );
 }
 
-export function AgendaLegend() {
+export function AgendaLegend({ simplified }: { simplified?: boolean } = {}) {
+  const colors = simplified ? SIMPLE_STATUS_COLORS : STATUS_COLORS;
+  const labels = simplified ? SIMPLE_STATUS_LABELS : STATUS_LABELS;
+  const statuses = simplified
+    ? (["DISPONIVEL", "RESERVADO"] as const)
+    : (Object.keys(STATUS_LABELS) as StatusAgenda[]);
+
   return (
-    <div className="flex flex-wrap gap-4 text-xs text-zinc-500 dark:text-zinc-400">
-      {(Object.keys(STATUS_LABELS) as StatusAgenda[]).map((status) => (
-        <span key={status} className="flex items-center gap-1.5">
-          <span
-            className={`h-2.5 w-2.5 rounded-full ${STATUS_COLORS[status]}`}
-          />
-          {STATUS_LABELS[status]}
-        </span>
-      ))}
+    <div className="flex flex-col gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+      <div className="flex flex-wrap gap-4">
+        {statuses.map((status) => (
+          <span key={status} className="flex items-center gap-1.5">
+            <span className={`h-2.5 w-2.5 rounded-full ${colors[status]}`} />
+            {labels[status]}
+          </span>
+        ))}
+      </div>
+      <p>
+        Dia pintado inteiro = dia todo ocupado. Bolinha = só um horário
+        específico, o resto do dia ainda pode estar livre.
+      </p>
     </div>
   );
 }
