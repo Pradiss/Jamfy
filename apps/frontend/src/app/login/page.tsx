@@ -17,7 +17,7 @@ import type { AuthenticatedUser } from "@/lib/types";
 const HERO_CATEGORIES: HeroCategory[] = [
   {
     label: "Shows",
-    title: "O artista certo. Pro seu show.",
+    title: "O artista certo. Pro seuu show.",
     subtitle: "Busque músicos e bandas e veja a agenda em tempo real.",
     color: "#6366f1",
     Icon: Music,
