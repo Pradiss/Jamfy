@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "pnpm --filter @jamfy/shared build && prisma generate && tsc",
     "start": "node dist/src/server.js",
     "seed:catalog": "tsx prisma/seed-catalog.ts"
   },
