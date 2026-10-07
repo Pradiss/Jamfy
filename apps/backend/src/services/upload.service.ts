@@ -1,6 +1,12 @@
 import { randomUUID } from "node:crypto";
+import sharp from "sharp";
 import { prisma } from "../config/prisma.js";
 import { supabaseAdmin } from "../config/supabase.js";
+
+// Cache the file for a year — safe because every upload gets a fresh
+// "?v=<timestamp>" query string, so an updated photo is always a new URL
+// rather than overwriting a cached one.
+const CACHE_CONTROL = "31536000";
 
 const BUCKET = "media";
 const BUCKET_FILE_SIZE_LIMIT = "50MB";
@@ -53,6 +59,19 @@ function extensionForMime(mimeType: string) {
   return EXTENSION_BY_MIME[mimeType] ?? mimeType.split("/")[1] ?? "bin";
 }
 
+// Every uploaded photo gets re-encoded to WebP — it's smaller than JPEG/PNG
+// at the same visual quality, which is most of what actually makes a page
+// heavy (photos dwarf JS/CSS on this site). Videos pass through untouched.
+async function toWebp(buffer: Buffer, mimeType: string) {
+  if (!mimeType.startsWith("image/") || mimeType === "image/webp") {
+    return { buffer, mimeType, extension: extensionForMime(mimeType) };
+  }
+
+  const webpBuffer = await sharp(buffer).webp({ quality: 80 }).toBuffer();
+
+  return { buffer: webpBuffer, mimeType: "image/webp", extension: "webp" };
+}
+
 function pathFromPublicUrl(url: string) {
   const marker = `/object/public/${BUCKET}/`;
   const withoutQuery = url.split("?")[0] ?? "";
@@ -70,6 +89,7 @@ async function uploadBuffer(path: string, buffer: Buffer, mimeType: string) {
     .from(BUCKET)
     .upload(path, buffer, {
       contentType: mimeType,
+      cacheControl: CACHE_CONTROL,
       upsert: true,
     });
 
@@ -84,7 +104,12 @@ async function uploadBuffer(path: string, buffer: Buffer, mimeType: string) {
 
 class UploadService {
   async uploadAvatar(userId: string, buffer: Buffer, mimeType: string) {
-    const url = await uploadBuffer(`avatars/${userId}.jpg`, buffer, mimeType);
+    const image = await toWebp(buffer, mimeType);
+    const url = await uploadBuffer(
+      `avatars/${userId}.${image.extension}`,
+      image.buffer,
+      image.mimeType,
+    );
 
     await prisma.usuario.update({
       where: { id: userId },
@@ -104,10 +129,11 @@ class UploadService {
       throw new Error("Perfil de artista não encontrado.");
     }
 
+    const image = await toWebp(buffer, mimeType);
     const url = await uploadBuffer(
-      `covers/${artistProfile.id}.jpg`,
-      buffer,
-      mimeType,
+      `covers/${artistProfile.id}.${image.extension}`,
+      image.buffer,
+      image.mimeType,
     );
 
     await prisma.perfilArtista.update({
@@ -129,17 +155,19 @@ class UploadService {
     }
 
     const tipo = mimeType.startsWith("video/") ? "VIDEO" : "FOTO";
-    const path = `portfolio/${artistProfile.id}/${randomUUID()}.${extensionForMime(mimeType)}`;
+    const image = await toWebp(buffer, mimeType);
+    const path = `portfolio/${artistProfile.id}/${randomUUID()}.${image.extension}`;
 
-    const url = await uploadBuffer(path, buffer, mimeType);
+    const url = await uploadBuffer(path, image.buffer, image.mimeType);
 
     return { url, tipo: tipo as "VIDEO" | "FOTO" };
   }
 
   async uploadAnuncioPhoto(userId: string, buffer: Buffer, mimeType: string) {
-    const path = `anuncios/${userId}/${randomUUID()}.${extensionForMime(mimeType)}`;
+    const image = await toWebp(buffer, mimeType);
+    const path = `anuncios/${userId}/${randomUUID()}.${image.extension}`;
 
-    return uploadBuffer(path, buffer, mimeType);
+    return uploadBuffer(path, image.buffer, image.mimeType);
   }
 
   async deleteFiles(urls: string[]) {
