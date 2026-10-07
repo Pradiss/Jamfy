@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { Music } from "lucide-react";
 
 import { apiFetch } from "@/lib/api";
 import type { ArtistProfileListResponse } from "@/lib/types";
-import { primaryButtonClass, secondaryButtonClass, containerClass } from "@/lib/ui";
+import { containerClass } from "@/lib/ui";
 import { ArtistRow } from "@/components/artist/artist-row";
 import { AnuncioRow } from "@/components/anuncio/anuncio-row";
 import { GenreCategoryGrid } from "@/components/search/genre-category-grid";
@@ -166,21 +167,34 @@ export default async function Home() {
         </Reveal>
       </section>
 
-      <section className="border-t border-black/5 px-6 py-16 text-center dark:border-white/10 sm:py-24">
-        <Reveal className={containerClass}>
-          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            Pronto para começar?
-          </h2>
-          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            <Link href="/artistas" className={primaryButtonClass}>
-              Buscar artistas
-            </Link>
-            <Link href="/cadastro" className={secondaryButtonClass}>
-              Criar conta
-            </Link>
+      <Reveal className={`${containerClass} px-6 py-16 sm:py-24`}>
+        <section className="flex flex-col overflow-hidden rounded-3xl bg-accent md:flex-row">
+          <div className="flex flex-1 flex-col justify-center gap-6 p-8 sm:p-12">
+            <h2 className="text-balance text-3xl font-semibold tracking-tight text-accent-foreground sm:text-5xl">
+              O palco é seu. Só falta o show.
+            </h2>
+            <p className="max-w-md text-accent-foreground/80 sm:text-lg">
+              Monte seu perfil, apareça pra quem está contratando e receba
+              pedidos de show direto aqui — sem depender só de indicação.
+            </p>
+            <div>
+              <Link
+                href="/cadastro"
+                className="inline-block rounded-full border-2 border-accent-foreground px-6 py-2.5 font-medium text-accent-foreground transition hover:bg-accent-foreground hover:text-accent"
+              >
+                Criar perfil grátis
+              </Link>
+            </div>
           </div>
-        </Reveal>
-      </section>
+
+          <div className="relative hidden min-h-64 flex-1 overflow-hidden bg-zinc-950 md:block">
+            <div className="animate-float-orb absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.35)_0%,transparent_55%)]" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Music className="h-24 w-24 text-white/20" strokeWidth={1} />
+            </div>
+          </div>
+        </section>
+      </Reveal>
     </div>
   );
 }

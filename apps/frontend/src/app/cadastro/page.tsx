@@ -11,12 +11,28 @@ import { useAuth } from "@/lib/auth-context";
 import { AuthSplitLayout, type HeroCategory } from "@/components/auth/auth-split-layout";
 import { FormField } from "@/components/ui/form-field";
 import { PasswordField } from "@/components/ui/password-field";
+import { formatBrazilPhone } from "@/lib/phone-mask";
 import { primaryButtonClass } from "@/lib/ui";
 
 const TIPO_OPTIONS = [
-  { value: "MUSICO", label: "Sou músico(a) solo" },
-  { value: "BANDA", label: "Sou uma banda" },
-  { value: "CONTRATANTE", label: "Quero contratar artistas" },
+  {
+    value: "MUSICO",
+    label: "Músico(a)",
+    description: "Toco sozinho(a)",
+    Icon: Music,
+  },
+  {
+    value: "BANDA",
+    label: "Banda",
+    description: "Temos vários integrantes",
+    Icon: Users,
+  },
+  {
+    value: "CONTRATANTE",
+    label: "Contratante",
+    description: "Quero contratar artistas",
+    Icon: Search,
+  },
 ] as const;
 
 const HERO_CATEGORIES: HeroCategory[] = [
@@ -120,11 +136,11 @@ export default function CadastroPage() {
             <legend className="mb-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
               Eu sou...
             </legend>
-            <div className="flex flex-col gap-2 sm:flex-row">
+            <div className="grid grid-cols-3 gap-2">
               {TIPO_OPTIONS.map((option) => (
                 <label
                   key={option.value}
-                  className={`flex-1 cursor-pointer rounded-xl border px-3 py-2.5 text-center text-sm transition ${
+                  className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-2xl border px-2 py-4 text-center transition ${
                     type === option.value
                       ? "border-accent bg-accent text-accent-foreground shadow-sm"
                       : "border-black/10 hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06]"
@@ -138,7 +154,19 @@ export default function CadastroPage() {
                     onChange={() => setType(option.value)}
                     className="sr-only"
                   />
-                  {option.label}
+                  <option.Icon className="h-5 w-5" strokeWidth={1.75} />
+                  <span className="text-sm font-semibold">
+                    {option.label}
+                  </span>
+                  <span
+                    className={`text-[11px] leading-tight ${
+                      type === option.value
+                        ? "text-accent-foreground/80"
+                        : "text-zinc-500 dark:text-zinc-400"
+                    }`}
+                  >
+                    {option.description}
+                  </span>
                 </label>
               ))}
             </div>
@@ -164,11 +192,15 @@ export default function CadastroPage() {
           <FormField
             label="Telefone"
             type="tel"
+            inputMode="numeric"
             required
-            minLength={10}
+            minLength={14}
+            maxLength={16}
             placeholder="(11) 91234-5678"
             value={phone}
-            onChange={(event) => setPhone(event.target.value)}
+            onChange={(event) =>
+              setPhone(formatBrazilPhone(event.target.value))
+            }
           />
 
           <PasswordField
