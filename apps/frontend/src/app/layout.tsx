@@ -33,7 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-background text-zinc-950 dark:text-zinc-50">
+      <body className="flex min-h-full flex-col overflow-x-hidden bg-background text-zinc-950 dark:text-zinc-50">
         <Script id="theme-init" strategy="beforeInteractive">
           {THEME_INIT_SCRIPT}
         </Script>
