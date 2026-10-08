@@ -32,6 +32,31 @@ const SIMPLE_STATUS_LABELS: Record<StatusAgenda, string> = {
   INDISPONIVEL: "Ocupado",
 };
 
+const STATUS_TEXT_COLORS: Record<StatusAgenda, string> = {
+  DISPONIVEL: "text-emerald-600 dark:text-emerald-400",
+  PENDENTE: "text-amber-600 dark:text-amber-400",
+  RESERVADO: "text-red-600 dark:text-red-400",
+  INDISPONIVEL: "text-zinc-500 dark:text-zinc-400",
+};
+
+// A day with just a specific-time booking shouldn't look as "fully blocked"
+// as a whole-day one (that's what the solid STATUS_COLORS fill is for) —
+// but a plain neutral cell made that reservation too easy to miss. A light
+// tint in the status color flags it clearly without claiming the whole day.
+const STATUS_TINTS: Record<StatusAgenda, string> = {
+  DISPONIVEL: "bg-emerald-50 text-emerald-900 dark:bg-emerald-500/10 dark:text-emerald-100",
+  PENDENTE: "bg-amber-50 text-amber-900 dark:bg-amber-500/10 dark:text-amber-100",
+  RESERVADO: "bg-red-50 text-red-900 dark:bg-red-500/10 dark:text-red-100",
+  INDISPONIVEL: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
+};
+
+const SIMPLE_STATUS_TINTS: Record<StatusAgenda, string> = {
+  DISPONIVEL: "bg-emerald-50 text-emerald-900 dark:bg-emerald-500/10 dark:text-emerald-100",
+  PENDENTE: "bg-red-50 text-red-900 dark:bg-red-500/10 dark:text-red-100",
+  RESERVADO: "bg-red-50 text-red-900 dark:bg-red-500/10 dark:text-red-100",
+  INDISPONIVEL: "bg-red-50 text-red-900 dark:bg-red-500/10 dark:text-red-100",
+};
+
 export function startOfMonth(date: Date) {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
 }
@@ -42,9 +67,32 @@ export function addMonths(date: Date, amount: number) {
   );
 }
 
+export function startOfWeek(date: Date) {
+  const start = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  );
+  start.setUTCDate(start.getUTCDate() - start.getUTCDay());
+  return start;
+}
+
+export function addWeeks(date: Date, amount: number) {
+  return new Date(date.getTime() + amount * 7 * 24 * 60 * 60 * 1000);
+}
+
 export const MONTH_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
   month: "long",
   year: "numeric",
+  timeZone: "UTC",
+});
+
+const WEEK_DAY_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
+  weekday: "short",
+  timeZone: "UTC",
+});
+
+const WEEK_RANGE_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
+  day: "numeric",
+  month: "short",
   timeZone: "UTC",
 });
 
@@ -89,6 +137,28 @@ export function getEntryForDay<T extends SimpleAgendaEntry>(
   return null;
 }
 
+// Unlike getEntryForDay (used by the month grid, where one color per cell is
+// enough), the week view needs every booking that day — an artist can have
+// more than one show in the same day at different times.
+export function getEntriesForDay<T extends SimpleAgendaEntry>(
+  day: Date,
+  entries: T[],
+): T[] {
+  const dayStart = day.getTime();
+  const dayEnd = dayStart + 24 * 60 * 60 * 1000;
+
+  return entries
+    .filter((entry) => {
+      const offset = entry.diaInteiro ? 0 : BRAZIL_UTC_OFFSET_MS;
+      const start = new Date(entry.dataInicio).getTime() - offset;
+      const end = new Date(entry.dataFim).getTime() - offset;
+      return start < dayEnd && end > dayStart;
+    })
+    .sort(
+      (a, b) => new Date(a.dataInicio).getTime() - new Date(b.dataInicio).getTime(),
+    );
+}
+
 function entryTooltip(entry: SimpleAgendaEntry, simplified?: boolean) {
   const label = simplified
     ? SIMPLE_STATUS_LABELS[entry.status]
@@ -121,6 +191,7 @@ export function MonthCalendar({
   simplified?: boolean;
 }) {
   const colors = simplified ? SIMPLE_STATUS_COLORS : STATUS_COLORS;
+  const tints = simplified ? SIMPLE_STATUS_TINTS : STATUS_TINTS;
   const year = month.getUTCFullYear();
   const monthIndex = month.getUTCMonth();
   const firstDay = new Date(Date.UTC(year, monthIndex, 1));
@@ -158,7 +229,9 @@ export function MonthCalendar({
           const className = `relative flex aspect-square items-center justify-center rounded-md text-xs transition ${
             isFullDayBlock
               ? `${colors[entry!.status]} text-white`
-              : "bg-black/[.03] text-zinc-700 dark:bg-white/[.06] dark:text-zinc-300"
+              : entry
+                ? tints[entry.status]
+                : "bg-black/[.03] text-zinc-700 dark:bg-white/[.06] dark:text-zinc-300"
           } ${clickable ? "cursor-pointer hover:ring-2 hover:ring-accent" : ""}`;
 
           const dot =
@@ -199,6 +272,101 @@ export function MonthCalendar({
           );
         })}
       </div>
+    </div>
+  );
+}
+
+export function weekRangeLabel(weekStart: Date) {
+  const weekEnd = new Date(weekStart.getTime() + 6 * 24 * 60 * 60 * 1000);
+  return `${WEEK_RANGE_FORMATTER.format(weekStart)} – ${WEEK_RANGE_FORMATTER.format(weekEnd)}`;
+}
+
+export function WeekView({
+  weekStart,
+  entries,
+  onDayClick,
+  disabledDays,
+  simplified,
+}: {
+  weekStart: Date;
+  entries: SimpleAgendaEntry[];
+  onDayClick?: (day: Date) => void;
+  disabledDays?: (day: Date) => boolean;
+  simplified?: boolean;
+}) {
+  const colors = simplified ? SIMPLE_STATUS_COLORS : STATUS_COLORS;
+  const labels = simplified ? SIMPLE_STATUS_LABELS : STATUS_LABELS;
+
+  const now = new Date();
+  const todayUtc = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+  );
+
+  const days = Array.from(
+    { length: 7 },
+    (_, index) => new Date(weekStart.getTime() + index * 24 * 60 * 60 * 1000),
+  );
+
+  return (
+    <div className="flex flex-col divide-y divide-black/5 overflow-hidden rounded-2xl border border-black/5 dark:divide-white/10 dark:border-white/10">
+      {days.map((day) => {
+        const dayEntries = getEntriesForDay(day, entries);
+        const wholeDay = dayEntries.find((entry) => entry.diaInteiro);
+        const isToday = day.getTime() === todayUtc;
+        const clickable = Boolean(onDayClick) && !disabledDays?.(day);
+
+        return (
+          <div
+            key={day.getTime()}
+            onClick={clickable ? () => onDayClick?.(day) : undefined}
+            className={`flex items-start gap-3 p-3 transition ${
+              clickable ? "cursor-pointer hover:bg-black/[.02] dark:hover:bg-white/[.04]" : ""
+            } ${isToday ? "bg-accent/5" : ""}`}
+          >
+            <div className="flex w-12 shrink-0 flex-col items-center">
+              <span className="text-[10px] font-medium tracking-wide text-zinc-400 uppercase">
+                {WEEK_DAY_FORMATTER.format(day).replace(".", "")}
+              </span>
+              <span
+                className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold ${
+                  isToday ? "bg-accent text-accent-foreground" : ""
+                }`}
+              >
+                {day.getUTCDate()}
+              </span>
+            </div>
+
+            <div className="flex min-w-0 flex-1 flex-col gap-1 pt-1.5 text-sm">
+              {wholeDay ? (
+                <span
+                  className={`break-words font-medium ${STATUS_TEXT_COLORS[wholeDay.status]}`}
+                >
+                  Dia todo: {labels[wholeDay.status]}
+                </span>
+              ) : dayEntries.length === 0 ? (
+                <span className="font-medium text-emerald-600 dark:text-emerald-400">
+                  Livre o dia todo
+                </span>
+              ) : (
+                dayEntries.map((entry, index) => (
+                  <span key={index} className="flex min-w-0 items-start gap-1.5">
+                    <span
+                      className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${colors[entry.status]}`}
+                    />
+                    <span className="min-w-0 break-words">
+                      {labels[entry.status]} •{" "}
+                      {TIME_FORMATTER.format(new Date(entry.dataInicio))}–
+                      {TIME_FORMATTER.format(new Date(entry.dataFim))}
+                    </span>
+                  </span>
+                ))
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

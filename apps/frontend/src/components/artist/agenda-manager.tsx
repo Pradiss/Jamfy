@@ -4,10 +4,16 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { apiFetch, ApiError } from "@/lib/api";
 import {
   MonthCalendar,
+  WeekView,
   AgendaLegend,
+  STATUS_LABELS,
   startOfMonth,
   addMonths,
+  startOfWeek,
+  addWeeks,
+  weekRangeLabel,
   getEntryForDay,
+  getEntriesForDay,
   MONTH_FORMATTER,
 } from "@/components/artist/month-calendar";
 import type { AgendaEntry } from "@/lib/types";
@@ -18,21 +24,47 @@ function toUtcDayStart(value: string) {
   return new Date(`${value}T00:00:00.000Z`);
 }
 
-function formatRange(start: string, end: string) {
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-  endDate.setUTCDate(endDate.getUTCDate() - 1);
+const DURACAO_OPTIONS = [
+  { value: 45, label: "45 min" },
+  { value: 60, label: "1h" },
+  { value: 75, label: "1h15" },
+  { value: 90, label: "1h30" },
+  { value: 105, label: "1h45" },
+  { value: 120, label: "2h" },
+  { value: 150, label: "2h30" },
+  { value: 180, label: "3h" },
+];
 
-  const fmt = (date: Date) =>
-    date.toLocaleDateString("pt-BR", { timeZone: "UTC" });
+const TIME_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: "America/Sao_Paulo",
+});
 
-  return startDate.getTime() === endDate.getTime()
-    ? fmt(startDate)
-    : `${fmt(startDate)} – ${fmt(endDate)}`;
+// Builds a "YYYY-MM-DDTHH:mm:00" string (no timezone suffix) from a nominal
+// UTC-midnight day marker + a plain "HH:mm" time — pure calendar/clock math,
+// no timezone conversion. The backend parses this as Brazil local time
+// (pinned server-side), exactly like the hiring-request flow already does.
+function combineDateAndTime(day: Date, time: string) {
+  const year = day.getUTCFullYear();
+  const month = String(day.getUTCMonth() + 1).padStart(2, "0");
+  const date = String(day.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${date}T${time}:00`;
+}
+
+function addMinutesToDay(day: Date, totalMinutes: number) {
+  const extraDays = Math.floor(totalMinutes / (24 * 60));
+  const minutesOfDay = ((totalMinutes % (24 * 60)) + 24 * 60) % (24 * 60);
+  const hh = String(Math.floor(minutesOfDay / 60)).padStart(2, "0");
+  const mm = String(minutesOfDay % 60).padStart(2, "0");
+  const shiftedDay = new Date(day.getTime() + extraDays * 24 * 60 * 60 * 1000);
+  return combineDateAndTime(shiftedDay, `${hh}:${mm}`);
 }
 
 export function AgendaManager() {
+  const [view, setView] = useState<"week" | "month">("week");
   const [month, setMonth] = useState(() => startOfMonth(new Date()));
+  const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
   const [entries, setEntries] = useState<AgendaEntry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -46,6 +78,12 @@ export function AgendaManager() {
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [pendingDay, setPendingDay] = useState<Date | null>(null);
+  const [editingEntry, setEditingEntry] = useState<AgendaEntry | null>(null);
+  const [reservaMode, setReservaMode] = useState(false);
+  const [reservaHora, setReservaHora] = useState("20:00");
+  const [reservaDuracao, setReservaDuracao] = useState(120);
+  const [resolvingDay, setResolvingDay] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -119,42 +157,143 @@ export function AgendaManager() {
     }
   }
 
-  async function handleDayClick(day: Date) {
-    const existing = getEntryForDay(day, entries ?? []);
+  function closeModal() {
+    setPendingDay(null);
+    setEditingEntry(null);
+    setReservaMode(false);
+  }
+
+  function handleDayClick(day: Date) {
+    setActionError(null);
+    setPendingDay(day);
+    setReservaMode(false);
+    setEditingEntry(null);
+  }
+
+  function openEntryDetail(entry: AgendaEntry) {
+    setActionError(null);
+    setEditingEntry(entry);
+    setReservaMode(false);
+  }
+
+  function backToList() {
+    setEditingEntry(null);
+    setReservaMode(false);
+  }
+
+  function openReservaForm() {
+    if (editingEntry && !editingEntry.diaInteiro) {
+      // Pre-fill from the entry's real start time and duration instead of
+      // the defaults, so editing starts from what's already saved.
+      const start = new Date(editingEntry.dataInicio);
+      const end = new Date(editingEntry.dataFim);
+      setReservaHora(TIME_FORMATTER.format(start));
+      setReservaDuracao(
+        Math.max(15, Math.round((end.getTime() - start.getTime()) / 60000)),
+      );
+    } else {
+      setReservaHora("20:00");
+      setReservaDuracao(120);
+    }
+
+    setReservaMode(true);
+  }
+
+  async function confirmReserva() {
+    if (!pendingDay) return;
+
+    setResolvingDay(true);
     setActionError(null);
 
-    const dayEnd = new Date(day);
-    dayEnd.setUTCDate(dayEnd.getUTCDate() + 1);
+    const dataInicio = combineDateAndTime(pendingDay, reservaHora);
+    const [hh, mm] = reservaHora.split(":").map(Number);
+    const dataFim = addMinutesToDay(
+      pendingDay,
+      hh * 60 + mm + reservaDuracao,
+    );
 
     try {
-      if (!existing) {
+      if (editingEntry) {
+        await apiFetch(`/api/artist-profile/agenda/${editingEntry.id}`, {
+          method: "PUT",
+          body: {
+            dataInicio,
+            dataFim,
+            diaInteiro: false,
+            status: "RESERVADO",
+          },
+        });
+      } else {
         await apiFetch("/api/artist-profile/agenda", {
           method: "POST",
           body: {
-            dataInicio: day.toISOString(),
-            dataFim: dayEnd.toISOString(),
-            diaInteiro: true,
-            status: "DISPONIVEL",
+            dataInicio,
+            dataFim,
+            diaInteiro: false,
+            status: "RESERVADO",
+            titulo: "Show fechado fora do site",
           },
-        });
-      } else if (existing.status === "DISPONIVEL") {
-        await apiFetch(`/api/artist-profile/agenda/${existing.id}`, {
-          method: "PUT",
-          body: { status: "INDISPONIVEL" },
-        });
-      } else {
-        await apiFetch(`/api/artist-profile/agenda/${existing.id}`, {
-          method: "DELETE",
         });
       }
 
+      // Return to the day's list instead of closing outright — lets the
+      // artist keep adding more shows to the same day in one sitting.
+      setEditingEntry(null);
+      setReservaMode(false);
       await load();
     } catch (err) {
       setActionError(
         err instanceof ApiError
           ? err.message
-          : "Não foi possível atualizar esse dia.",
+          : "Não foi possível salvar esse compromisso.",
       );
+    } finally {
+      setResolvingDay(false);
+    }
+  }
+
+  async function blockPendingDay() {
+    if (!pendingDay) return;
+
+    setResolvingDay(true);
+    setActionError(null);
+
+    const dayEnd = new Date(pendingDay);
+    dayEnd.setUTCDate(dayEnd.getUTCDate() + 1);
+
+    try {
+      await apiFetch("/api/artist-profile/agenda", {
+        method: "POST",
+        body: {
+          dataInicio: pendingDay.toISOString(),
+          dataFim: dayEnd.toISOString(),
+          diaInteiro: true,
+          status: "INDISPONIVEL",
+        },
+      });
+
+      closeModal();
+      await load();
+    } catch (err) {
+      setActionError(
+        err instanceof ApiError
+          ? err.message
+          : "Não foi possível bloquear esse dia.",
+      );
+    } finally {
+      setResolvingDay(false);
+    }
+  }
+
+  async function removeEditingEntry() {
+    if (!editingEntry) return;
+    setResolvingDay(true);
+
+    try {
+      await handleDelete(editingEntry.id);
+      setEditingEntry(null);
+    } finally {
+      setResolvingDay(false);
     }
   }
 
@@ -174,39 +313,76 @@ export function AgendaManager() {
     }
   }
 
-  const manualEntries = (entries ?? []).filter(
-    (entry) => entry.origem === "ARTISTA",
+  const pendingDayEntries = pendingDay
+    ? getEntriesForDay(pendingDay, entries ?? []).filter(
+        (entry) => entry.origem === "ARTISTA",
+      )
+    : [];
+  const pendingDayHasFullBlock = pendingDayEntries.some(
+    (entry) => entry.diaInteiro,
   );
 
   return (
     <section>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-xl font-semibold tracking-tight">Agenda</h2>
-        <div className="flex items-center gap-1 text-sm">
-          <button
-            type="button"
-            onClick={() => setMonth((current) => addMonths(current, -1))}
-            aria-label="Mês anterior"
-            className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.08] dark:hover:text-zinc-50"
-          >
-            ‹
-          </button>
-          <span className="min-w-[9rem] text-center capitalize">
-            {MONTH_FORMATTER.format(month)}
-          </span>
-          <button
-            type="button"
-            onClick={() => setMonth((current) => addMonths(current, 1))}
-            aria-label="Próximo mês"
-            className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.08] dark:hover:text-zinc-50"
-          >
-            ›
-          </button>
-        </div>
+
+        {view === "week" ? (
+          <div className="flex items-center gap-1 text-sm">
+            <button
+              type="button"
+              onClick={() => setWeekStart((current) => addWeeks(current, -1))}
+              aria-label="Semana anterior"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.08] dark:hover:text-zinc-50"
+            >
+              ‹
+            </button>
+            <span className="min-w-[8rem] text-center">
+              {weekRangeLabel(weekStart)}
+            </span>
+            <button
+              type="button"
+              onClick={() => setWeekStart((current) => addWeeks(current, 1))}
+              aria-label="Próxima semana"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.08] dark:hover:text-zinc-50"
+            >
+              ›
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1 text-sm">
+            <button
+              type="button"
+              onClick={() => setMonth((current) => addMonths(current, -1))}
+              aria-label="Mês anterior"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.08] dark:hover:text-zinc-50"
+            >
+              ‹
+            </button>
+            <span className="min-w-[9rem] text-center capitalize">
+              {MONTH_FORMATTER.format(month)}
+            </span>
+            <button
+              type="button"
+              onClick={() => setMonth((current) => addMonths(current, 1))}
+              aria-label="Próximo mês"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.08] dark:hover:text-zinc-50"
+            >
+              ›
+            </button>
+          </div>
+        )}
       </div>
 
       {error ? (
         <p className="text-red-600 dark:text-red-400">{error}</p>
+      ) : view === "week" ? (
+        <WeekView
+          weekStart={weekStart}
+          entries={entries ?? []}
+          onDayClick={handleDayClick}
+          disabledDays={isDayLocked}
+        />
       ) : (
         <MonthCalendar
           month={month}
@@ -223,11 +399,246 @@ export function AgendaManager() {
       ) : null}
 
       <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
-        Clique em um dia para marcar como disponível ou indisponível.
+        Clique num dia livre pra marcar um compromisso ou bloquear. Clique
+        num dia já marcado pra editar ou remover.
       </p>
 
-      <div className="mt-3">
+      {pendingDay ? (
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+          <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
+          <div className="relative z-10 w-full max-w-sm rounded-t-3xl bg-white p-6 shadow-xl sm:rounded-3xl dark:bg-zinc-900">
+            <h2 className="text-lg font-semibold tracking-tight capitalize">
+              {pendingDay.toLocaleDateString("pt-BR", {
+                timeZone: "UTC",
+                day: "2-digit",
+                month: "long",
+              })}
+            </h2>
+
+            {reservaMode ? (
+              <>
+                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                  Que horas é o show?
+                </p>
+
+                <div className="mt-4 flex flex-col gap-3">
+                  <label className="flex flex-col gap-1.5 text-sm">
+                    <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                      Horário de início
+                    </span>
+                    <input
+                      type="time"
+                      value={reservaHora}
+                      onChange={(event) => setReservaHora(event.target.value)}
+                      className={inputClass}
+                    />
+                  </label>
+
+                  <label className="flex flex-col gap-1.5 text-sm">
+                    <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                      Duração
+                    </span>
+                    <select
+                      value={reservaDuracao}
+                      onChange={(event) =>
+                        setReservaDuracao(Number(event.target.value))
+                      }
+                      className={inputClass}
+                    >
+                      {DURACAO_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+
+                <div className="mt-5 flex items-center gap-3">
+                  <button
+                    type="button"
+                    disabled={resolvingDay}
+                    onClick={confirmReserva}
+                    className={primaryButtonClass}
+                  >
+                    {resolvingDay ? "Salvando..." : "Confirmar"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setReservaMode(false)}
+                    className="text-sm text-zinc-500 hover:underline dark:text-zinc-400"
+                  >
+                    Voltar
+                  </button>
+                </div>
+              </>
+            ) : editingEntry ? (
+              <>
+                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                  {STATUS_LABELS[editingEntry.status]}
+                  {!editingEntry.diaInteiro
+                    ? ` • ${TIME_FORMATTER.format(new Date(editingEntry.dataInicio))}–${TIME_FORMATTER.format(new Date(editingEntry.dataFim))}`
+                    : ""}
+                  {editingEntry.titulo ? ` · ${editingEntry.titulo}` : ""}
+                </p>
+
+                <div className="mt-5 flex flex-col gap-3">
+                  {editingEntry.status === "RESERVADO" ? (
+                    <button
+                      type="button"
+                      disabled={resolvingDay}
+                      onClick={openReservaForm}
+                      className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 dark:hover:bg-white/[.04]`}
+                    >
+                      <p className="font-medium">Editar horário</p>
+                      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                        Mudar o horário ou a duração desse show.
+                      </p>
+                    </button>
+                  ) : null}
+
+                  <button
+                    type="button"
+                    disabled={resolvingDay}
+                    onClick={removeEditingEntry}
+                    className={`text-left ${cardClass} p-4 transition hover:bg-red-50 disabled:opacity-50 dark:hover:bg-red-500/10`}
+                  >
+                    <p className="font-medium text-red-600 dark:text-red-400">
+                      Remover
+                    </p>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                      Show cancelado ou marcação errada — libera o dia de
+                      novo.
+                    </p>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={backToList}
+                  className="mt-4 block w-full text-center text-sm text-zinc-500 hover:underline dark:text-zinc-400"
+                >
+                  ← Voltar
+                </button>
+
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="mt-2 w-full rounded-full border border-red-200 py-2.5 text-center text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-500/10"
+                >
+                  Cancelar
+                </button>
+              </>
+            ) : pendingDayEntries.length > 0 ? (
+              <>
+                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                  {pendingDayEntries.length === 1
+                    ? "Esse dia já tem um compromisso."
+                    : `Esse dia já tem ${pendingDayEntries.length} compromissos.`}
+                </p>
+
+                <div className="mt-5 flex flex-col gap-3">
+                  {pendingDayEntries.map((entry) => (
+                    <button
+                      key={entry.id}
+                      type="button"
+                      onClick={() => openEntryDetail(entry)}
+                      className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] dark:hover:bg-white/[.04]`}
+                    >
+                      <p className="font-medium">
+                        {STATUS_LABELS[entry.status]}
+                        {!entry.diaInteiro
+                          ? ` • ${TIME_FORMATTER.format(new Date(entry.dataInicio))}–${TIME_FORMATTER.format(new Date(entry.dataFim))}`
+                          : ""}
+                      </p>
+                      {entry.titulo ? (
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                          {entry.titulo}
+                        </p>
+                      ) : null}
+                    </button>
+                  ))}
+
+                  {!pendingDayHasFullBlock ? (
+                    <button
+                      type="button"
+                      disabled={resolvingDay}
+                      onClick={openReservaForm}
+                      className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 dark:hover:bg-white/[.04]`}
+                    >
+                      <p className="font-medium">
+                        + Marcar outro show nesse dia
+                      </p>
+                      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                        Fechou mais um horário no mesmo dia? Adiciona aqui.
+                      </p>
+                    </button>
+                  ) : null}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="mt-4 w-full rounded-full border border-red-200 py-2.5 text-center text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-500/10"
+                >
+                  Cancelar
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                  O que você quer fazer com esse dia?
+                </p>
+
+                <div className="mt-5 flex flex-col gap-3">
+                  <button
+                    type="button"
+                    disabled={resolvingDay}
+                    onClick={openReservaForm}
+                    className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 dark:hover:bg-white/[.04]`}
+                  >
+                    <p className="font-medium">Já fechei um show</p>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                      Combinei fora do site — marcar o horário como
+                      reservado.
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={resolvingDay}
+                    onClick={blockPendingDay}
+                    className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 dark:hover:bg-white/[.04]`}
+                  >
+                    <p className="font-medium">Bloquear esse dia</p>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                      Não vou tocar nesse dia, fica indisponível.
+                    </p>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="mt-4 w-full rounded-full border border-red-200 py-2.5 text-center text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-500/10"
+                >
+                  Cancelar
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      ) : null}
+
+      <div className="mt-3 flex items-center justify-between gap-3">
         <AgendaLegend />
+        <button
+          type="button"
+          onClick={() => setView(view === "week" ? "month" : "week")}
+          className={`shrink-0 ${secondaryButtonClass} px-4 py-1.5 text-xs`}
+        >
+          {view === "week" ? "Ver mês inteiro" : "Ver semana"}
+        </button>
       </div>
 
       <div className="mt-6">
@@ -322,30 +733,6 @@ export function AgendaManager() {
           </form>
         )}
       </div>
-
-      {manualEntries.length > 0 ? (
-        <ul className="mt-6 flex flex-col gap-2">
-          {manualEntries.map((entry) => (
-            <li
-              key={entry.id}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-black/5 bg-white px-3.5 py-2.5 text-sm shadow-sm dark:border-white/10 dark:bg-white/[.03]"
-            >
-              <span className="min-w-0 break-words">
-                {formatRange(entry.dataInicio, entry.dataFim)} ·{" "}
-                {entry.status === "DISPONIVEL" ? "Disponível" : "Indisponível"}
-                {entry.titulo ? ` · ${entry.titulo}` : ""}
-              </span>
-              <button
-                type="button"
-                onClick={() => handleDelete(entry.id)}
-                className="shrink-0 text-zinc-500 hover:text-red-600 dark:text-zinc-400"
-              >
-                Remover
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
     </section>
   );
 }

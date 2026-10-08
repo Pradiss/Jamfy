@@ -1,8 +1,14 @@
 import { z } from "zod";
 
-const manualAgendaStatusSchema = z.enum(["DISPONIVEL", "INDISPONIVEL"], {
-  message: "Status inválido. Utilize DISPONIVEL ou INDISPONIVEL.",
-});
+// RESERVADO is also allowed here — it's how an artist marks a day as
+// booked when the deal was closed off-platform (a show arranged outside
+// Jamfy), distinct from INDISPONIVEL (just not working that day).
+const manualAgendaStatusSchema = z.enum(
+  ["DISPONIVEL", "INDISPONIVEL", "RESERVADO"],
+  {
+    message: "Status inválido.",
+  },
+);
 
 export const createAgendaEntrySchema = z.object({
   body: z
