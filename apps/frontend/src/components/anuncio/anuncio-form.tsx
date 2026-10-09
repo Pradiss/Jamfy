@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
+import Image from "next/image";
 import { apiFetch, ApiError } from "@/lib/api";
 import { FormField, inputClass } from "@/components/ui/form-field";
 import { EstadoCidadeFields } from "@/components/ui/estado-cidade-fields";
@@ -230,12 +231,7 @@ export function AnuncioForm({
               key={foto}
               className="relative h-24 w-24 overflow-hidden rounded-xl bg-surface"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={foto}
-                alt=""
-                className="h-full w-full object-cover"
-              />
+              <Image src={foto} alt="" fill sizes="96px" className="object-cover" />
               <button
                 type="button"
                 onClick={() => removeFoto(foto)}

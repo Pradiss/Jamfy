@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { apiFetch } from "@/lib/api";
 import { STATUS_CONVERSA_LABELS, type ConversaSummary } from "@/lib/types";
 
@@ -66,10 +67,11 @@ export function ConversaSidebar({ activeId }: { activeId?: string }) {
                 }`}
               >
                 {conversa.counterpart.fotoUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={conversa.counterpart.fotoUrl}
                     alt={conversa.counterpart.nome}
+                    width={40}
+                    height={40}
                     className="h-10 w-10 shrink-0 rounded-full object-cover"
                   />
                 ) : (

@@ -49,7 +49,9 @@ export default async function AnunciosPage(props: PageProps<"/anuncios">) {
   let error: string | null = null;
 
   try {
-    data = await apiFetch<AnuncioListResponse>(`/api/anuncios?${query}`);
+    data = await apiFetch<AnuncioListResponse>(`/api/anuncios?${query}`, {
+      next: { revalidate: 60 },
+    });
   } catch (err) {
     error =
       err instanceof ApiError

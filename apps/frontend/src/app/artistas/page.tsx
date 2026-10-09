@@ -63,6 +63,7 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
   try {
     data = await apiFetch<ArtistProfileListResponse>(
       `/api/artist-profile?${query}`,
+      { next: { revalidate: 60 } },
     );
   } catch (err) {
     error =
@@ -77,6 +78,7 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
     try {
       const genero = await apiFetch<{ nome: string }>(
         `/api/genre/${generoId}`,
+        { next: { revalidate: 3600 } },
       );
       generoNome = genero.nome;
     } catch {
@@ -86,11 +88,15 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
 
   const [generos, instrumentos] = await Promise.all([
     !generoId
-      ? apiFetch<{ id: string; nome: string }[]>("/api/genre")
+      ? apiFetch<{ id: string; nome: string }[]>("/api/genre", {
+          next: { revalidate: 3600 },
+        })
           .then(sortGenresByPopularity)
           .catch(() => [] as { id: string; nome: string }[])
       : Promise.resolve([] as { id: string; nome: string }[]),
-    apiFetch<{ id: string; nome: string }[]>("/api/instruments")
+    apiFetch<{ id: string; nome: string }[]>("/api/instruments", {
+      next: { revalidate: 3600 },
+    })
       .then(sortInstrumentsByPopularity)
       .catch(() => [] as { id: string; nome: string }[]),
   ]);

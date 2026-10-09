@@ -59,15 +59,26 @@ function extensionForMime(mimeType: string) {
   return EXTENSION_BY_MIME[mimeType] ?? mimeType.split("/")[1] ?? "bin";
 }
 
-// Every uploaded photo gets re-encoded to WebP — it's smaller than JPEG/PNG
-// at the same visual quality, which is most of what actually makes a page
-// heavy (photos dwarf JS/CSS on this site). Videos pass through untouched.
-async function toWebp(buffer: Buffer, mimeType: string) {
-  if (!mimeType.startsWith("image/") || mimeType === "image/webp") {
+// Every uploaded photo gets re-encoded to WebP and capped at maxDimension on
+// its longest side — it's smaller than JPEG/PNG at the same visual quality,
+// which is most of what actually makes a page heavy (photos dwarf JS/CSS on
+// this site). A phone photo straight off the camera can be 4000px+ wide; none
+// of our UI ever displays one larger than a couple hundred px, so shipping
+// the original resolution is pure waste. Videos pass through untouched.
+async function toWebp(buffer: Buffer, mimeType: string, maxDimension: number) {
+  if (!mimeType.startsWith("image/")) {
     return { buffer, mimeType, extension: extensionForMime(mimeType) };
   }
 
-  const webpBuffer = await sharp(buffer).webp({ quality: 80 }).toBuffer();
+  const webpBuffer = await sharp(buffer)
+    .resize({
+      width: maxDimension,
+      height: maxDimension,
+      fit: "inside",
+      withoutEnlargement: true,
+    })
+    .webp({ quality: 80 })
+    .toBuffer();
 
   return { buffer: webpBuffer, mimeType: "image/webp", extension: "webp" };
 }
@@ -104,7 +115,7 @@ async function uploadBuffer(path: string, buffer: Buffer, mimeType: string) {
 
 class UploadService {
   async uploadAvatar(userId: string, buffer: Buffer, mimeType: string) {
-    const image = await toWebp(buffer, mimeType);
+    const image = await toWebp(buffer, mimeType, 512);
     const url = await uploadBuffer(
       `avatars/${userId}.${image.extension}`,
       image.buffer,
@@ -129,7 +140,7 @@ class UploadService {
       throw new Error("Perfil de artista não encontrado.");
     }
 
-    const image = await toWebp(buffer, mimeType);
+    const image = await toWebp(buffer, mimeType, 1600);
     const url = await uploadBuffer(
       `covers/${artistProfile.id}.${image.extension}`,
       image.buffer,
@@ -155,7 +166,7 @@ class UploadService {
     }
 
     const tipo = mimeType.startsWith("video/") ? "VIDEO" : "FOTO";
-    const image = await toWebp(buffer, mimeType);
+    const image = await toWebp(buffer, mimeType, 1600);
     const path = `portfolio/${artistProfile.id}/${randomUUID()}.${image.extension}`;
 
     const url = await uploadBuffer(path, image.buffer, image.mimeType);
@@ -164,7 +175,7 @@ class UploadService {
   }
 
   async uploadAnuncioPhoto(userId: string, buffer: Buffer, mimeType: string) {
-    const image = await toWebp(buffer, mimeType);
+    const image = await toWebp(buffer, mimeType, 1600);
     const path = `anuncios/${userId}/${randomUUID()}.${image.extension}`;
 
     return uploadBuffer(path, image.buffer, image.mimeType);

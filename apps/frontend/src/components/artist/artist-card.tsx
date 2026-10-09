@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Star } from "lucide-react";
 import type { ArtistProfileSummary } from "@/lib/types";
 
@@ -78,11 +79,12 @@ export function ArtistCard({ artist }: { artist: ArtistProfileSummary }) {
     >
       <div className="relative aspect-[3/2] w-full overflow-hidden bg-surface">
         {artist.usuario.fotoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={artist.usuario.fotoUrl}
             alt={artist.nomeArtistico}
-            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
           />
         ) : (
           <span className="flex h-full w-full items-center justify-center text-5xl font-semibold text-zinc-300 dark:text-zinc-700">

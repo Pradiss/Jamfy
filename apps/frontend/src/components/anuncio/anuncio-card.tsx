@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { AnuncioSummary } from "@/lib/types";
 import { TIPO_ANUNCIO_LABELS } from "@/lib/types";
 
@@ -33,11 +34,12 @@ export function AnuncioCard({ anuncio }: { anuncio: AnuncioSummary }) {
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface">
         {anuncio.fotos[0] ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={anuncio.fotos[0]}
             alt={anuncio.titulo}
-            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
           />
         ) : (
           <span className="flex h-full w-full items-center justify-center text-5xl font-semibold text-zinc-300 dark:text-zinc-700">

@@ -16,6 +16,7 @@ async function fetchArtists(query: string) {
   try {
     const data = await apiFetch<ArtistProfileListResponse>(
       `/api/artist-profile?${query}`,
+      { next: { revalidate: 60 } },
     );
     return data.artistas;
   } catch {
@@ -27,6 +28,7 @@ async function fetchAnuncios() {
   try {
     const data = await apiFetch<AnuncioListResponse>(
       "/api/anuncios?limit=10",
+      { next: { revalidate: 60 } },
     );
     return data.anuncios;
   } catch {
@@ -38,6 +40,7 @@ async function fetchGenres() {
   try {
     const genres = await apiFetch<{ id: string; nome: string }[]>(
       "/api/genre",
+      { next: { revalidate: 3600 } },
     );
     return sortGenresByPopularity(genres);
   } catch {

@@ -18,6 +18,17 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  images: {
+    // Lets next/image optimize photos served from Supabase Storage (the
+    // only external image host this app uses).
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

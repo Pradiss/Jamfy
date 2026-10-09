@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { apiFetch } from "@/lib/api";
@@ -63,13 +64,14 @@ export default function MeusAnunciosPage() {
               href={`/anuncios/${anuncio.id}`}
               className={`flex items-center gap-4 p-4 transition hover:bg-black/[.02] dark:hover:bg-white/[.04] ${cardClass}`}
             >
-              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-surface">
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-surface">
                 {anuncio.fotos[0] ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={anuncio.fotos[0]}
                     alt={anuncio.titulo}
-                    className="h-full w-full object-cover"
+                    fill
+                    sizes="64px"
+                    className="object-cover"
                   />
                 ) : null}
               </div>

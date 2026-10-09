@@ -200,10 +200,16 @@ export function PortfolioManager({
                     onClick={() => setLightboxIndex(viewableIndex)}
                     className="block w-full"
                   >
+                    {/* Not next/image: these tiles keep each photo's
+                        natural aspect ratio (no stored width/height to
+                        size it from), which next/image requires. Native
+                        lazy loading still gets the main win below the
+                        fold. */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={item.arquivoUrl}
                       alt={item.titulo ?? ""}
+                      loading="lazy"
                       className="block w-full"
                     />
                   </button>

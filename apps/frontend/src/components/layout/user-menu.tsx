@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { profileHref, profileLabel } from "@/lib/profile-link";
@@ -47,10 +48,11 @@ export function UserMenu() {
         className="flex items-center gap-2 rounded-full py-1 pr-2 pl-1 transition hover:bg-black/[.04] dark:hover:bg-white/[.06]"
       >
         {user.fotoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={user.fotoUrl}
             alt={user.nome}
+            width={28}
+            height={28}
             className="h-7 w-7 rounded-full object-cover"
           />
         ) : (

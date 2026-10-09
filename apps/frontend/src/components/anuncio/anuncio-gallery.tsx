@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { PortfolioLightbox } from "@/components/artist/portfolio-lightbox";
 
 export function AnuncioGallery({
@@ -45,8 +46,7 @@ export function AnuncioGallery({
                     : "ring-transparent hover:ring-black/10 dark:hover:ring-white/15"
                 }`}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={foto} alt="" className="h-full w-full object-cover" />
+                <Image src={foto} alt="" fill sizes="64px" className="object-cover" />
               </button>
             ))}
           </div>
@@ -57,11 +57,12 @@ export function AnuncioGallery({
           onClick={() => setLightboxIndex(activeIndex)}
           className="relative order-1 aspect-square w-full flex-1 overflow-hidden rounded-2xl bg-surface sm:order-2"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={fotos[activeIndex]}
             alt={titulo}
-            className="h-full w-full object-cover"
+            fill
+            sizes="(max-width: 640px) 100vw, 50vw"
+            className="object-cover"
           />
         </button>
       </div>

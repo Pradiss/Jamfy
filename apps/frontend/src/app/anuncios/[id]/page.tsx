@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import type { Metadata } from "next";
 
 import { apiFetch, ApiError } from "@/lib/api";
@@ -9,6 +10,9 @@ import { AnuncioGallery } from "@/components/anuncio/anuncio-gallery";
 import { AnuncioContactSection } from "@/components/anuncio/anuncio-contact-section";
 import { containerClass } from "@/lib/ui";
 
+// Not cached on purpose — every call to this endpoint also increments the
+// listing's view counter server-side, so caching the response would
+// silently undercount views for every cache hit.
 const getAnuncioById = cache((id: string) =>
   apiFetch<AnuncioDetail>(`/api/anuncios/${id}`),
 );
@@ -82,10 +86,11 @@ export default async function AnuncioDetailPage(
 
           <div className="mt-6 flex items-center gap-3 border-t border-black/5 pt-6 dark:border-white/10">
             {anuncio.usuario.fotoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={anuncio.usuario.fotoUrl}
                 alt={anuncio.usuario.nome}
+                width={40}
+                height={40}
                 className="h-10 w-10 rounded-full object-cover"
               />
             ) : (

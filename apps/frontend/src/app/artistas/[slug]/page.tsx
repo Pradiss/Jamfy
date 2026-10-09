@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import type { Metadata } from "next";
 
 import { apiFetch, ApiError } from "@/lib/api";
@@ -55,6 +56,9 @@ function TagGroup({ label, items }: { label: string; items: string[] }) {
   );
 }
 
+// Not cached on purpose — every call to this endpoint also increments the
+// artist's view counter server-side (fire-and-forget), so caching the
+// response would silently undercount views for every cache hit.
 const getArtistBySlug = cache((slug: string) =>
   apiFetch<ArtistProfileDetail>(`/api/artist-profile/${slug}`),
 );
@@ -117,11 +121,13 @@ export default async function ArtistaPage(
     <div className="flex-1">
       <div className="relative aspect-[3/1] w-full overflow-hidden bg-surface sm:aspect-[4/1]">
         {artist.fotoCapaUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={artist.fotoCapaUrl}
             alt={artist.nomeArtistico}
-            className="h-full w-full object-cover"
+            fill
+            sizes="100vw"
+            preload
+            className="object-cover"
           />
         ) : null}
         <CoverUploader ownerUserId={artist.usuarioId} />
@@ -129,13 +135,14 @@ export default async function ArtistaPage(
 
       <div className={`${containerClass} px-6 pb-10`}>
         <div className="relative -mt-12 h-24 w-24 sm:-mt-16 sm:h-32 sm:w-32">
-          <div className="h-full w-full overflow-hidden rounded-full border-4 border-white bg-surface shadow-md dark:border-black">
+          <div className="relative h-full w-full overflow-hidden rounded-full border-4 border-white bg-surface shadow-md dark:border-black">
             {artist.usuario.fotoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={artist.usuario.fotoUrl}
                 alt={artist.nomeArtistico}
-                className="h-full w-full object-cover"
+                fill
+                sizes="128px"
+                className="object-cover"
               />
             ) : (
               <span className="flex h-full w-full items-center justify-center text-3xl font-semibold text-zinc-400 dark:text-zinc-600">

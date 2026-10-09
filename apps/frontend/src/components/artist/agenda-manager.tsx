@@ -12,7 +12,6 @@ import {
   startOfWeek,
   addWeeks,
   weekRangeLabel,
-  getEntryForDay,
   getEntriesForDay,
   MONTH_FORMATTER,
 } from "@/components/artist/month-calendar";
@@ -297,11 +296,6 @@ export function AgendaManager() {
     }
   }
 
-  function isDayLocked(day: Date) {
-    const existing = getEntryForDay(day, entries ?? []);
-    return Boolean(existing && existing.origem !== "ARTISTA");
-  }
-
   async function handleDelete(id: string) {
     try {
       await apiFetch(`/api/artist-profile/agenda/${id}`, {
@@ -314,9 +308,7 @@ export function AgendaManager() {
   }
 
   const pendingDayEntries = pendingDay
-    ? getEntriesForDay(pendingDay, entries ?? []).filter(
-        (entry) => entry.origem === "ARTISTA",
-      )
+    ? getEntriesForDay(pendingDay, entries ?? [])
     : [];
   const pendingDayHasFullBlock = pendingDayEntries.some(
     (entry) => entry.diaInteiro,
@@ -381,14 +373,12 @@ export function AgendaManager() {
           weekStart={weekStart}
           entries={entries ?? []}
           onDayClick={handleDayClick}
-          disabledDays={isDayLocked}
         />
       ) : (
         <MonthCalendar
           month={month}
           entries={entries ?? []}
           onDayClick={handleDayClick}
-          disabledDays={isDayLocked}
         />
       )}
 
@@ -482,36 +472,44 @@ export function AgendaManager() {
                   {editingEntry.titulo ? ` · ${editingEntry.titulo}` : ""}
                 </p>
 
-                <div className="mt-5 flex flex-col gap-3">
-                  {editingEntry.status === "RESERVADO" ? (
+                {editingEntry.origem !== "ARTISTA" ? (
+                  <p className="mt-3 rounded-2xl bg-black/[.03] p-3 text-sm text-zinc-500 dark:bg-white/[.06] dark:text-zinc-400">
+                    Esse compromisso veio de uma contratação feita pelo
+                    site. Para alterar ou cancelar, use a aba de
+                    solicitações.
+                  </p>
+                ) : (
+                  <div className="mt-5 flex flex-col gap-3">
+                    {editingEntry.status === "RESERVADO" ? (
+                      <button
+                        type="button"
+                        disabled={resolvingDay}
+                        onClick={openReservaForm}
+                        className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 dark:hover:bg-white/[.04]`}
+                      >
+                        <p className="font-medium">Editar horário</p>
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                          Mudar o horário ou a duração desse show.
+                        </p>
+                      </button>
+                    ) : null}
+
                     <button
                       type="button"
                       disabled={resolvingDay}
-                      onClick={openReservaForm}
-                      className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 dark:hover:bg-white/[.04]`}
+                      onClick={removeEditingEntry}
+                      className={`text-left ${cardClass} p-4 transition hover:bg-red-50 disabled:opacity-50 dark:hover:bg-red-500/10`}
                     >
-                      <p className="font-medium">Editar horário</p>
+                      <p className="font-medium text-red-600 dark:text-red-400">
+                        Remover
+                      </p>
                       <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                        Mudar o horário ou a duração desse show.
+                        Show cancelado ou marcação errada — libera o dia de
+                        novo.
                       </p>
                     </button>
-                  ) : null}
-
-                  <button
-                    type="button"
-                    disabled={resolvingDay}
-                    onClick={removeEditingEntry}
-                    className={`text-left ${cardClass} p-4 transition hover:bg-red-50 disabled:opacity-50 dark:hover:bg-red-500/10`}
-                  >
-                    <p className="font-medium text-red-600 dark:text-red-400">
-                      Remover
-                    </p>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                      Show cancelado ou marcação errada — libera o dia de
-                      novo.
-                    </p>
-                  </button>
-                </div>
+                  </div>
+                )}
 
                 <button
                   type="button"
@@ -551,11 +549,11 @@ export function AgendaManager() {
                           ? ` • ${TIME_FORMATTER.format(new Date(entry.dataInicio))}–${TIME_FORMATTER.format(new Date(entry.dataFim))}`
                           : ""}
                       </p>
-                      {entry.titulo ? (
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                          {entry.titulo}
-                        </p>
-                      ) : null}
+                      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                        {entry.origem !== "ARTISTA"
+                          ? "Contratação pelo site"
+                          : entry.titulo}
+                      </p>
                     </button>
                   ))}
 
