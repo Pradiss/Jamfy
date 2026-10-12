@@ -1,7 +1,11 @@
+import "./instrument.js";
+
 import express from "express";
 import type { Express } from "express";
 import cors from "cors";
+import compression from "compression";
 import cookieParser from "cookie-parser";
+import * as Sentry from "@sentry/node";
 
 import { authRoutes } from "./routes/auth.routes.js";
 import { artistProfileRoutes  } from  "./routes/artist-profile.routes.js";
@@ -33,6 +37,8 @@ app.use(
     credentials: true,
   }),
 );
+
+app.use(compression());
 
 app.use(express.json());
 app.use(cookieParser());
@@ -69,6 +75,8 @@ app.use("/api/hiring-requests", hiringRequestRoutes);
 app.use("/api/conversas", conversaRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/uploads", uploadRoutes);
+
+Sentry.setupExpressErrorHandler(app);
 
 app.use(errorMiddleware);
 

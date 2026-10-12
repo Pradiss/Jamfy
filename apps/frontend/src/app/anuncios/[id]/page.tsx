@@ -34,6 +34,12 @@ export async function generateMetadata(
         description,
         images: anuncio.fotos[0] ? [{ url: anuncio.fotos[0] }] : undefined,
       },
+      twitter: {
+        card: anuncio.fotos[0] ? "summary_large_image" : "summary",
+        title: anuncio.titulo,
+        description,
+        images: anuncio.fotos[0] ? [anuncio.fotos[0]] : undefined,
+      },
     };
   } catch {
     return { title: "Anúncio não encontrado | Jamfy" };

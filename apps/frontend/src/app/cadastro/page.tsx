@@ -86,6 +86,7 @@ export default function CadastroPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [checkEmail, setCheckEmail] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -215,31 +216,42 @@ export default function CadastroPage() {
             <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
           ) : null}
 
+          <label className="flex items-start gap-2.5 text-xs text-zinc-500 dark:text-zinc-400">
+            <input
+              type="checkbox"
+              required
+              checked={acceptedTerms}
+              onChange={(event) => setAcceptedTerms(event.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 rounded border-zinc-300 text-accent focus:ring-accent dark:border-zinc-600"
+            />
+            <span>
+              Li e aceito os{" "}
+              <Link
+                href="/termos"
+                target="_blank"
+                className="underline hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Termos de Uso
+              </Link>{" "}
+              e a{" "}
+              <Link
+                href="/privacidade"
+                target="_blank"
+                className="underline hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Política de Privacidade
+              </Link>{" "}
+              do Jamfy.
+            </span>
+          </label>
+
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || !acceptedTerms}
             className={`mt-1 w-full ${primaryButtonClass}`}
           >
             {submitting ? "Criando conta..." : "Criar conta"}
           </button>
-
-          <p className="text-center text-xs text-zinc-500 dark:text-zinc-400">
-            Ao criar uma conta, você concorda com os{" "}
-            <Link
-              href="/termos"
-              className="underline hover:text-zinc-700 dark:hover:text-zinc-300"
-            >
-              Termos de Uso
-            </Link>{" "}
-            e a{" "}
-            <Link
-              href="/privacidade"
-              className="underline hover:text-zinc-700 dark:hover:text-zinc-300"
-            >
-              Política de Privacidade
-            </Link>{" "}
-            do Jamfy.
-          </p>
         </form>
       )}
 

@@ -38,6 +38,19 @@ authRoutes.patch(
   authController.updateProfile.bind(authController),
 );
 
+authRoutes.get(
+  "/me/export",
+  authMiddleware,
+  authController.exportMyData.bind(authController),
+);
+
+authRoutes.delete(
+  "/me",
+  authMiddleware,
+  accountRateLimit,
+  authController.deleteMyAccount.bind(authController),
+);
+
 authRoutes.post(
   "/forgot-password",
   accountRateLimit,

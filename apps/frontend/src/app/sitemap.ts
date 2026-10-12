@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { apiFetch } from "@/lib/api";
-import type { ArtistProfileListResponse } from "@/lib/types";
+import type { ArtistProfileListResponse, AnuncioListResponse } from "@/lib/types";
 import { SITE_URL } from "@/lib/config";
 
 const MAX_PAGES = 10;
@@ -29,12 +29,40 @@ async function fetchAllArtistSlugs() {
   return slugs;
 }
 
+async function fetchAllAnuncioIds() {
+  const ids: string[] = [];
+
+  for (let page = 1; page <= MAX_PAGES; page += 1) {
+    let data: AnuncioListResponse;
+
+    try {
+      data = await apiFetch<AnuncioListResponse>(
+        `/api/anuncios?page=${page}&limit=50`,
+      );
+    } catch {
+      break;
+    }
+
+    ids.push(...data.anuncios.map((anuncio) => anuncio.id));
+
+    if (page >= data.paginacao.totalPaginas) {
+      break;
+    }
+  }
+
+  return ids;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const slugs = await fetchAllArtistSlugs();
+  const [slugs, anuncioIds] = await Promise.all([
+    fetchAllArtistSlugs(),
+    fetchAllAnuncioIds(),
+  ]);
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: SITE_URL, changeFrequency: "daily", priority: 1 },
     { url: `${SITE_URL}/artistas`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE_URL}/anuncios`, changeFrequency: "daily", priority: 0.9 },
   ];
 
   const artistRoutes: MetadataRoute.Sitemap = slugs.map((slug) => ({
@@ -43,5 +71,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...artistRoutes];
+  const anuncioRoutes: MetadataRoute.Sitemap = anuncioIds.map((id) => ({
+    url: `${SITE_URL}/anuncios/${id}`,
+    changeFrequency: "weekly",
+    priority: 0.6,
+  }));
+
+  return [...staticRoutes, ...artistRoutes, ...anuncioRoutes];
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { apiFetch, ApiError } from "@/lib/api";
 import { secondaryButtonClass, cardClass, containerClass } from "@/lib/ui";
 import {
   getStoredTheme,
@@ -30,6 +31,10 @@ export default function ConfiguracoesPage() {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
   const [theme, setThemeState] = useState<ThemePreference>("system");
+  const [exporting, setExporting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -58,6 +63,48 @@ export default function ConfiguracoesPage() {
     await logout();
     router.push("/");
     router.refresh();
+  }
+
+  async function handleExportData() {
+    setExporting(true);
+
+    try {
+      const result = await apiFetch<{ dados: unknown }>(
+        "/api/auth/me/export",
+      );
+      const blob = new Blob([JSON.stringify(result.dados, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "jamfy-meus-dados.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      // Nothing was downloaded — the button staying enabled lets them try again.
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    setDeleteError(null);
+
+    try {
+      await apiFetch("/api/auth/me", { method: "DELETE" });
+      await logout();
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      setDeleteError(
+        err instanceof ApiError
+          ? err.message
+          : "Não foi possível excluir a conta.",
+      );
+      setDeleting(false);
+    }
   }
 
   return (
@@ -128,6 +175,33 @@ export default function ConfiguracoesPage() {
         </a>
       </div>
 
+      <div className={`mt-6 p-5 ${cardClass}`}>
+        <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+          Privacidade e dados
+        </p>
+        <p className="mb-3 text-sm text-zinc-600 dark:text-zinc-300">
+          Baixe uma cópia de tudo que temos sobre sua conta, ou exclua sua
+          conta e todos os seus dados permanentemente.
+        </p>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <button
+            type="button"
+            onClick={handleExportData}
+            disabled={exporting}
+            className={`${secondaryButtonClass} disabled:opacity-50`}
+          >
+            {exporting ? "Preparando..." : "Exportar meus dados"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowDeleteConfirm(true)}
+            className="rounded-full border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-500/10"
+          >
+            Excluir minha conta
+          </button>
+        </div>
+      </div>
+
       <button
         type="button"
         onClick={handleLogout}
@@ -136,6 +210,49 @@ export default function ConfiguracoesPage() {
         Sair da conta
       </button>
       </div>
+
+      {showDeleteConfirm ? (
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => !deleting && setShowDeleteConfirm(false)}
+          />
+          <div className="relative z-10 w-full max-w-sm rounded-t-3xl bg-white p-6 shadow-xl sm:rounded-3xl dark:bg-zinc-900">
+            <h2 className="text-lg font-semibold tracking-tight">
+              Excluir sua conta?
+            </h2>
+            <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+              Isso apaga seu perfil, anúncios, portfólio, agenda, conversas e
+              todo o resto permanentemente. Não é possível desfazer.
+            </p>
+
+            {deleteError ? (
+              <p className="mt-3 text-sm text-red-600 dark:text-red-400">
+                {deleteError}
+              </p>
+            ) : null}
+
+            <div className="mt-5 flex flex-col gap-3">
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={handleDeleteAccount}
+                className="w-full rounded-full bg-red-600 py-2.5 text-center text-sm font-medium text-white transition hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleting ? "Excluindo..." : "Sim, excluir permanentemente"}
+              </button>
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={() => setShowDeleteConfirm(false)}
+                className="text-sm text-zinc-500 hover:underline disabled:opacity-50 dark:text-zinc-400"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -10,6 +10,7 @@ import { MobileTabBar } from "@/components/layout/mobile-tab-bar";
 import { RouteTransition } from "@/components/layout/route-transition";
 import { ThemeListener } from "@/components/layout/theme-listener";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
+import { SITE_URL } from "@/lib/config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,10 +22,29 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const TITLE = "Jamfy — encontre e contrate artistas";
+const DESCRIPTION =
+  "Marketplace para descobrir músicos e bandas e solicitar contratações para o seu evento.";
+
 export const metadata: Metadata = {
-  title: "Jamfy — encontre e contrate artistas",
-  description:
-    "Marketplace para descobrir músicos e bandas e solicitar contratações para o seu evento.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: TITLE,
+    template: "%s | Jamfy",
+  },
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    siteName: "Jamfy",
+    locale: "pt_BR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

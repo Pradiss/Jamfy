@@ -113,6 +113,42 @@ class AuthController {
     });
   }
 
+  async exportMyData(req: AuthRequest, res: Response) {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized." });
+    }
+
+    try {
+      const data = await authService.exportUserData(req.user.id);
+      return res.status(200).json({ dados: data });
+    } catch (error) {
+      return res.status(400).json({
+        message:
+          error instanceof Error ? error.message : "Internal server error.",
+      });
+    }
+  }
+
+  async deleteMyAccount(req: AuthRequest, res: Response) {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized." });
+    }
+
+    try {
+      await authService.deleteAccount(req.user.id);
+      clearAuthCookies(res);
+
+      return res.status(200).json({
+        message: "Conta excluída com sucesso.",
+      });
+    } catch (error) {
+      return res.status(400).json({
+        message:
+          error instanceof Error ? error.message : "Internal server error.",
+      });
+    }
+  }
+
   async refresh(req: Request, res: Response) {
     try{
       const refreshToken = req.cookies?.refreshToken;

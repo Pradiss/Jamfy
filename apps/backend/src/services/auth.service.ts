@@ -1,5 +1,6 @@
 import { prisma } from "../config/prisma.js";
 import { supabaseAdmin, supabaseAuth } from "../config/supabase.js";
+import { uploadService } from "./upload.service.js";
 import { TipoUsuario } from "../../generated/prisma/client.js";
 
 interface RegisterInput {
@@ -228,7 +229,110 @@ class AuthService {
     );
 
     if (error) {
-      throw new Error(error.message);
+      // Never let this reach the client as-is: Supabase's error message
+      // (or its mere presence) would reveal whether the address is
+      // registered, and a misconfigured SMTP would surface a scary,
+      // unactionable error instead of the same generic response every
+      // other case gets. Log it so delivery problems are still visible
+      // server-side, but the caller always sees a uniform success.
+      console.error("Failed to send password reset email:", error.message);
+    }
+  }
+
+  // LGPD data portability: a single dump of everything tied to this user,
+  // for the "exportar meus dados" settings action.
+  async exportUserData(userId: string) {
+    const user = await prisma.usuario.findUnique({
+      where: { id: userId },
+      include: {
+        perfilArtista: {
+          include: {
+            instrumentos: { include: { instrumento: true } },
+            generos: { include: { genero: true } },
+            integrantes: true,
+            portfolio: true,
+            agenda: true,
+            artistaFuncaos: { include: { funcao: true } },
+            avaliacoes: true,
+            solicitacoes: true,
+          },
+        },
+        perfilContratante: true,
+        anuncios: true,
+        solicitacoesEnviadas: true,
+        avaliacoesFeitas: true,
+        denunciasFeitas: true,
+        notificacoes: true,
+        conversasComoComprador: { include: { mensagens: true } },
+        conversasComoVendedor: { include: { mensagens: true } },
+      },
+    });
+
+    if (!user) {
+      throw new Error("Usuário não encontrado.");
+    }
+
+    return user;
+  }
+
+  // LGPD right to erasure. SolicitacaoContratacao has onDelete: Restrict on
+  // both contratanteId and artistaId (an accepted hiring is a real-world
+  // commitment, not something that should vanish silently through an
+  // unrelated cascade) — so those rows must be cleared explicitly before
+  // the user row itself can be deleted.
+  async deleteAccount(userId: string) {
+    const user = await prisma.usuario.findUnique({
+      where: { id: userId },
+      include: {
+        perfilArtista: {
+          select: {
+            id: true,
+            fotoCapaUrl: true,
+            portfolio: { select: { arquivoUrl: true } },
+          },
+        },
+        anuncios: { select: { fotos: true } },
+      },
+    });
+
+    if (!user) {
+      throw new Error("Usuário não encontrado.");
+    }
+
+    await prisma.$transaction(async (transaction) => {
+      await transaction.solicitacaoContratacao.deleteMany({
+        where: {
+          OR: [
+            { contratanteId: userId },
+            ...(user.perfilArtista
+              ? [{ artistaId: user.perfilArtista.id }]
+              : []),
+          ],
+        },
+      });
+
+      await transaction.usuario.delete({ where: { id: userId } });
+    });
+
+    const { error: authDeleteError } =
+      await supabaseAdmin.auth.admin.deleteUser(userId);
+
+    if (authDeleteError) {
+      console.error(
+        "Failed to delete Supabase auth user:",
+        authDeleteError.message,
+      );
+    }
+
+    const filesToDelete = [
+      user.fotoUrl,
+      user.perfilArtista?.fotoCapaUrl,
+      ...(user.perfilArtista?.portfolio.map((item) => item.arquivoUrl) ?? []),
+      ...user.anuncios.flatMap((anuncio) => anuncio.fotos),
+    ].filter((url): url is string => Boolean(url));
+
+    if (filesToDelete.length > 0) {
+      await uploadService.deleteFiles(filesToDelete);
     }
   }
 
