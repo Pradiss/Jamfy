@@ -32,7 +32,7 @@ export function ArtistContactSection({
         <ReportDialog
           tipo="USUARIO"
           referenciaId={ownerUserId}
-          triggerLabel="Denunciar este perfil"
+          triggerLabel="Denunciar est perfil"
         />
       ) : null}
     </div>
