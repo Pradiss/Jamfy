@@ -9,10 +9,10 @@ import {
   STATUS_LABELS,
   startOfMonth,
   addMonths,
-  startOfWeek,
   addWeeks,
   weekRangeLabel,
   getEntriesForDay,
+  getBrazilToday,
   MONTH_FORMATTER,
 } from "@/components/artist/month-calendar";
 import type { AgendaEntry } from "@/lib/types";
@@ -63,7 +63,10 @@ function addMinutesToDay(day: Date, totalMinutes: number) {
 export function AgendaManager() {
   const [view, setView] = useState<"week" | "month">("week");
   const [month, setMonth] = useState(() => startOfMonth(new Date()));
-  const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
+  // Rolls a 7-day window starting on today, not the calendar week's Sunday
+  // — showing past days of the current week by default was confusing, and
+  // none of them can be clicked anyway (see isPastDay).
+  const [weekStart, setWeekStart] = useState(() => getBrazilToday());
   const [entries, setEntries] = useState<AgendaEntry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -167,6 +170,10 @@ export function AgendaManager() {
     setPendingDay(day);
     setReservaMode(false);
     setEditingEntry(null);
+  }
+
+  function isPastDay(day: Date) {
+    return day.getTime() < getBrazilToday().getTime();
   }
 
   function openEntryDetail(entry: AgendaEntry) {
@@ -373,12 +380,14 @@ export function AgendaManager() {
           weekStart={weekStart}
           entries={entries ?? []}
           onDayClick={handleDayClick}
+          disabledDays={isPastDay}
         />
       ) : (
         <MonthCalendar
           month={month}
           entries={entries ?? []}
           onDayClick={handleDayClick}
+          disabledDays={isPastDay}
         />
       )}
 

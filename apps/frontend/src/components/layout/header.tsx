@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
@@ -7,21 +8,41 @@ import { NotificationBell } from "@/components/layout/notification-bell";
 import { SearchIconLink } from "@/components/layout/search-icon-link";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { UserMenu } from "@/components/layout/user-menu";
+import { MagneticButton } from "@/components/ui/magnetic-button";
 import { containerClass } from "@/lib/ui";
 import { isChromelessRoute } from "@/lib/chromeless-routes";
 
 export function Header() {
   const { user, loading } = useAuth();
   const pathname = usePathname();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 8);
+    }
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   if (isChromelessRoute(pathname)) {
     return null;
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-black/5 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-black/70">
+    <header
+      className={`sticky top-0 z-40 border-b transition-colors duration-300 ${
+        scrolled
+          ? "border-black/5 bg-white/80 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-black/80"
+          : "border-transparent bg-white/40 backdrop-blur-md dark:bg-black/40"
+      }`}
+    >
       <div
-        className={`${containerClass} flex items-center justify-between gap-3 px-4 py-3 sm:px-6`}
+        className={`${containerClass} flex items-center justify-between gap-3 px-4 transition-[padding] duration-300 sm:px-6 ${
+          scrolled ? "py-2.5" : "py-3.5"
+        }`}
       >
         <div className="flex items-center gap-5">
           <Link href="/" className="text-[15px] font-medium tracking-tight">
@@ -54,12 +75,9 @@ export function Header() {
               >
                 Entrar
               </Link>
-              <Link
-                href="/cadastro"
-                className="rounded-full bg-accent px-4 py-1.5 text-sm font-medium text-accent-foreground shadow-sm transition hover:opacity-90 active:scale-[0.97]"
-              >
+              <MagneticButton href="/cadastro" size="compact">
                 Cadastrar
-              </Link>
+              </MagneticButton>
             </div>
           )}
         </div>

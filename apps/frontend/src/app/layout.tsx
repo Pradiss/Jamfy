@@ -52,6 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col overflow-x-hidden bg-background text-zinc-950 dark:text-zinc-50">
         <Script id="theme-init" strategy="beforeInteractive">

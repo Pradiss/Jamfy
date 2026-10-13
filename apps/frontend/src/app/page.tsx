@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Music } from "lucide-react";
 
 import { apiFetch } from "@/lib/api";
@@ -8,7 +7,12 @@ import { ArtistRow } from "@/components/artist/artist-row";
 import { AnuncioRow } from "@/components/anuncio/anuncio-row";
 import { GenreCategoryGrid } from "@/components/search/genre-category-grid";
 import { HeroSearch } from "@/components/home/hero-search";
+import { HeroMockup } from "@/components/home/hero-mockup";
+import { AnimatedHeadline } from "@/components/home/animated-headline";
+import { FeatureBento } from "@/components/home/feature-bento";
+import { AppScreens } from "@/components/home/app-screens";
 import { Reveal } from "@/components/ui/reveal";
+import { MagneticButton } from "@/components/ui/magnetic-button";
 import { sortGenresByPopularity } from "@/lib/popularity";
 import type { AnuncioListResponse } from "@/lib/types";
 
@@ -63,15 +67,20 @@ export default async function Home() {
           className={`${containerClass} grid items-center gap-14 lg:grid-cols-2 lg:gap-16`}
         >
           <div>
-            <span className="mb-5 inline-block text-xs font-semibold tracking-[0.2em] text-accent uppercase">
-              Jamfy
+            <span className="mb-5 inline-flex items-center gap-2 rounded-full bg-accent/10 px-3.5 py-1.5 text-xs font-semibold text-accent">
+              <i
+                className="hero-dot h-1.5 w-1.5 rounded-full bg-accent"
+                aria-hidden="true"
+              />
+              Novo · Peça orçamento sem sair do site
             </span>
 
-            <h1 className="text-balance text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
-              O artista certo.
-              <br />
-              Pro seu evento.
-            </h1>
+            <AnimatedHeadline
+              lines={[
+                { words: ["O", "artista", "certo."] },
+                { words: ["Pro", "seu", "evento."], accent: true },
+              ]}
+            />
 
             <p className="mt-6 max-w-md text-lg text-zinc-500 dark:text-zinc-400">
               Busque por cidade, gênero e instrumento. Veja a agenda em tempo
@@ -79,39 +88,15 @@ export default async function Home() {
             </p>
 
             <HeroSearch />
+
+            <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">
+              Sem comissão sobre o cachê. Contato liberado direto no WhatsApp
+              assim que o artista aceita.
+            </p>
           </div>
 
-          <div className="relative pb-8">
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl bg-zinc-950 shadow-2xl shadow-accent/10 ring-1 ring-black/5">
-              <div className="animate-float-orb absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,var(--accent)_0%,transparent_55%)] opacity-60" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_85%,rgba(255,255,255,0.12)_0%,transparent_50%)]" />
-              <div className="absolute inset-0 bg-[linear-gradient(to_bottom_right,transparent_40%,rgba(255,255,255,0.06)_100%)]" />
-            </div>
-
-            <div className="absolute -bottom-2 left-6 flex items-center gap-3 rounded-2xl border border-black/5 bg-white px-4 py-3 shadow-lg dark:border-white/10 dark:bg-zinc-900 sm:left-8">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="h-4.5 w-4.5"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M5 13l4 4L19 7"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-              <div className="text-sm">
-                <p className="font-semibold">Agenda sempre atualizada</p>
-                <p className="text-zinc-500 dark:text-zinc-400">
-                  Veja quem está livre pro seu evento
-                </p>
-              </div>
-            </div>
+          <div className="relative py-8">
+            <HeroMockup />
           </div>
         </div>
       </section>
@@ -144,6 +129,14 @@ export default async function Home() {
           anuncios={anuncios}
           viewAllHref="/anuncios"
         />
+      </Reveal>
+
+      <Reveal>
+        <FeatureBento />
+      </Reveal>
+
+      <Reveal>
+        <AppScreens />
       </Reveal>
 
       <section className="bg-zinc-950 px-6 py-20 text-center text-white sm:py-40">
@@ -181,12 +174,9 @@ export default async function Home() {
               pedidos de show direto aqui — sem depender só de indicação.
             </p>
             <div>
-              <Link
-                href="/cadastro"
-                className="inline-block rounded-full border-2 border-accent-foreground px-6 py-2.5 font-medium text-accent-foreground transition hover:bg-accent-foreground hover:text-accent"
-              >
+              <MagneticButton href="/cadastro" variant="inverse">
                 Criar perfil grátis
-              </Link>
+              </MagneticButton>
             </div>
           </div>
 

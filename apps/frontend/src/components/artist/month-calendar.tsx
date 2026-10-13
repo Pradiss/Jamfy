@@ -117,6 +117,21 @@ const TIME_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
 // day they actually fall on before checking overlap with the day cell.
 const BRAZIL_UTC_OFFSET_MS = 3 * 60 * 60 * 1000;
 
+// "Today" as a nominal UTC-midnight marker for the current BRAZIL calendar
+// day — shifted the same way entries are, so it lines up with day cells.
+// Reading the UTC calendar date of "now" directly would be wrong for ~3h
+// every evening (21:00–24:00 Brazil time is already "tomorrow" in UTC).
+export function getBrazilToday() {
+  const shifted = new Date(Date.now() - BRAZIL_UTC_OFFSET_MS);
+  return new Date(
+    Date.UTC(
+      shifted.getUTCFullYear(),
+      shifted.getUTCMonth(),
+      shifted.getUTCDate(),
+    ),
+  );
+}
+
 export function getEntryForDay<T extends SimpleAgendaEntry>(
   day: Date,
   entries: T[],
@@ -297,12 +312,7 @@ export function WeekView({
   const colors = simplified ? SIMPLE_STATUS_COLORS : STATUS_COLORS;
   const labels = simplified ? SIMPLE_STATUS_LABELS : STATUS_LABELS;
 
-  const now = new Date();
-  const todayUtc = Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate(),
-  );
+  const todayUtc = getBrazilToday().getTime();
 
   const days = Array.from(
     { length: 7 },
