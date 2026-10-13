@@ -280,13 +280,16 @@ export default async function ArtistaPage(
         <ArtistAgendaSection
           artistId={artist.id}
           ownerUserId={artist.usuarioId}
+          slug={slug}
         />
       </div>
 
+      <div id="contratar" className="scroll-mt-20">
         <ArtistContactSection
           artistId={artist.id}
           ownerUserId={artist.usuarioId}
         />
+      </div>
       </div>
     </div>
   );

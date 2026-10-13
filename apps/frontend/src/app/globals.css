@@ -42,6 +42,15 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Stops a fast tap on a button/link from being misread as the start of a
+   double-tap-to-zoom gesture on mobile. Pinch-to-zoom (a deliberate gesture
+   on the page itself, not a single element) is untouched — zoom should
+   only ever happen when someone actually does that. */
+a,
+button {
+  touch-action: manipulation;
+}
+
 @keyframes page-in {
   from {
     opacity: 0;

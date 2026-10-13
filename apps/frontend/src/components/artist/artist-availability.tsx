@@ -1,26 +1,71 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { X } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 import {
   MonthCalendar,
   WeekView,
   AgendaLegend,
   startOfMonth,
   addMonths,
-  startOfWeek,
   addWeeks,
   weekRangeLabel,
+  getBrazilToday,
   MONTH_FORMATTER,
   type SimpleAgendaEntry,
 } from "@/components/artist/month-calendar";
+import { HiringRequestForm } from "@/components/hiring/hiring-request-form";
 import { secondaryButtonClass } from "@/lib/ui";
 
-export function ArtistAvailability({ artistId }: { artistId: string }) {
+export function ArtistAvailability(props: {
+  artistId: string;
+  ownerUserId: string;
+  slug: string;
+}) {
+  return (
+    <Suspense fallback={null}>
+      <ArtistAvailabilityInner {...props} />
+    </Suspense>
+  );
+}
+
+function ArtistAvailabilityInner({
+  artistId,
+  ownerUserId,
+  slug,
+}: {
+  artistId: string;
+  ownerUserId: string;
+  slug: string;
+}) {
+  const { user } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [view, setView] = useState<"week" | "month">("week");
   const [month, setMonth] = useState(() => startOfMonth(new Date()));
-  const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
+  const [weekStart, setWeekStart] = useState(() => getBrazilToday());
   const [entries, setEntries] = useState<SimpleAgendaEntry[]>([]);
+  const [manualRequestDate, setManualRequestDate] = useState<string | null>(
+    null,
+  );
+  const [dismissedUrlDate, setDismissedUrlDate] = useState(false);
+
+  // Coming back here right after signing up/logging in to schedule a
+  // specific day reopens the request popup for it — derived straight from
+  // the URL instead of synced through an effect, so there's no extra
+  // render in between.
+  const urlRequestDate = searchParams.get("data");
+  const requestDate =
+    manualRequestDate ??
+    (!dismissedUrlDate && user ? urlRequestDate : null);
+
+  function closeRequestModal() {
+    setManualRequestDate(null);
+    setDismissedUrlDate(true);
+  }
 
   useEffect(() => {
     let active = true;
@@ -47,9 +92,19 @@ export function ArtistAvailability({ artistId }: { artistId: string }) {
     };
   }, [artistId, view, month, weekStart]);
 
-  function handleMonthDayClick(day: Date) {
-    setWeekStart(startOfWeek(day));
-    setView("week");
+  // Clicking a day is the main way to start scheduling with the artist — it
+  // opens the hiring request right there with that date already filled in,
+  // instead of making the visitor scroll down and fill the date by hand.
+  function handleDayClick(day: Date) {
+    const data = day.toISOString().slice(0, 10);
+
+    if (!user) {
+      const target = `/artistas/${slug}?data=${data}`;
+      router.push(`/cadastro?redirect=${encodeURIComponent(target)}`);
+      return;
+    }
+
+    setManualRequestDate(data);
   }
 
   return (
@@ -105,12 +160,17 @@ export function ArtistAvailability({ artistId }: { artistId: string }) {
       </div>
 
       {view === "week" ? (
-        <WeekView weekStart={weekStart} entries={entries} simplified />
+        <WeekView
+          weekStart={weekStart}
+          entries={entries}
+          onDayClick={handleDayClick}
+          simplified
+        />
       ) : (
         <MonthCalendar
           month={month}
           entries={entries}
-          onDayClick={handleMonthDayClick}
+          onDayClick={handleDayClick}
           simplified
         />
       )}
@@ -125,6 +185,27 @@ export function ArtistAvailability({ artistId }: { artistId: string }) {
           {view === "week" ? "Ver mês inteiro" : "Ver semana"}
         </button>
       </div>
+
+      {requestDate ? (
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={closeRequestModal} />
+          <div className="relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-white p-5 shadow-xl sm:rounded-3xl sm:p-6 dark:bg-zinc-900">
+            <button
+              type="button"
+              onClick={closeRequestModal}
+              aria-label="Fechar"
+              className="absolute top-4 right-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-400 transition hover:bg-black/5 hover:text-zinc-700 dark:hover:bg-white/10 dark:hover:text-zinc-200"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <HiringRequestForm
+              artistId={artistId}
+              artistUserId={ownerUserId}
+              initialDate={requestDate}
+            />
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

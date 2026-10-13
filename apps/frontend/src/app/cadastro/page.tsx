@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, type FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 import { Music, Users, Search, Mic2, PartyPopper } from "lucide-react";
@@ -74,7 +74,17 @@ const HERO_CATEGORIES: HeroCategory[] = [
 ];
 
 export default function CadastroPage() {
+  return (
+    <Suspense fallback={null}>
+      <CadastroForm />
+    </Suspense>
+  );
+}
+
+function CadastroForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
   const { refresh } = useAuth();
 
   const [name, setName] = useState("");
@@ -108,7 +118,7 @@ export default function CadastroPage() {
       await refresh();
 
       const needsOnboarding = type === "MUSICO" || type === "BANDA";
-      router.push(needsOnboarding ? "/dashboard" : "/");
+      router.push(redirectTo || (needsOnboarding ? "/dashboard" : "/"));
       router.refresh();
     } catch (err) {
       setError(
@@ -257,7 +267,10 @@ export default function CadastroPage() {
 
       <p className="mt-5 text-center text-sm text-zinc-500 dark:text-zinc-400">
         Já tem conta?{" "}
-        <Link href="/login" className="font-medium text-accent underline">
+        <Link
+          href={redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"}
+          className="font-medium text-accent underline"
+        >
           Entrar
         </Link>
       </p>

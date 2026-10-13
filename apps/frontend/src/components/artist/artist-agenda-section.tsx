@@ -7,9 +7,11 @@ import { ArtistAvailability } from "@/components/artist/artist-availability";
 export function ArtistAgendaSection({
   artistId,
   ownerUserId,
+  slug,
 }: {
   artistId: string;
   ownerUserId: string;
+  slug: string;
 }) {
   const { user } = useAuth();
 
@@ -21,5 +23,11 @@ export function ArtistAgendaSection({
     );
   }
 
-  return <ArtistAvailability artistId={artistId} />;
+  return (
+    <ArtistAvailability
+      artistId={artistId}
+      ownerUserId={ownerUserId}
+      slug={slug}
+    />
+  );
 }

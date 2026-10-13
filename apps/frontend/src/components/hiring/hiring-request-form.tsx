@@ -56,15 +56,17 @@ function formatDuration(minutos: number) {
 export function HiringRequestForm({
   artistId,
   artistUserId,
+  initialDate,
 }: {
   artistId: string;
   artistUserId: string;
+  initialDate?: string;
 }) {
   const { user, loading } = useAuth();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(Boolean(initialDate));
   const [descricao, setDescricao] = useState("");
   const [tipoEvento, setTipoEvento] = useState<TipoEvento | "">("");
-  const [dataEvento, setDataEvento] = useState("");
+  const [dataEvento, setDataEvento] = useState(initialDate ?? "");
   const [horaEvento, setHoraEvento] = useState("20:00");
   const [numeroSets, setNumeroSets] = useState(1);
   const [duracaoSetMinutos, setDuracaoSetMinutos] = useState(120);
@@ -79,7 +81,6 @@ export function HiringRequestForm({
 
   useEffect(() => {
     if (!dataEvento) {
-      setBusyWindows([]);
       return;
     }
 
@@ -269,7 +270,7 @@ export function HiringRequestForm({
         </label>
       </div>
 
-      {busyWindows.length > 0 ? (
+      {dataEvento && busyWindows.length > 0 ? (
         <div className="-mt-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900 dark:bg-amber-500/10 dark:text-amber-400">
           Já ocupado nesse dia:{" "}
           {busyWindows

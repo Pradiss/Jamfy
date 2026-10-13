@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, type FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 import { Music, Heart, GraduationCap, Cake, PartyPopper } from "lucide-react";
@@ -53,7 +53,17 @@ const HERO_CATEGORIES: HeroCategory[] = [
 ];
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
   const { refresh } = useAuth();
 
   const [email, setEmail] = useState("");
@@ -78,7 +88,7 @@ export default function LoginPage() {
         (result.user.tipo === "MUSICO" || result.user.tipo === "BANDA") &&
         !result.user.perfilArtista;
 
-      router.push(needsOnboarding ? "/dashboard" : "/");
+      router.push(redirectTo || (needsOnboarding ? "/dashboard" : "/"));
       router.refresh();
     } catch (err) {
       setError(
@@ -139,7 +149,10 @@ export default function LoginPage() {
         </Link>
         <p className="text-zinc-500 dark:text-zinc-400">
           Não tem conta?{" "}
-          <Link href="/cadastro" className="font-medium text-accent underline">
+          <Link
+            href={redirectTo ? `/cadastro?redirect=${encodeURIComponent(redirectTo)}` : "/cadastro"}
+            className="font-medium text-accent underline"
+          >
             Cadastre-se
           </Link>
         </p>
