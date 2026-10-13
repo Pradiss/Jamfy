@@ -72,7 +72,12 @@ export function PortfolioManager({
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const isOwner = user?.id === ownerUserId;
-  const viewableItems = items.filter(
+  // Destaque items go first — a stable sort keeps everything else in the
+  // order the artist uploaded it.
+  const sortedItems = [...items].sort(
+    (a, b) => Number(b.destaque) - Number(a.destaque),
+  );
+  const viewableItems = sortedItems.filter(
     (item) => item.tipo === "FOTO" || item.tipo === "VIDEO",
   );
 
@@ -168,7 +173,7 @@ export function PortfolioManager({
         ) : null
       ) : (
         <div className="columns-2 gap-3 sm:columns-3 sm:gap-4">
-          {items.map((item) => {
+          {sortedItems.map((item) => {
             const viewableIndex = viewableItems.findIndex(
               (viewable) => viewable.id === item.id,
             );
@@ -176,8 +181,18 @@ export function PortfolioManager({
             return (
               <figure
                 key={item.id}
-                className="group relative mb-3 break-inside-avoid overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm sm:mb-4 dark:border-white/10 dark:bg-white/[.03]"
+                className={`group relative mb-3 break-inside-avoid overflow-hidden rounded-2xl border bg-white shadow-sm sm:mb-4 dark:bg-white/[.03] ${
+                  item.destaque
+                    ? "border-accent/40 ring-2 ring-accent/30"
+                    : "border-black/5 dark:border-white/10"
+                }`}
               >
+                {item.destaque ? (
+                  <span className="absolute top-2 left-2 z-10 rounded-full bg-accent px-2.5 py-1 text-[11px] font-semibold text-accent-foreground">
+                    Destaque
+                  </span>
+                ) : null}
+
                 {item.tipo === "VIDEO" ? (
                   <button
                     type="button"

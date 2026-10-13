@@ -41,6 +41,7 @@ const CATEGORIA_SUGESTOES = [
   "Violão",
   "Guitarra",
   "Baixo",
+  "Cavaquinho",
   "Bateria",
   "Teclado",
   "Amplificador",

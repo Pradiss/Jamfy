@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 import { apiFetch, ApiError } from "@/lib/api";
 import {
   MonthCalendar,
@@ -176,23 +177,18 @@ export function AgendaManager() {
     return day.getTime() < getBrazilToday().getTime();
   }
 
-  function openEntryDetail(entry: AgendaEntry) {
-    setActionError(null);
-    setEditingEntry(entry);
-    setReservaMode(false);
-  }
+  // Takes the entry directly instead of reading `editingEntry` from state —
+  // setEditingEntry(entry) followed by reading `editingEntry` in the same
+  // handler would still see the stale value, since the update hasn't
+  // applied yet.
+  function openReservaForm(entry?: AgendaEntry) {
+    const target = entry ?? null;
 
-  function backToList() {
-    setEditingEntry(null);
-    setReservaMode(false);
-  }
-
-  function openReservaForm() {
-    if (editingEntry && !editingEntry.diaInteiro) {
+    if (target && !target.diaInteiro) {
       // Pre-fill from the entry's real start time and duration instead of
       // the defaults, so editing starts from what's already saved.
-      const start = new Date(editingEntry.dataInicio);
-      const end = new Date(editingEntry.dataFim);
+      const start = new Date(target.dataInicio);
+      const end = new Date(target.dataFim);
       setReservaHora(TIME_FORMATTER.format(start));
       setReservaDuracao(
         Math.max(15, Math.round((end.getTime() - start.getTime()) / 60000)),
@@ -202,6 +198,8 @@ export function AgendaManager() {
       setReservaDuracao(120);
     }
 
+    setEditingEntry(target);
+    setActionError(null);
     setReservaMode(true);
   }
 
@@ -291,13 +289,11 @@ export function AgendaManager() {
     }
   }
 
-  async function removeEditingEntry() {
-    if (!editingEntry) return;
+  async function removeEntry(entry: AgendaEntry) {
     setResolvingDay(true);
 
     try {
-      await handleDelete(editingEntry.id);
-      setEditingEntry(null);
+      await handleDelete(entry.id);
     } finally {
       setResolvingDay(false);
     }
@@ -471,71 +467,6 @@ export function AgendaManager() {
                   </button>
                 </div>
               </>
-            ) : editingEntry ? (
-              <>
-                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                  {STATUS_LABELS[editingEntry.status]}
-                  {!editingEntry.diaInteiro
-                    ? ` • ${TIME_FORMATTER.format(new Date(editingEntry.dataInicio))}–${TIME_FORMATTER.format(new Date(editingEntry.dataFim))}`
-                    : ""}
-                  {editingEntry.titulo ? ` · ${editingEntry.titulo}` : ""}
-                </p>
-
-                {editingEntry.origem !== "ARTISTA" ? (
-                  <p className="mt-3 rounded-2xl bg-black/[.03] p-3 text-sm text-zinc-500 dark:bg-white/[.06] dark:text-zinc-400">
-                    Esse compromisso veio de uma contratação feita pelo
-                    site. Para alterar ou cancelar, use a aba de
-                    solicitações.
-                  </p>
-                ) : (
-                  <div className="mt-5 flex flex-col gap-3">
-                    {editingEntry.status === "RESERVADO" ? (
-                      <button
-                        type="button"
-                        disabled={resolvingDay}
-                        onClick={openReservaForm}
-                        className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 dark:hover:bg-white/[.04]`}
-                      >
-                        <p className="font-medium">Editar horário</p>
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                          Mudar o horário ou a duração desse show.
-                        </p>
-                      </button>
-                    ) : null}
-
-                    <button
-                      type="button"
-                      disabled={resolvingDay}
-                      onClick={removeEditingEntry}
-                      className={`text-left ${cardClass} p-4 transition hover:bg-red-50 disabled:opacity-50 dark:hover:bg-red-500/10`}
-                    >
-                      <p className="font-medium text-red-600 dark:text-red-400">
-                        Remover
-                      </p>
-                      <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                        Show cancelado ou marcação errada — libera o dia de
-                        novo.
-                      </p>
-                    </button>
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  onClick={backToList}
-                  className="mt-4 block w-full text-center text-sm text-zinc-500 hover:underline dark:text-zinc-400"
-                >
-                  ← Voltar
-                </button>
-
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="mt-2 w-full rounded-full border border-red-200 py-2.5 text-center text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-500/10"
-                >
-                  Cancelar
-                </button>
-              </>
             ) : pendingDayEntries.length > 0 ? (
               <>
                 <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
@@ -544,33 +475,60 @@ export function AgendaManager() {
                     : `Esse dia já tem ${pendingDayEntries.length} compromissos.`}
                 </p>
 
-                <div className="mt-5 flex flex-col gap-3">
+                <div className="mt-5 flex flex-col gap-2">
                   {pendingDayEntries.map((entry) => (
-                    <button
+                    <div
                       key={entry.id}
-                      type="button"
-                      onClick={() => openEntryDetail(entry)}
-                      className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] dark:hover:bg-white/[.04]`}
+                      className={`flex items-center gap-3 ${cardClass} p-3.5`}
                     >
-                      <p className="font-medium">
-                        {STATUS_LABELS[entry.status]}
-                        {!entry.diaInteiro
-                          ? ` • ${TIME_FORMATTER.format(new Date(entry.dataInicio))}–${TIME_FORMATTER.format(new Date(entry.dataFim))}`
-                          : ""}
-                      </p>
-                      <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                        {entry.origem !== "ARTISTA"
-                          ? "Contratação pelo site"
-                          : entry.titulo}
-                      </p>
-                    </button>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium">
+                          {STATUS_LABELS[entry.status]}
+                          {!entry.diaInteiro
+                            ? ` • ${TIME_FORMATTER.format(new Date(entry.dataInicio))}–${TIME_FORMATTER.format(new Date(entry.dataFim))}`
+                            : ""}
+                        </p>
+                        <p className="truncate text-sm text-zinc-500 dark:text-zinc-400">
+                          {entry.origem !== "ARTISTA"
+                            ? "Contratação pelo site"
+                            : (entry.titulo ?? "")}
+                        </p>
+                      </div>
+
+                      {entry.origem === "ARTISTA" ? (
+                        <div className="flex shrink-0 items-center gap-1">
+                          {entry.status === "RESERVADO" ? (
+                            <button
+                              type="button"
+                              disabled={resolvingDay}
+                              onClick={() => openReservaForm(entry)}
+                              aria-label="Editar horário"
+                              title="Editar horário"
+                              className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/5 hover:text-zinc-900 disabled:opacity-50 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-zinc-50"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </button>
+                          ) : null}
+                          <button
+                            type="button"
+                            disabled={resolvingDay}
+                            onClick={() => removeEntry(entry)}
+                            aria-label="Remover"
+                            title="Remover"
+                            className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50 dark:text-zinc-400 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ) : null}
+                    </div>
                   ))}
 
                   {!pendingDayHasFullBlock ? (
                     <button
                       type="button"
                       disabled={resolvingDay}
-                      onClick={openReservaForm}
+                      onClick={() => openReservaForm()}
                       className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 dark:hover:bg-white/[.04]`}
                     >
                       <p className="font-medium">
@@ -601,7 +559,7 @@ export function AgendaManager() {
                   <button
                     type="button"
                     disabled={resolvingDay}
-                    onClick={openReservaForm}
+                    onClick={() => openReservaForm()}
                     className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 dark:hover:bg-white/[.04]`}
                   >
                     <p className="font-medium">Já fechei um show</p>

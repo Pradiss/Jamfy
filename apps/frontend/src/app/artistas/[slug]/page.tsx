@@ -1,11 +1,13 @@
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import { Star } from "lucide-react";
 import type { Metadata } from "next";
 
 import { apiFetch, ApiError } from "@/lib/api";
 import type { ArtistProfileDetail } from "@/lib/types";
 import { ArtistProfileOwnerControls } from "@/components/artist/artist-profile-owner-controls";
+import { StickyHireBar } from "@/components/artist/sticky-hire-bar";
 import { PortfolioManager } from "@/components/artist/portfolio-manager";
 import { ArtistAgendaSection } from "@/components/artist/artist-agenda-section";
 import { ArtistContactSection } from "@/components/artist/artist-contact-section";
@@ -36,23 +38,6 @@ function Tag({ children }: { children: React.ReactNode }) {
     <span className="rounded-full bg-surface px-3.5 py-1 text-sm text-zinc-700 dark:bg-white/[.06] dark:text-zinc-300">
       {children}
     </span>
-  );
-}
-
-function TagGroup({ label, items }: { label: string; items: string[] }) {
-  if (items.length === 0) return null;
-
-  return (
-    <div>
-      <p className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
-        {label}
-      </p>
-      <div className="flex flex-wrap gap-2">
-        {items.map((item) => (
-          <Tag key={item}>{item}</Tag>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -119,6 +104,8 @@ export default async function ArtistaPage(
 
   return (
     <div className="flex-1">
+      <StickyHireBar ownerUserId={artist.usuarioId} cache={artist.cache} />
+
       <div className="relative aspect-[3/1] w-full overflow-hidden bg-surface sm:aspect-[4/1]">
         {artist.fotoCapaUrl ? (
           <Image
@@ -170,6 +157,41 @@ export default async function ArtistaPage(
               {artist.tipo === "BANDA" ? "Banda" : "Músico(a)"}
               {artist.aceitaViagem ? " · Aceita viagem" : ""}
             </p>
+
+            {artist.quantidadeAvaliacoes > 0 ? (
+              <p className="mt-1.5 flex items-center gap-1.5 text-sm">
+                <Star className="h-4 w-4 fill-current text-accent" />
+                <span className="font-semibold">
+                  {Number(artist.avaliacao).toLocaleString("pt-BR", {
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1,
+                  })}
+                </span>
+                <span className="text-zinc-500 dark:text-zinc-400">
+                  ({artist.quantidadeAvaliacoes}{" "}
+                  {artist.quantidadeAvaliacoes === 1
+                    ? "avaliação"
+                    : "avaliações"}
+                  )
+                </span>
+              </p>
+            ) : null}
+
+            {artist.instrumentos.length ||
+            artist.generos.length ||
+            artist.artistaFuncaos.length ? (
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {[
+                  ...artist.generos.map(({ genero }) => genero.nome),
+                  ...artist.instrumentos.map(
+                    ({ instrumento }) => instrumento.nome,
+                  ),
+                  ...artist.artistaFuncaos.map(({ funcao }) => funcao.nome),
+                ].map((nome) => (
+                  <Tag key={nome}>{nome}</Tag>
+                ))}
+              </div>
+            ) : null}
           </div>
 
           <div className="text-right">
@@ -204,27 +226,6 @@ export default async function ArtistaPage(
         <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
           {artist.experiencia}
         </p>
-      ) : null}
-
-      {artist.instrumentos.length ||
-      artist.generos.length ||
-      artist.artistaFuncaos.length ? (
-        <div className="mt-6 flex flex-wrap gap-6">
-          <TagGroup
-            label="Categoria"
-            items={artist.generos.map(({ genero }) => genero.nome)}
-          />
-          <TagGroup
-            label="Instrumentos"
-            items={artist.instrumentos.map(
-              ({ instrumento }) => instrumento.nome,
-            )}
-          />
-          <TagGroup
-            label="Funções"
-            items={artist.artistaFuncaos.map(({ funcao }) => funcao.nome)}
-          />
-        </div>
       ) : null}
 
       {SOCIAL_LINKS.some((link) => artist[link.key]) ? (
@@ -270,12 +271,6 @@ export default async function ArtistaPage(
         ownerUserId={artist.usuarioId}
       />
 
-      <ArtistReviewsSection
-        artistId={artist.id}
-        avaliacao={artist.avaliacao}
-        quantidadeAvaliacoes={artist.quantidadeAvaliacoes}
-      />
-
       <div id="agenda" className="scroll-mt-20">
         <ArtistAgendaSection
           artistId={artist.id}
@@ -283,6 +278,12 @@ export default async function ArtistaPage(
           slug={slug}
         />
       </div>
+
+      <ArtistReviewsSection
+        artistId={artist.id}
+        avaliacao={artist.avaliacao}
+        quantidadeAvaliacoes={artist.quantidadeAvaliacoes}
+      />
 
       <div id="contratar" className="scroll-mt-20">
         <ArtistContactSection

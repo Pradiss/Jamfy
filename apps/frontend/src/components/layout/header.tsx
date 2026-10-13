@@ -48,15 +48,21 @@ export function Header() {
           <Link href="/" className="text-[15px] font-medium tracking-tight">
             Jamfy
           </Link>
+        </div>
+
+        <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/anuncios"
             className="hidden text-sm font-medium text-zinc-600 transition hover:text-zinc-950 sm:inline dark:text-zinc-400 dark:hover:text-zinc-50"
           >
             Comprar e vender
           </Link>
-        </div>
-
-        <div className="flex items-center gap-2 sm:gap-3">
+          <Link
+            href="/anuncios?tipo=ALUGUEL"
+            className="hidden text-sm font-medium text-zinc-600 transition hover:text-zinc-950 sm:inline dark:text-zinc-400 dark:hover:text-zinc-50"
+          >
+            Alugar
+          </Link>
           <SearchIconLink />
           {/* Logged-in users control the theme from Configurações instead —
               keeping it here too would just be a redundant second control. */}

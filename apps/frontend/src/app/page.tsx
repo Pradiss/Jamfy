@@ -11,6 +11,7 @@ import { HeroMockup } from "@/components/home/hero-mockup";
 import { AnimatedHeadline } from "@/components/home/animated-headline";
 import { FeatureBento } from "@/components/home/feature-bento";
 import { AppScreens } from "@/components/home/app-screens";
+import { MarketplaceHighlight } from "@/components/home/marketplace-highlight";
 import { Reveal } from "@/components/ui/reveal";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 import { sortGenresByPopularity } from "@/lib/popularity";
@@ -18,25 +19,23 @@ import type { AnuncioListResponse } from "@/lib/types";
 
 async function fetchArtists(query: string) {
   try {
-    const data = await apiFetch<ArtistProfileListResponse>(
+    return await apiFetch<ArtistProfileListResponse>(
       `/api/artist-profile?${query}`,
       { next: { revalidate: 60 } },
     );
-    return data.artistas;
   } catch {
-    return [];
+    return null;
   }
 }
 
 async function fetchAnuncios() {
   try {
-    const data = await apiFetch<AnuncioListResponse>(
+    return await apiFetch<AnuncioListResponse>(
       "/api/anuncios?limit=10",
       { next: { revalidate: 60 } },
     );
-    return data.anuncios;
   } catch {
-    return [];
+    return null;
   }
 }
 
@@ -53,12 +52,16 @@ async function fetchGenres() {
 }
 
 export default async function Home() {
-  const [musicos, bandas, generos, anuncios] = await Promise.all([
+  const [musicosData, bandasData, generos, anunciosData] = await Promise.all([
     fetchArtists("tipo=MUSICO&limit=10"),
     fetchArtists("tipo=BANDA&limit=10"),
     fetchGenres(),
     fetchAnuncios(),
   ]);
+
+  const musicos = musicosData?.artistas ?? [];
+  const bandas = bandasData?.artistas ?? [];
+  const anuncios = anunciosData?.anuncios ?? [];
 
   return (
     <div className="flex flex-1 flex-col">
@@ -121,6 +124,10 @@ export default async function Home() {
           artists={bandas}
           viewAllHref="/artistas?tipo=BANDA"
         />
+      </Reveal>
+
+      <Reveal>
+        <MarketplaceHighlight />
       </Reveal>
 
       <Reveal>

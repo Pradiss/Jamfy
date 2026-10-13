@@ -205,7 +205,7 @@ export function HiringRequestForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className={`mt-10 flex flex-col gap-4 p-5 ${cardClass}`}
+      className={``}
     >
       <h3 className="font-semibold tracking-tight">Solicitar contratação</h3>
 
