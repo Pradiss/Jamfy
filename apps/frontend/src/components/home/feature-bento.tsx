@@ -11,7 +11,7 @@ import { containerClass } from "@/lib/ui";
 function MiniListings() {
   return (
     <div className="flex w-full flex-col gap-2 px-2">
-      <div className="flex items-center justify-between gap-2 rounded-xl bg-white/90 px-3 py-2 text-xs shadow-sm dark:bg-black/30">
+      <div className="flex items-center justify-between gap-2 rounded-xl bg-white/90 px-3 py-2 text-xs shadow-sm ">
         <span className="min-w-0 truncate font-medium">
           Guitarra Tagima Woodstock
         </span>
@@ -19,7 +19,7 @@ function MiniListings() {
           R$ 1.200
         </span>
       </div>
-      <div className="flex items-center justify-between gap-2 rounded-xl bg-white/90 px-3 py-2 text-xs shadow-sm dark:bg-black/30">
+      <div className="flex items-center justify-between gap-2 rounded-xl bg-white/90 px-3 py-2 text-xs shadow-sm ">
         <span className="min-w-0 truncate font-medium">
           Caixa de som JBL 15&quot;
         </span>
@@ -51,12 +51,12 @@ function MiniBandMembers() {
         {colors.map((color, index) => (
           <span
             key={color}
-            className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-white text-xs font-semibold text-white dark:border-zinc-900 ${color}`}
+            className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-white text-xs font-semibold text-white ${color}`}
           >
             {String.fromCharCode(65 + index)}
           </span>
         ))}
-        <span className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-black/10 text-sm font-semibold dark:border-zinc-900 dark:bg-white/10">
+        <span className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-black/10 text-sm font-semibold ">
           +
         </span>
       </div>
@@ -81,7 +81,7 @@ function MiniGallery() {
 function MiniChat() {
   return (
     <div className="flex w-full flex-col gap-2 px-1">
-      <div className="max-w-[75%] self-start rounded-2xl rounded-bl-sm bg-white/90 px-3 py-2 text-xs shadow-sm dark:bg-black/30">
+      <div className="max-w-[75%] self-start rounded-2xl rounded-bl-sm bg-white/90 px-3 py-2 text-xs shadow-sm ">
         Ainda tem a guitarra? Aceita troca?
       </div>
       <div className="max-w-[75%] self-end rounded-2xl rounded-br-sm bg-accent px-3 py-2 text-xs text-accent-foreground shadow-sm">
@@ -95,7 +95,7 @@ function MiniFee() {
   return (
     <div className="flex flex-col items-center gap-1">
       <p className="text-4xl font-semibold tracking-tight text-accent">0%</p>
-      <p className="text-xs text-zinc-500 dark:text-zinc-400">de comissão</p>
+      <p className="text-xs text-zinc-500 ">de comissão</p>
     </div>
   );
 }
@@ -180,7 +180,7 @@ export function FeatureBento() {
       <div className={containerClass}>
         <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-black/5 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:bg-white/10 dark:text-zinc-300">
+            <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-black/5 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-zinc-600 uppercase ">
               <i
                 className="hero-dot h-1.5 w-1.5 rounded-full bg-accent"
                 aria-hidden="true"
@@ -200,7 +200,7 @@ export function FeatureBento() {
               key={feature.title}
               className={`flex flex-col gap-5 rounded-[2rem] p-6 shadow-sm ${CARD_BACKGROUNDS[index]} ${feature.span}`}
             >
-              <div className="flex flex-1 items-center justify-center overflow-hidden rounded-2xl bg-black/[.03] dark:bg-white/[.06]">
+              <div className="flex flex-1 items-center justify-center overflow-hidden rounded-2xl bg-black/[.03] ">
                 {feature.visual}
               </div>
               <div>
@@ -210,7 +210,7 @@ export function FeatureBento() {
                 <p className="mt-1.5 text-sm opacity-80">
                   {feature.description}
                 </p>
-                <span className="mt-3 inline-block rounded-full bg-black/10 px-2.5 py-1 text-[11px] font-medium dark:bg-white/15">
+                <span className="mt-3 inline-block rounded-full bg-black/10 px-2.5 py-1 text-[11px] font-medium ">
                   {feature.stat}
                 </span>
               </div>

@@ -75,7 +75,7 @@ export function ArtistCard({ artist }: { artist: ArtistProfileSummary }) {
   return (
     <Link
       href={`/artistas/${artist.slug}`}
-      className="group flex flex-col overflow-hidden rounded-3xl border border-black/5 bg-white shadow-md transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-zinc-900/10 dark:border-white/10 dark:bg-zinc-900 dark:hover:shadow-black/40"
+      className="group flex flex-col overflow-hidden rounded-3xl border border-black/5 bg-white shadow-md transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-zinc-900/10 "
     >
       <div className="relative aspect-[3/2] w-full overflow-hidden bg-surface">
         {artist.usuario.fotoUrl ? (
@@ -87,7 +87,7 @@ export function ArtistCard({ artist }: { artist: ArtistProfileSummary }) {
             className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
           />
         ) : (
-          <span className="flex h-full w-full items-center justify-center text-5xl font-semibold text-zinc-300 dark:text-zinc-700">
+          <span className="flex h-full w-full items-center justify-center text-5xl font-semibold text-zinc-300 ">
             {artist.nomeArtistico.charAt(0).toUpperCase()}
           </span>
         )}
@@ -102,30 +102,30 @@ export function ArtistCard({ artist }: { artist: ArtistProfileSummary }) {
             </h3>
             {artist.verificado ? <VerifiedBadgeIcon /> : null}
           </div>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="text-sm text-zinc-500 ">
             {specialty}
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400">
+        <div className="flex items-center gap-1.5 text-sm text-zinc-500 ">
           <PinIcon />
           {artist.cidade}, {artist.estado}
         </div>
 
         {artist.avaliacao ? (
           <div className="flex items-center gap-1.5 text-sm">
-            <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 dark:bg-amber-500/10">
+            <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 ">
               <StarIcon />
-              <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+              <span className="font-semibold text-zinc-800 ">
                 {Number(artist.avaliacao).toFixed(1)}
               </span>
             </span>
-            <span className="text-zinc-500 dark:text-zinc-400">
+            <span className="text-zinc-500 ">
               ({artist.quantidadeAvaliacoes} avaliações)
             </span>
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 text-sm text-zinc-400 dark:text-zinc-500">
+          <div className="flex items-center gap-1.5 text-sm text-zinc-400 ">
             <StarIcon />
             Novo
           </div>
@@ -136,7 +136,7 @@ export function ArtistCard({ artist }: { artist: ArtistProfileSummary }) {
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-black/5 bg-surface px-2.5 py-1 text-xs font-medium text-zinc-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-300"
+                className="rounded-full border border-black/5 bg-surface px-2.5 py-1 text-xs font-medium text-zinc-600 "
               >
                 {tag}
               </span>
@@ -144,7 +144,7 @@ export function ArtistCard({ artist }: { artist: ArtistProfileSummary }) {
           </div>
         ) : null}
 
-        <span className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-full bg-zinc-950 py-2.5 text-center text-sm font-semibold text-white transition-colors duration-300 group-hover:bg-accent dark:bg-white dark:text-zinc-950 dark:group-hover:bg-accent dark:group-hover:text-accent-foreground">
+        <span className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-full bg-zinc-950 py-2.5 text-center text-sm font-semibold text-white transition-colors duration-300 group-hover:bg-accent ">
           Ver perfil
           <ArrowRightIcon />
         </span>

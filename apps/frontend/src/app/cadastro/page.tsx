@@ -137,14 +137,14 @@ function CadastroForm() {
       </h1>
 
       {checkEmail ? (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-center text-sm dark:border-emerald-900 dark:bg-emerald-500/10">
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-center text-sm ">
           Enviamos um link de confirmação para o seu e-mail. Confirme para
           poder entrar.
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <fieldset className="flex flex-col gap-2">
-            <legend className="mb-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <legend className="mb-1 text-sm font-medium text-zinc-700 ">
               Eu sou...
             </legend>
             <div className="grid grid-cols-3 gap-2">
@@ -154,7 +154,7 @@ function CadastroForm() {
                   className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-2xl border px-2 py-4 text-center transition ${
                     type === option.value
                       ? "border-accent bg-accent text-accent-foreground shadow-sm"
-                      : "border-black/10 hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06]"
+                      : "border-black/10 hover:bg-black/[.03] "
                   }`}
                 >
                   <input
@@ -173,7 +173,7 @@ function CadastroForm() {
                     className={`text-[11px] leading-tight ${
                       type === option.value
                         ? "text-accent-foreground/80"
-                        : "text-zinc-500 dark:text-zinc-400"
+                        : "text-zinc-500 "
                     }`}
                   >
                     {option.description}
@@ -223,23 +223,23 @@ function CadastroForm() {
           />
 
           {error ? (
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <p className="text-sm text-red-600 ">{error}</p>
           ) : null}
 
-          <label className="flex items-start gap-2.5 text-xs text-zinc-500 dark:text-zinc-400">
+          <label className="flex items-start gap-2.5 text-xs text-zinc-500 ">
             <input
               type="checkbox"
               required
               checked={acceptedTerms}
               onChange={(event) => setAcceptedTerms(event.target.checked)}
-              className="mt-0.5 h-4 w-4 shrink-0 rounded border-zinc-300 text-accent focus:ring-accent dark:border-zinc-600"
+              className="mt-0.5 h-4 w-4 shrink-0 rounded border-zinc-300 text-accent focus:ring-accent "
             />
             <span>
               Li e aceito os{" "}
               <Link
                 href="/termos"
                 target="_blank"
-                className="underline hover:text-zinc-700 dark:hover:text-zinc-300"
+                className="underline hover:text-zinc-700 "
               >
                 Termos de Uso
               </Link>{" "}
@@ -247,7 +247,7 @@ function CadastroForm() {
               <Link
                 href="/privacidade"
                 target="_blank"
-                className="underline hover:text-zinc-700 dark:hover:text-zinc-300"
+                className="underline hover:text-zinc-700 "
               >
                 Política de Privacidade
               </Link>{" "}
@@ -265,7 +265,7 @@ function CadastroForm() {
         </form>
       )}
 
-      <p className="mt-5 text-center text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="mt-5 text-center text-sm text-zinc-500 ">
         Já tem conta?{" "}
         <Link
           href={redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"}

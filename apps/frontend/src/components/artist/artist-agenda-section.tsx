@@ -8,10 +8,14 @@ export function ArtistAgendaSection({
   artistId,
   ownerUserId,
   slug,
+  cidade,
+  estado,
 }: {
   artistId: string;
   ownerUserId: string;
   slug: string;
+  cidade: string;
+  estado: string;
 }) {
   const { user } = useAuth();
 
@@ -28,6 +32,8 @@ export function ArtistAgendaSection({
       artistId={artistId}
       ownerUserId={ownerUserId}
       slug={slug}
+      cidade={cidade}
+      estado={estado}
     />
   );
 }

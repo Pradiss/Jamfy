@@ -56,7 +56,7 @@ export function ContratanteDashboard() {
 
   return (
     <div>
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-3xl font-semibold tracking-tight">
           Minhas solicitações
         </h1>
@@ -66,11 +66,11 @@ export function ContratanteDashboard() {
       </div>
 
       {error ? (
-        <p className="text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-red-600 ">{error}</p>
       ) : requests === null ? (
-        <p className="text-zinc-500 dark:text-zinc-400">Carregando...</p>
+        <p className="text-zinc-500 ">Carregando...</p>
       ) : requests.length === 0 ? (
-        <p className="text-zinc-500 dark:text-zinc-400">
+        <p className="text-zinc-500 ">
           Você ainda não enviou nenhuma solicitação.{" "}
           <Link href="/artistas" className="text-accent underline">
             Buscar artistas

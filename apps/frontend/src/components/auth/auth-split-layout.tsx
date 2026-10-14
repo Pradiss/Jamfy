@@ -83,11 +83,11 @@ export function AuthSplitLayout({
         </div>
       </div>
 
-      <div className="relative flex h-full w-full flex-col overflow-y-auto rounded-3xl bg-white lg:w-1/2 dark:bg-zinc-950">
+      <div className="relative flex h-full w-full flex-col overflow-y-auto rounded-3xl bg-white lg:w-1/2 ">
         <div className="absolute top-6 left-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.06] dark:hover:text-zinc-50"
+            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 "
           >
             ← Voltar
           </Link>
@@ -95,7 +95,7 @@ export function AuthSplitLayout({
 
         <div className="flex w-full flex-1 flex-col items-center justify-center px-6 py-10">
           <div className="flex w-full max-w-xs flex-col items-stretch gap-6">
-            <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-950 text-lg font-bold text-white dark:bg-white dark:text-zinc-950">
+            <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-950 text-lg font-bold text-white ">
               J
             </span>
 

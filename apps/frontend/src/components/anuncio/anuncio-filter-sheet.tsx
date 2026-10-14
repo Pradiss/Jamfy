@@ -73,7 +73,7 @@ export function AnuncioFilterSheet({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 rounded-xl border border-black/10 px-4 text-sm font-medium whitespace-nowrap transition hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06]"
+        className="flex items-center gap-2 rounded-xl border border-black/10 px-4 text-sm font-medium whitespace-nowrap transition hover:bg-black/[.03] "
       >
         <FilterIcon className="h-4 w-4" />
         Filtros
@@ -91,7 +91,7 @@ export function AnuncioFilterSheet({
             onClick={() => setOpen(false)}
           />
 
-          <div className="relative z-10 max-h-[85vh] w-full overflow-y-auto rounded-t-3xl bg-white p-6 shadow-xl sm:max-w-md sm:rounded-3xl dark:bg-zinc-900">
+          <div className="relative z-10 max-h-[85vh] w-full overflow-y-auto rounded-t-3xl bg-white p-6 shadow-xl sm:max-w-md sm:rounded-3xl ">
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-lg font-semibold tracking-tight">
                 Filtros
@@ -100,7 +100,7 @@ export function AnuncioFilterSheet({
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Fechar"
-                className="text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-50"
+                className="text-zinc-400 hover:text-zinc-950 "
               >
                 ✕
               </button>
@@ -117,7 +117,7 @@ export function AnuncioFilterSheet({
 
               <div className="grid grid-cols-2 gap-3">
                 <label className="flex flex-col gap-1.5 text-sm">
-                  <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                  <span className="font-medium text-zinc-700 ">
                     Preço mín. (R$)
                   </span>
                   <input
@@ -129,7 +129,7 @@ export function AnuncioFilterSheet({
                   />
                 </label>
                 <label className="flex flex-col gap-1.5 text-sm">
-                  <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                  <span className="font-medium text-zinc-700 ">
                     Preço máx. (R$)
                   </span>
                   <input
@@ -154,7 +154,7 @@ export function AnuncioFilterSheet({
               <button
                 type="button"
                 onClick={clear}
-                className="text-sm text-zinc-500 hover:underline dark:text-zinc-400"
+                className="text-sm text-zinc-500 hover:underline "
               >
                 Limpar
               </button>

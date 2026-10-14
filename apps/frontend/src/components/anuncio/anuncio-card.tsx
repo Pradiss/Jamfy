@@ -30,7 +30,7 @@ export function AnuncioCard({ anuncio }: { anuncio: AnuncioSummary }) {
   return (
     <Link
       href={`/anuncios/${anuncio.id}`}
-      className="group flex flex-col overflow-hidden rounded-3xl border border-black/5 bg-white shadow-md transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-zinc-900/10 dark:border-white/10 dark:bg-zinc-900 dark:hover:shadow-black/40"
+      className="group flex flex-col overflow-hidden rounded-3xl border border-black/5 bg-white shadow-md transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-zinc-900/10 "
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface">
         {anuncio.fotos[0] ? (
@@ -42,7 +42,7 @@ export function AnuncioCard({ anuncio }: { anuncio: AnuncioSummary }) {
             className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
           />
         ) : (
-          <span className="flex h-full w-full items-center justify-center text-5xl font-semibold text-zinc-300 dark:text-zinc-700">
+          <span className="flex h-full w-full items-center justify-center text-5xl font-semibold text-zinc-300 ">
             🎸
           </span>
         )}
@@ -58,11 +58,11 @@ export function AnuncioCard({ anuncio }: { anuncio: AnuncioSummary }) {
         <h3 className="truncate font-bold tracking-tight">
           {anuncio.titulo}
         </h3>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-zinc-500 ">
           {anuncio.categoria}
         </p>
 
-        <div className="flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400">
+        <div className="flex items-center gap-1.5 text-sm text-zinc-500 ">
           <PinIcon />
           {anuncio.cidade}, {anuncio.estado}
         </div>

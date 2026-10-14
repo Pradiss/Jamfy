@@ -40,7 +40,7 @@ export default function ConversaDetailPage() {
 
   if (!user || (!conversa && !notFound)) {
     return (
-      <div className="flex flex-1 items-center justify-center text-zinc-500 dark:text-zinc-400">
+      <div className="flex flex-1 items-center justify-center text-zinc-500 ">
         Carregando...
       </div>
     );
@@ -48,7 +48,7 @@ export default function ConversaDetailPage() {
 
   if (notFound || !conversa) {
     return (
-      <div className="flex flex-1 items-center justify-center text-zinc-500 dark:text-zinc-400">
+      <div className="flex flex-1 items-center justify-center text-zinc-500 ">
         Conversa não encontrada.
       </div>
     );
@@ -104,10 +104,10 @@ export default function ConversaDetailPage() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <div className="flex shrink-0 items-center gap-3 border-b border-black/5 px-4 py-3 dark:border-white/10">
+      <div className="flex shrink-0 items-center gap-3 border-b border-black/5 px-4 py-3 ">
         <Link
           href="/conversas"
-          className="text-zinc-500 hover:text-zinc-950 sm:hidden dark:text-zinc-400 dark:hover:text-zinc-50"
+          className="text-zinc-500 hover:text-zinc-950 sm:hidden "
           aria-label="Voltar"
         >
           ←
@@ -120,14 +120,14 @@ export default function ConversaDetailPage() {
           >
             {conversa.anuncio.titulo}
           </Link>
-          <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="truncate text-xs text-zinc-500 ">
             {conversa.counterpart.nome} · {STATUS_CONVERSA_LABELS[conversa.status]}
           </p>
         </div>
       </div>
 
       {canRespond ? (
-        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-black/5 bg-amber-50 px-4 py-3 dark:border-white/10 dark:bg-amber-500/10">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-black/5 bg-amber-50 px-4 py-3 ">
           <p className="text-sm">Aceitar esta mensagem para conversar livremente.</p>
           <div className="flex shrink-0 gap-2">
             <button
@@ -151,7 +151,7 @@ export default function ConversaDetailPage() {
       ) : null}
 
       {conversa.status === "RECUSADA" ? (
-        <p className="shrink-0 border-b border-black/5 px-4 py-3 text-sm text-zinc-500 dark:border-white/10 dark:text-zinc-400">
+        <p className="shrink-0 border-b border-black/5 px-4 py-3 text-sm text-zinc-500 ">
           {conversa.papel === "vendedor"
             ? "Você recusou esta conversa."
             : "O vendedor recusou esta conversa."}
@@ -165,7 +165,7 @@ export default function ConversaDetailPage() {
             className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-sm break-words sm:max-w-[75%] ${
               msg.autorId === user.id
                 ? "self-end bg-accent text-accent-foreground"
-                : "self-start bg-black/[.04] dark:bg-white/[.08]"
+                : "self-start bg-black/[.04] "
             }`}
           >
             {msg.conteudo}
@@ -175,7 +175,7 @@ export default function ConversaDetailPage() {
       </div>
 
       {canSend ? (
-        <div className="shrink-0 border-t border-black/5 p-3 dark:border-white/10">
+        <div className="shrink-0 border-t border-black/5 p-3 ">
           <MessageComposer
             value={conteudo}
             onChange={setConteudo}
@@ -187,7 +187,7 @@ export default function ConversaDetailPage() {
       ) : null}
 
       {error ? (
-        <p className="shrink-0 px-4 pb-2 text-sm text-red-600 dark:text-red-400">
+        <p className="shrink-0 px-4 pb-2 text-sm text-red-600 ">
           {error}
         </p>
       ) : null}

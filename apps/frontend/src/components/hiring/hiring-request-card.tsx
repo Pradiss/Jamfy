@@ -19,11 +19,11 @@ import { RatingDialog } from "@/components/hiring/rating-dialog";
 
 const STATUS_STYLES: Record<HiringRequest["status"], string> = {
   PENDENTE:
-    "bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-400",
+    "bg-amber-100 text-amber-800 ",
   ACEITA:
-    "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400",
-  RECUSADA: "bg-red-100 text-red-800 dark:bg-red-500/10 dark:text-red-400",
-  CANCELADA: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
+    "bg-emerald-100 text-emerald-800 ",
+  RECUSADA: "bg-red-100 text-red-800 ",
+  CANCELADA: "bg-zinc-100 text-zinc-600 ",
 };
 
 const HOUR_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
@@ -109,7 +109,7 @@ export function HiringRequestCard({
               : (request.artista?.nomeArtistico ?? "Artista")}
           </p>
           {request.tipoEvento ? (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="text-sm text-zinc-500 ">
               {TIPO_EVENTO_LABELS[request.tipoEvento]}
             </p>
           ) : null}
@@ -122,7 +122,7 @@ export function HiringRequestCard({
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-x-4 gap-y-2 rounded-xl bg-black/[.02] p-3 text-sm sm:grid-cols-2 dark:bg-white/[.04]">
+      <div className="grid grid-cols-1 gap-x-4 gap-y-2 rounded-xl bg-black/[.02] p-3 text-sm sm:grid-cols-2 ">
         {request.dataEvento ? (
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 shrink-0 text-zinc-400" />
@@ -154,12 +154,12 @@ export function HiringRequestCard({
         ) : null}
       </div>
 
-      <p className="text-sm text-zinc-700 dark:text-zinc-300">
+      <p className="text-sm text-zinc-700 ">
         {request.descricao}
       </p>
 
       {request.status === "ACEITA" && counterpart ? (
-        <div className="flex flex-wrap items-center gap-3 rounded-xl bg-emerald-50 p-3 text-sm dark:bg-emerald-500/10">
+        <div className="flex flex-wrap items-center gap-3 rounded-xl bg-emerald-50 p-3 text-sm ">
           <span>
             Contato liberado:{" "}
             <span className="font-medium">
@@ -188,7 +188,7 @@ export function HiringRequestCard({
           {counterpart.telefone ? (
             <a
               href={`tel:${counterpart.telefone}`}
-              className="flex items-center gap-1.5 rounded-full border border-black/10 px-3 py-1.5 text-xs font-medium transition hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06]"
+              className="flex items-center gap-1.5 rounded-full border border-black/10 px-3 py-1.5 text-xs font-medium transition hover:bg-black/[.03] "
             >
               <PhoneIcon className="h-3.5 w-3.5" />
               Ligar
@@ -200,7 +200,7 @@ export function HiringRequestCard({
               href={counterpart.instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 rounded-full border border-black/10 px-3 py-1.5 text-xs font-medium transition hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06]"
+              className="flex items-center gap-1.5 rounded-full border border-black/10 px-3 py-1.5 text-xs font-medium transition hover:bg-black/[.03] "
             >
               <InstagramIcon className="h-3.5 w-3.5" />
               Instagram
@@ -210,11 +210,11 @@ export function HiringRequestCard({
       ) : null}
 
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-600 ">{error}</p>
       ) : null}
 
       {request.status === "PENDENTE" || request.status === "ACEITA" ? (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-black/5 pt-3 dark:border-white/10">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-black/5 pt-3 ">
           <div className="flex flex-wrap gap-2">
             {request.status === "PENDENTE" ? (
               perspective === "artist" ? (

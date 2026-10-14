@@ -73,7 +73,7 @@ export function ReportDialog({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 rounded-full border border-black/10 px-3.5 py-1.5 text-xs font-medium text-zinc-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:border-white/15 dark:text-zinc-400 dark:hover:border-red-500/30 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+        className="flex items-center gap-1.5 rounded-full border border-black/10 px-3.5 py-1.5 text-xs font-medium text-zinc-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 "
       >
         <Flag className="h-3.5 w-3.5" />
         {triggerLabel}
@@ -86,13 +86,13 @@ export function ReportDialog({
             onClick={handleClose}
           />
 
-          <div className="relative z-10 w-full max-w-sm rounded-t-3xl bg-white p-6 shadow-xl sm:rounded-3xl dark:bg-zinc-900">
+          <div className="relative z-10 w-full max-w-sm rounded-t-3xl bg-white p-6 shadow-xl sm:rounded-3xl ">
             {sent ? (
               <>
                 <h2 className="text-lg font-semibold tracking-tight">
                   Denúncia enviada
                 </h2>
-                <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                <p className="mt-2 text-sm text-zinc-500 ">
                   Obrigado por avisar. Nossa equipe vai analisar o quanto
                   antes.
                 </p>
@@ -114,14 +114,14 @@ export function ReportDialog({
                     type="button"
                     onClick={handleClose}
                     aria-label="Fechar"
-                    className="text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-50"
+                    className="text-zinc-400 hover:text-zinc-950 "
                   >
                     ✕
                   </button>
                 </div>
 
                 <label className="flex flex-col gap-1.5 text-sm">
-                  <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                  <span className="font-medium text-zinc-700 ">
                     Motivo
                   </span>
                   <select
@@ -138,7 +138,7 @@ export function ReportDialog({
                 </label>
 
                 <label className="flex flex-col gap-1.5 text-sm">
-                  <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                  <span className="font-medium text-zinc-700 ">
                     Detalhes (opcional)
                   </span>
                   <textarea
@@ -150,7 +150,7 @@ export function ReportDialog({
                 </label>
 
                 {error ? (
-                  <p className="text-sm text-red-600 dark:text-red-400">
+                  <p className="text-sm text-red-600 ">
                     {error}
                   </p>
                 ) : null}

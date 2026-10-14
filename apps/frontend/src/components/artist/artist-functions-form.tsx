@@ -80,12 +80,12 @@ export function ArtistFunctionsForm() {
   return (
     <div className={`flex flex-col gap-4 p-5 ${cardClass}`}>
       <h3 className="font-semibold tracking-tight">Funções artísticas</h3>
-      <p className="-mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="-mt-2 text-xs text-zinc-500 ">
         Escolha até {MAX_FUNCTIONS} funções (ex: vocalista, instrumentista).
       </p>
 
       {loading ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-zinc-500 ">
           Carregando...
         </p>
       ) : (
@@ -101,7 +101,7 @@ export function ArtistFunctionsForm() {
                 className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
                   checked
                     ? "border-accent bg-accent text-accent-foreground"
-                    : "border-black/10 hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06]"
+                    : "border-black/10 hover:bg-black/[.03] "
                 }`}
               >
                 {item.nome}
@@ -112,11 +112,11 @@ export function ArtistFunctionsForm() {
       )}
 
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-600 ">{error}</p>
       ) : null}
 
       {success ? (
-        <p className="text-sm text-emerald-600 dark:text-emerald-400">
+        <p className="text-sm text-emerald-600 ">
           Funções atualizadas.
         </p>
       ) : null}

@@ -84,7 +84,7 @@ export function ArtistInstrumentsForm() {
       <h3 className="font-semibold tracking-tight">Instrumentos</h3>
 
       {loading ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-zinc-500 ">
           Carregando...
         </p>
       ) : (
@@ -100,7 +100,7 @@ export function ArtistInstrumentsForm() {
                 className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
                   checked
                     ? "border-accent bg-accent text-accent-foreground"
-                    : "border-black/10 hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06]"
+                    : "border-black/10 hover:bg-black/[.03] "
                 }`}
               >
                 {item.nome}
@@ -111,11 +111,11 @@ export function ArtistInstrumentsForm() {
       )}
 
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-600 ">{error}</p>
       ) : null}
 
       {success ? (
-        <p className="text-sm text-emerald-600 dark:text-emerald-400">
+        <p className="text-sm text-emerald-600 ">
           Instrumentos atualizados.
         </p>
       ) : null}

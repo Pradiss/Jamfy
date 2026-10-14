@@ -24,6 +24,8 @@ export function ArtistAvailability(props: {
   artistId: string;
   ownerUserId: string;
   slug: string;
+  cidade: string;
+  estado: string;
 }) {
   return (
     <Suspense fallback={null}>
@@ -36,10 +38,14 @@ function ArtistAvailabilityInner({
   artistId,
   ownerUserId,
   slug,
+  cidade,
+  estado,
 }: {
   artistId: string;
   ownerUserId: string;
   slug: string;
+  cidade: string;
+  estado: string;
 }) {
   const { user } = useAuth();
   const router = useRouter();
@@ -118,7 +124,7 @@ function ArtistAvailabilityInner({
               type="button"
               onClick={() => setWeekStart((current) => addWeeks(current, -1))}
               aria-label="Semana anterior"
-              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.08] dark:hover:text-zinc-50"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 "
             >
               ‹
             </button>
@@ -129,7 +135,7 @@ function ArtistAvailabilityInner({
               type="button"
               onClick={() => setWeekStart((current) => addWeeks(current, 1))}
               aria-label="Próxima semana"
-              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.08] dark:hover:text-zinc-50"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 "
             >
               ›
             </button>
@@ -140,7 +146,7 @@ function ArtistAvailabilityInner({
               type="button"
               onClick={() => setMonth((current) => addMonths(current, -1))}
               aria-label="Mês anterior"
-              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.08] dark:hover:text-zinc-50"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 "
             >
               ‹
             </button>
@@ -151,7 +157,7 @@ function ArtistAvailabilityInner({
               type="button"
               onClick={() => setMonth((current) => addMonths(current, 1))}
               aria-label="Próximo mês"
-              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.08] dark:hover:text-zinc-50"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 "
             >
               ›
             </button>
@@ -189,12 +195,12 @@ function ArtistAvailabilityInner({
       {requestDate ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
           <div className="absolute inset-0 bg-black/40" onClick={closeRequestModal} />
-          <div className="relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-white p-5 shadow-xl sm:rounded-3xl sm:p-6 dark:bg-zinc-900">
+          <div className="relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-white p-5 shadow-xl sm:rounded-3xl sm:p-6 ">
             <button
               type="button"
               onClick={closeRequestModal}
               aria-label="Fechar"
-              className="absolute top-4 right-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-400 transition hover:bg-black/5 hover:text-zinc-700 dark:hover:bg-white/10 dark:hover:text-zinc-200"
+              className="absolute top-4 right-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-400 transition hover:bg-black/5 hover:text-zinc-700 "
             >
               <X className="h-4 w-4" />
             </button>
@@ -202,6 +208,8 @@ function ArtistAvailabilityInner({
               artistId={artistId}
               artistUserId={ownerUserId}
               initialDate={requestDate}
+              cidade={cidade}
+              estado={estado}
             />
           </div>
         </div>

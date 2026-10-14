@@ -22,7 +22,7 @@ export function StickyHireBar({
 
   return (
     <div
-      className="fixed inset-x-0 bottom-14 z-30 border-t border-black/5 bg-white/95 px-4 py-2.5 backdrop-blur-xl sm:hidden dark:border-white/10 dark:bg-zinc-950/95"
+      className="fixed inset-x-0 bottom-14 z-30 border-t border-black/5 bg-white/95 px-4 py-2.5 backdrop-blur-xl sm:hidden "
       style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom))" }}
     >
       <a

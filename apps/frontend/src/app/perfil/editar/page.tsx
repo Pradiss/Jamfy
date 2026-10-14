@@ -20,7 +20,7 @@ export default function EditarPerfilPage() {
 
   if (loading || !user) {
     return (
-      <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 dark:text-zinc-400">
+      <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 ">
         Carregando...
       </div>
     );
@@ -43,7 +43,7 @@ export default function EditarPerfilPage() {
         }
       >
         <section>
-          <h2 className="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+          <h2 className="mb-3 text-sm font-medium text-zinc-500 ">
             Conta
           </h2>
           <EditProfileForm user={user} />
@@ -51,7 +51,7 @@ export default function EditarPerfilPage() {
 
         {isArtist ? (
           <section>
-            <h2 className="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+            <h2 className="mb-3 text-sm font-medium text-zinc-500 ">
               Perfil público de artista
             </h2>
             <ArtistSettingsTabs />
@@ -60,7 +60,7 @@ export default function EditarPerfilPage() {
 
         {isContratante ? (
           <section>
-            <h2 className="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+            <h2 className="mb-3 text-sm font-medium text-zinc-500 ">
               Perfil de contratante
             </h2>
             <ContratanteProfileForm />

@@ -328,7 +328,7 @@ export function AgendaManager() {
               type="button"
               onClick={() => setWeekStart((current) => addWeeks(current, -1))}
               aria-label="Semana anterior"
-              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.08] dark:hover:text-zinc-50"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 "
             >
               ‹
             </button>
@@ -339,7 +339,7 @@ export function AgendaManager() {
               type="button"
               onClick={() => setWeekStart((current) => addWeeks(current, 1))}
               aria-label="Próxima semana"
-              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.08] dark:hover:text-zinc-50"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 "
             >
               ›
             </button>
@@ -350,7 +350,7 @@ export function AgendaManager() {
               type="button"
               onClick={() => setMonth((current) => addMonths(current, -1))}
               aria-label="Mês anterior"
-              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.08] dark:hover:text-zinc-50"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 "
             >
               ‹
             </button>
@@ -361,7 +361,7 @@ export function AgendaManager() {
               type="button"
               onClick={() => setMonth((current) => addMonths(current, 1))}
               aria-label="Próximo mês"
-              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[.08] dark:hover:text-zinc-50"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/[.04] hover:text-zinc-950 "
             >
               ›
             </button>
@@ -370,7 +370,7 @@ export function AgendaManager() {
       </div>
 
       {error ? (
-        <p className="text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-red-600 ">{error}</p>
       ) : view === "week" ? (
         <WeekView
           weekStart={weekStart}
@@ -388,12 +388,12 @@ export function AgendaManager() {
       )}
 
       {actionError ? (
-        <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+        <p className="mt-2 text-sm text-red-600 ">
           {actionError}
         </p>
       ) : null}
 
-      <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="mt-3 text-xs text-zinc-500 ">
         Clique num dia livre pra marcar um compromisso ou bloquear. Clique
         num dia já marcado pra editar ou remover.
       </p>
@@ -401,7 +401,7 @@ export function AgendaManager() {
       {pendingDay ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
           <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
-          <div className="relative z-10 w-full max-w-sm rounded-t-3xl bg-white p-6 shadow-xl sm:rounded-3xl dark:bg-zinc-900">
+          <div className="relative z-10 w-full max-w-sm rounded-t-3xl bg-white p-6 shadow-xl sm:rounded-3xl ">
             <h2 className="text-lg font-semibold tracking-tight capitalize">
               {pendingDay.toLocaleDateString("pt-BR", {
                 timeZone: "UTC",
@@ -412,13 +412,13 @@ export function AgendaManager() {
 
             {reservaMode ? (
               <>
-                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                <p className="mt-1 text-sm text-zinc-500 ">
                   Que horas é o show?
                 </p>
 
                 <div className="mt-4 flex flex-col gap-3">
                   <label className="flex flex-col gap-1.5 text-sm">
-                    <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                    <span className="font-medium text-zinc-700 ">
                       Horário de início
                     </span>
                     <input
@@ -430,7 +430,7 @@ export function AgendaManager() {
                   </label>
 
                   <label className="flex flex-col gap-1.5 text-sm">
-                    <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                    <span className="font-medium text-zinc-700 ">
                       Duração
                     </span>
                     <select
@@ -461,7 +461,7 @@ export function AgendaManager() {
                   <button
                     type="button"
                     onClick={() => setReservaMode(false)}
-                    className="text-sm text-zinc-500 hover:underline dark:text-zinc-400"
+                    className="text-sm text-zinc-500 hover:underline "
                   >
                     Voltar
                   </button>
@@ -469,7 +469,7 @@ export function AgendaManager() {
               </>
             ) : pendingDayEntries.length > 0 ? (
               <>
-                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                <p className="mt-1 text-sm text-zinc-500 ">
                   {pendingDayEntries.length === 1
                     ? "Esse dia já tem um compromisso."
                     : `Esse dia já tem ${pendingDayEntries.length} compromissos.`}
@@ -488,7 +488,7 @@ export function AgendaManager() {
                             ? ` • ${TIME_FORMATTER.format(new Date(entry.dataInicio))}–${TIME_FORMATTER.format(new Date(entry.dataFim))}`
                             : ""}
                         </p>
-                        <p className="truncate text-sm text-zinc-500 dark:text-zinc-400">
+                        <p className="truncate text-sm text-zinc-500 ">
                           {entry.origem !== "ARTISTA"
                             ? "Contratação pelo site"
                             : (entry.titulo ?? "")}
@@ -504,7 +504,7 @@ export function AgendaManager() {
                               onClick={() => openReservaForm(entry)}
                               aria-label="Editar horário"
                               title="Editar horário"
-                              className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/5 hover:text-zinc-900 disabled:opacity-50 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-zinc-50"
+                              className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/5 hover:text-zinc-900 disabled:opacity-50 "
                             >
                               <Pencil className="h-4 w-4" />
                             </button>
@@ -515,7 +515,7 @@ export function AgendaManager() {
                             onClick={() => removeEntry(entry)}
                             aria-label="Remover"
                             title="Remover"
-                            className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50 dark:text-zinc-400 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                            className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50 "
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -529,12 +529,12 @@ export function AgendaManager() {
                       type="button"
                       disabled={resolvingDay}
                       onClick={() => openReservaForm()}
-                      className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 dark:hover:bg-white/[.04]`}
+                      className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 `}
                     >
                       <p className="font-medium">
                         + Marcar outro show nesse dia
                       </p>
-                      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                      <p className="text-sm text-zinc-500 ">
                         Fechou mais um horário no mesmo dia? Adiciona aqui.
                       </p>
                     </button>
@@ -544,14 +544,14 @@ export function AgendaManager() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="mt-4 w-full rounded-full border border-red-200 py-2.5 text-center text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-500/10"
+                  className="mt-4 w-full rounded-full border border-red-200 py-2.5 text-center text-sm font-medium text-red-600 transition hover:bg-red-50 "
                 >
                   Cancelar
                 </button>
               </>
             ) : (
               <>
-                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                <p className="mt-1 text-sm text-zinc-500 ">
                   O que você quer fazer com esse dia?
                 </p>
 
@@ -560,10 +560,10 @@ export function AgendaManager() {
                     type="button"
                     disabled={resolvingDay}
                     onClick={() => openReservaForm()}
-                    className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 dark:hover:bg-white/[.04]`}
+                    className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 `}
                   >
                     <p className="font-medium">Já fechei um show</p>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                    <p className="text-sm text-zinc-500 ">
                       Combinei fora do site — marcar o horário como
                       reservado.
                     </p>
@@ -573,10 +573,10 @@ export function AgendaManager() {
                     type="button"
                     disabled={resolvingDay}
                     onClick={blockPendingDay}
-                    className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 dark:hover:bg-white/[.04]`}
+                    className={`text-left ${cardClass} p-4 transition hover:bg-black/[.02] disabled:opacity-50 `}
                   >
                     <p className="font-medium">Bloquear esse dia</p>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                    <p className="text-sm text-zinc-500 ">
                       Não vou tocar nesse dia, fica indisponível.
                     </p>
                   </button>
@@ -585,7 +585,7 @@ export function AgendaManager() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="mt-4 w-full rounded-full border border-red-200 py-2.5 text-center text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-500/10"
+                  className="mt-4 w-full rounded-full border border-red-200 py-2.5 text-center text-sm font-medium text-red-600 transition hover:bg-red-50 "
                 >
                   Cancelar
                 </button>
@@ -622,7 +622,7 @@ export function AgendaManager() {
           >
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <label className="flex flex-col gap-1.5 text-sm">
-                <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                <span className="font-medium text-zinc-700 ">
                   De
                 </span>
                 <input
@@ -634,7 +634,7 @@ export function AgendaManager() {
                 />
               </label>
               <label className="flex flex-col gap-1.5 text-sm">
-                <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                <span className="font-medium text-zinc-700 ">
                   Até (opcional, mesmo dia se vazio)
                 </span>
                 <input
@@ -647,7 +647,7 @@ export function AgendaManager() {
             </div>
 
             <label className="flex flex-col gap-1.5 text-sm">
-              <span className="font-medium text-zinc-700 dark:text-zinc-300">
+              <span className="font-medium text-zinc-700 ">
                 Status
               </span>
               <select
@@ -663,7 +663,7 @@ export function AgendaManager() {
             </label>
 
             <label className="flex flex-col gap-1.5 text-sm">
-              <span className="font-medium text-zinc-700 dark:text-zinc-300">
+              <span className="font-medium text-zinc-700 ">
                 Título (opcional)
               </span>
               <input
@@ -674,7 +674,7 @@ export function AgendaManager() {
             </label>
 
             {formError ? (
-              <p className="text-sm text-red-600 dark:text-red-400">
+              <p className="text-sm text-red-600 ">
                 {formError}
               </p>
             ) : null}
@@ -690,7 +690,7 @@ export function AgendaManager() {
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="text-sm text-zinc-500 hover:underline dark:text-zinc-400"
+                className="text-sm text-zinc-500 hover:underline "
               >
                 Cancelar
               </button>

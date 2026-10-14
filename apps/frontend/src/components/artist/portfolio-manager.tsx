@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { apiFetch, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { PortfolioLightbox } from "@/components/artist/portfolio-lightbox";
@@ -66,6 +67,7 @@ export function PortfolioManager({
   const router = useRouter();
   const { user } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
   const [uploading, setUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -152,7 +154,7 @@ export function PortfolioManager({
               type="button"
               onClick={() => inputRef.current?.click()}
               disabled={uploading}
-              className="flex shrink-0 items-center gap-1.5 rounded-full border border-black/10 px-3.5 py-1.5 text-sm font-medium transition hover:bg-black/[.03] disabled:opacity-50 dark:border-white/15 dark:hover:bg-white/[.06]"
+              className="flex shrink-0 items-center gap-1.5 rounded-full border border-black/10 px-3.5 py-1.5 text-sm font-medium transition hover:bg-black/[.03] disabled:opacity-50 "
             >
               <PlusIcon />
               {uploading ? "Enviando..." : "Adicionar foto ou vídeo"}
@@ -162,106 +164,142 @@ export function PortfolioManager({
       </div>
 
       {error ? (
-        <p className="mb-4 text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="mb-4 text-sm text-red-600 ">{error}</p>
       ) : null}
 
       {items.length === 0 ? (
         isOwner ? (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="text-sm text-zinc-500 ">
             Adicione fotos e vídeos para mostrar seu trabalho.
           </p>
         ) : null
       ) : (
-        <div className="columns-2 gap-3 sm:columns-3 sm:gap-4">
-          {sortedItems.map((item) => {
-            const viewableIndex = viewableItems.findIndex(
-              (viewable) => viewable.id === item.id,
-            );
+        <div className="relative">
+          <div
+            ref={scrollerRef}
+            className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-2 sm:gap-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {sortedItems.map((item) => {
+              const viewableIndex = viewableItems.findIndex(
+                (viewable) => viewable.id === item.id,
+              );
 
-            return (
-              <figure
-                key={item.id}
-                className={`group relative mb-3 break-inside-avoid overflow-hidden rounded-2xl border bg-white shadow-sm sm:mb-4 dark:bg-white/[.03] ${
-                  item.destaque
-                    ? "border-accent/40 ring-2 ring-accent/30"
-                    : "border-black/5 dark:border-white/10"
-                }`}
-              >
-                {item.destaque ? (
-                  <span className="absolute top-2 left-2 z-10 rounded-full bg-accent px-2.5 py-1 text-[11px] font-semibold text-accent-foreground">
-                    Destaque
-                  </span>
-                ) : null}
-
-                {item.tipo === "VIDEO" ? (
-                  <button
-                    type="button"
-                    onClick={() => setLightboxIndex(viewableIndex)}
-                    className="relative block w-full"
-                  >
-                    <video
-                      src={item.arquivoUrl}
-                      muted
-                      playsInline
-                      className="block w-full"
-                    />
-                    <span className="absolute inset-0 flex items-center justify-center bg-black/20 text-white transition group-hover:bg-black/30">
-                      <PlayIcon />
+              return (
+                <figure
+                  key={item.id}
+                  className={`group relative aspect-[4/5] w-56 shrink-0 snap-start overflow-hidden rounded-2xl border bg-white shadow-sm sm:w-72 ${
+                    item.destaque
+                      ? "border-accent/40 ring-2 ring-accent/30"
+                      : "border-black/5 "
+                  }`}
+                >
+                  {item.destaque ? (
+                    <span className="absolute top-2 left-2 z-10 rounded-full bg-accent px-2.5 py-1 text-[11px] font-semibold text-accent-foreground">
+                      Destaque
                     </span>
-                  </button>
-                ) : item.tipo === "FOTO" ? (
-                  <button
-                    type="button"
-                    onClick={() => setLightboxIndex(viewableIndex)}
-                    className="block w-full"
-                  >
-                    {/* Not next/image: these tiles keep each photo's
-                        natural aspect ratio (no stored width/height to
-                        size it from), which next/image requires. Native
-                        lazy loading still gets the main win below the
-                        fold. */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={item.arquivoUrl}
-                      alt={item.titulo ?? ""}
-                      loading="lazy"
-                      className="block w-full"
-                    />
-                  </button>
-                ) : (
-                  <a
-                    href={item.arquivoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex aspect-video w-full items-center justify-center bg-surface text-sm text-accent underline"
-                  >
-                    Abrir {item.tipo.toLowerCase()}
-                  </a>
-                )}
+                  ) : null}
 
-                {item.titulo ? (
-                  <figcaption className="p-3 text-sm font-medium">
-                    {item.titulo}
-                  </figcaption>
-                ) : null}
+                  {item.tipo === "VIDEO" ? (
+                    <button
+                      type="button"
+                      onClick={() => setLightboxIndex(viewableIndex)}
+                      className="relative block h-full w-full"
+                    >
+                      <video
+                        src={item.arquivoUrl}
+                        muted
+                        playsInline
+                        className="block h-full w-full object-cover"
+                      />
+                      <span className="absolute inset-0 flex items-center justify-center bg-black/20 text-white transition group-hover:bg-black/30">
+                        <PlayIcon />
+                      </span>
+                    </button>
+                  ) : item.tipo === "FOTO" ? (
+                    <button
+                      type="button"
+                      onClick={() => setLightboxIndex(viewableIndex)}
+                      className="block h-full w-full"
+                    >
+                      {/* Not next/image: these tiles keep a uniform crop
+                          via object-cover, but still don't have stored
+                          width/height to size next/image from. Native
+                          lazy loading still gets the main win below the
+                          fold. */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.arquivoUrl}
+                        alt={item.titulo ?? ""}
+                        loading="lazy"
+                        className="block h-full w-full object-cover"
+                      />
+                    </button>
+                  ) : (
+                    <a
+                      href={item.arquivoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-full w-full items-center justify-center bg-surface text-sm text-accent underline"
+                    >
+                      Abrir {item.tipo.toLowerCase()}
+                    </a>
+                  )}
 
-                {isOwner ? (
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleDelete(item.id);
-                    }}
-                    disabled={deletingId === item.id}
-                    aria-label="Remover item"
-                    className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition hover:bg-black/80 disabled:opacity-50"
-                  >
-                    <TrashIcon />
-                  </button>
-                ) : null}
-              </figure>
-            );
-          })}
+                  {item.titulo ? (
+                    <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 text-sm font-medium text-white">
+                      {item.titulo}
+                    </figcaption>
+                  ) : null}
+
+                  {isOwner ? (
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleDelete(item.id);
+                      }}
+                      disabled={deletingId === item.id}
+                      aria-label="Remover item"
+                      className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition hover:bg-black/80 disabled:opacity-50"
+                    >
+                      <TrashIcon />
+                    </button>
+                  ) : null}
+                </figure>
+              );
+            })}
+          </div>
+
+          {sortedItems.length > 1 ? (
+            <div className="mt-2 hidden items-center justify-end gap-2 sm:flex">
+              <button
+                type="button"
+                onClick={() =>
+                  scrollerRef.current?.scrollBy({
+                    left: -300,
+                    behavior: "smooth",
+                  })
+                }
+                aria-label="Ver anteriores"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10 text-zinc-600 transition hover:bg-black/[.03] "
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  scrollerRef.current?.scrollBy({
+                    left: 300,
+                    behavior: "smooth",
+                  })
+                }
+                aria-label="Ver próximos"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10 text-zinc-600 transition hover:bg-black/[.03] "
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          ) : null}
         </div>
       )}
 

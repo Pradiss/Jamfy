@@ -153,7 +153,7 @@ export function MobileTabBar() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 flex items-stretch justify-around border-t border-black/5 bg-white/90 backdrop-blur-xl sm:hidden dark:border-white/10 dark:bg-black/90"
+      className="fixed inset-x-0 bottom-0 z-40 flex items-stretch justify-around border-t border-black/5 bg-white/90 backdrop-blur-xl sm:hidden "
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       {items.map((item) => (
@@ -162,8 +162,8 @@ export function MobileTabBar() {
           href={item.href}
           className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[11px] font-medium ${
             item.active
-              ? "text-zinc-950 dark:text-zinc-50"
-              : "text-zinc-400 dark:text-zinc-500"
+              ? "text-zinc-950 "
+              : "text-zinc-400 "
           }`}
         >
           <item.Icon className="h-5 w-5" />

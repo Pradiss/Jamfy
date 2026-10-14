@@ -9,7 +9,7 @@ import { primaryButtonClass } from "@/lib/ui";
 function StarIcon({ filled }: { filled: boolean }) {
   return (
     <Star
-      className={`h-8 w-8 ${filled ? "fill-amber-500 text-amber-500" : "fill-none text-zinc-300 dark:text-zinc-700"}`}
+      className={`h-8 w-8 ${filled ? "fill-amber-500 text-amber-500" : "fill-none text-zinc-300 "}`}
     />
   );
 }
@@ -69,7 +69,7 @@ export function RatingDialog({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 rounded-full border border-black/10 px-3.5 py-1.5 text-xs font-medium transition hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06]"
+        className="flex items-center gap-1.5 rounded-full border border-black/10 px-3.5 py-1.5 text-xs font-medium transition hover:bg-black/[.03] "
       >
         Avaliar artista
       </button>
@@ -83,7 +83,7 @@ export function RatingDialog({
 
           <form
             onSubmit={handleSubmit}
-            className="relative z-10 flex w-full max-w-sm flex-col gap-4 rounded-t-3xl bg-white p-6 shadow-xl sm:rounded-3xl dark:bg-zinc-900"
+            className="relative z-10 flex w-full max-w-sm flex-col gap-4 rounded-t-3xl bg-white p-6 shadow-xl sm:rounded-3xl "
           >
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold tracking-tight">
@@ -93,7 +93,7 @@ export function RatingDialog({
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Fechar"
-                className="text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-50"
+                className="text-zinc-400 hover:text-zinc-950 "
               >
                 ✕
               </button>
@@ -117,7 +117,7 @@ export function RatingDialog({
             </div>
 
             <label className="flex flex-col gap-1.5 text-sm">
-              <span className="font-medium text-zinc-700 dark:text-zinc-300">
+              <span className="font-medium text-zinc-700 ">
                 Comentário (opcional)
               </span>
               <textarea
@@ -129,7 +129,7 @@ export function RatingDialog({
             </label>
 
             {error ? (
-              <p className="text-sm text-red-600 dark:text-red-400">
+              <p className="text-sm text-red-600 ">
                 {error}
               </p>
             ) : null}

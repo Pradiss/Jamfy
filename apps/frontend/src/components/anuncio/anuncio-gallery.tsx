@@ -43,7 +43,7 @@ export function AnuncioGallery({
                 className={`relative aspect-square w-16 shrink-0 overflow-hidden rounded-xl bg-surface ring-2 transition sm:w-full ${
                   index === activeIndex
                     ? "ring-accent"
-                    : "ring-transparent hover:ring-black/10 dark:hover:ring-white/15"
+                    : "ring-transparent hover:ring-black/10 "
                 }`}
               >
                 <Image src={foto} alt="" fill sizes="64px" className="object-cover" />

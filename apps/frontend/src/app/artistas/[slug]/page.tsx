@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { Star, Music2, Guitar, Mic2 } from "lucide-react";
 import type { Metadata } from "next";
 
 import { apiFetch, ApiError } from "@/lib/api";
@@ -35,9 +35,58 @@ const SOCIAL_LINKS: {
 
 function Tag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded-full bg-surface px-3.5 py-1 text-sm text-zinc-700 dark:bg-white/[.06] dark:text-zinc-300">
+    <span className="rounded-full bg-surface px-3.5 py-1 text-sm text-zinc-700 ">
       {children}
     </span>
+  );
+}
+
+const TAG_GROUP_STYLES = {
+  accent: {
+    icon: "text-accent",
+    chip: "bg-accent/10 text-accent",
+  },
+  emerald: {
+    icon: "text-emerald-600 ",
+    chip:
+      "bg-emerald-50 text-emerald-700 ",
+  },
+  amber: {
+    icon: "text-amber-600 ",
+    chip: "bg-amber-50 text-amber-700 ",
+  },
+} as const;
+
+function TagGroup({
+  label,
+  items,
+  icon: Icon,
+  tone,
+}: {
+  label: string;
+  items: string[];
+  icon: (props: { className?: string }) => React.ReactNode;
+  tone: keyof typeof TAG_GROUP_STYLES;
+}) {
+  const styles = TAG_GROUP_STYLES[tone];
+
+  return (
+    <div className="flex items-start gap-2">
+      <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${styles.icon}`} />
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="text-xs font-medium tracking-wide text-zinc-400 uppercase ">
+          {label}
+        </span>
+        {items.map((nome) => (
+          <span
+            key={nome}
+            className={`rounded-full px-3 py-1 text-sm font-medium ${styles.chip}`}
+          >
+            {nome}
+          </span>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -122,7 +171,7 @@ export default async function ArtistaPage(
 
       <div className={`${containerClass} px-6 pb-10`}>
         <div className="relative -mt-12 h-24 w-24 sm:-mt-16 sm:h-32 sm:w-32">
-          <div className="relative h-full w-full overflow-hidden rounded-full border-4 border-white bg-surface shadow-md dark:border-black">
+          <div className="relative h-full w-full overflow-hidden rounded-full border-4 border-white bg-surface shadow-md ">
             {artist.usuario.fotoUrl ? (
               <Image
                 src={artist.usuario.fotoUrl}
@@ -132,7 +181,7 @@ export default async function ArtistaPage(
                 className="object-cover"
               />
             ) : (
-              <span className="flex h-full w-full items-center justify-center text-3xl font-semibold text-zinc-400 dark:text-zinc-600">
+              <span className="flex h-full w-full items-center justify-center text-3xl font-semibold text-zinc-400 ">
                 {artist.nomeArtistico.charAt(0).toUpperCase()}
               </span>
             )}
@@ -147,12 +196,12 @@ export default async function ArtistaPage(
             <h1 className="flex items-center gap-2 text-4xl font-semibold tracking-tight">
               {artist.nomeArtistico}
               {artist.verificado ? (
-                <span className="text-base text-emerald-600 dark:text-emerald-400">
+                <span className="text-base text-emerald-600 ">
                   ✓
                 </span>
               ) : null}
             </h1>
-            <p className="mt-1 text-zinc-500 dark:text-zinc-400">
+            <p className="mt-1 text-zinc-500 ">
               {artist.cidade}, {artist.estado} ·{" "}
               {artist.tipo === "BANDA" ? "Banda" : "Músico(a)"}
               {artist.aceitaViagem ? " · Aceita viagem" : ""}
@@ -167,7 +216,7 @@ export default async function ArtistaPage(
                     maximumFractionDigits: 1,
                   })}
                 </span>
-                <span className="text-zinc-500 dark:text-zinc-400">
+                <span className="text-zinc-500 ">
                   ({artist.quantidadeAvaliacoes}{" "}
                   {artist.quantidadeAvaliacoes === 1
                     ? "avaliação"
@@ -177,29 +226,44 @@ export default async function ArtistaPage(
               </p>
             ) : null}
 
-            {artist.instrumentos.length ||
-            artist.generos.length ||
-            artist.artistaFuncaos.length ? (
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {[
-                  ...artist.generos.map(({ genero }) => genero.nome),
-                  ...artist.instrumentos.map(
+            <div className="mt-3 flex flex-col gap-2">
+              {artist.generos.length ? (
+                <TagGroup
+                  label="Gêneros"
+                  icon={Music2}
+                  tone="accent"
+                  items={artist.generos.map(({ genero }) => genero.nome)}
+                />
+              ) : null}
+              {artist.instrumentos.length ? (
+                <TagGroup
+                  label="Instrumentos"
+                  icon={Guitar}
+                  tone="emerald"
+                  items={artist.instrumentos.map(
                     ({ instrumento }) => instrumento.nome,
-                  ),
-                  ...artist.artistaFuncaos.map(({ funcao }) => funcao.nome),
-                ].map((nome) => (
-                  <Tag key={nome}>{nome}</Tag>
-                ))}
-              </div>
-            ) : null}
+                  )}
+                />
+              ) : null}
+              {artist.artistaFuncaos.length ? (
+                <TagGroup
+                  label="Funções"
+                  icon={Mic2}
+                  tone="amber"
+                  items={artist.artistaFuncaos.map(
+                    ({ funcao }) => funcao.nome,
+                  )}
+                />
+              ) : null}
+            </div>
           </div>
 
           <div className="text-right">
             <p
               className={
                 artist.disponivel
-                  ? "font-medium text-emerald-600 dark:text-emerald-400"
-                  : "font-medium text-zinc-400 dark:text-zinc-600"
+                  ? "font-medium text-emerald-600 "
+                  : "font-medium text-zinc-400 "
               }
             >
               {artist.disponivel ? "Disponível" : "Indisponível"}
@@ -217,13 +281,13 @@ export default async function ArtistaPage(
         </div>
 
       {artist.biografia ? (
-        <p className="mt-6 whitespace-pre-line text-zinc-700 dark:text-zinc-300">
+        <p className="mt-6 whitespace-pre-line text-zinc-700 ">
           {artist.biografia}
         </p>
       ) : null}
 
       {artist.experiencia ? (
-        <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-4 text-sm text-zinc-500 ">
           {artist.experiencia}
         </p>
       ) : null}
@@ -254,10 +318,10 @@ export default async function ArtistaPage(
             {artist.integrantes.map((member) => (
               <div
                 key={member.id}
-                className="rounded-2xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[.03]"
+                className="rounded-2xl border border-black/5 bg-white p-4 shadow-sm "
               >
                 <p className="font-medium">{member.nome}</p>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                <p className="text-sm text-zinc-500 ">
                   {member.funcao ?? member.outraFuncao ?? member.instrumento}
                 </p>
               </div>
@@ -276,6 +340,8 @@ export default async function ArtistaPage(
           artistId={artist.id}
           ownerUserId={artist.usuarioId}
           slug={slug}
+          cidade={artist.cidade}
+          estado={artist.estado}
         />
       </div>
 
@@ -289,6 +355,8 @@ export default async function ArtistaPage(
         <ArtistContactSection
           artistId={artist.id}
           ownerUserId={artist.usuarioId}
+          cidade={artist.cidade}
+          estado={artist.estado}
         />
       </div>
       </div>

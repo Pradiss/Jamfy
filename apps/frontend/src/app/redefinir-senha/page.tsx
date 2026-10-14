@@ -70,7 +70,7 @@ export default function RedefinirSenhaPage() {
           <h1 className="text-2xl font-semibold tracking-tight">
             Senha atualizada!
           </h1>
-          <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mt-3 text-sm text-zinc-500 ">
             Agora é só entrar com a sua nova senha.
           </p>
           <Link href="/login" className={`mt-6 ${primaryButtonClass}`}>
@@ -90,7 +90,7 @@ export default function RedefinirSenhaPage() {
           <h1 className="text-2xl font-semibold tracking-tight">
             Link inválido ou expirado
           </h1>
-          <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mt-3 text-sm text-zinc-500 ">
             Solicite um novo link de redefinição de senha.
           </p>
           <Link href="/esqueci-senha" className={`mt-6 ${primaryButtonClass}`}>
@@ -103,7 +103,7 @@ export default function RedefinirSenhaPage() {
 
   if (!ready) {
     return (
-      <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 dark:text-zinc-400">
+      <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 ">
         Carregando...
       </div>
     );
@@ -120,7 +120,7 @@ export default function RedefinirSenhaPage() {
 
       <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
         <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-medium text-zinc-700 dark:text-zinc-300">
+          <span className="font-medium text-zinc-700 ">
             Nova senha
           </span>
           <input
@@ -135,7 +135,7 @@ export default function RedefinirSenhaPage() {
         </label>
 
         <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-medium text-zinc-700 dark:text-zinc-300">
+          <span className="font-medium text-zinc-700 ">
             Confirmar nova senha
           </span>
           <input
@@ -150,7 +150,7 @@ export default function RedefinirSenhaPage() {
         </label>
 
         {error ? (
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          <p className="text-sm text-red-600 ">{error}</p>
         ) : null}
 
         <button

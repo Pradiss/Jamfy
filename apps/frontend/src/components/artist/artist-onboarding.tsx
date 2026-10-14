@@ -54,7 +54,7 @@ export function ArtistOnboarding() {
   }
 
   if (!checked) {
-    return <p className="text-zinc-500 dark:text-zinc-400">Carregando...</p>;
+    return <p className="text-zinc-500 ">Carregando...</p>;
   }
 
   if (slug) {
@@ -63,7 +63,7 @@ export function ArtistOnboarding() {
         <h1 className="mb-2 text-3xl font-semibold tracking-tight">
           Quase lá! O que você toca?
         </h1>
-        <p className="mb-6 text-zinc-500 dark:text-zinc-400">
+        <p className="mb-6 text-zinc-500 ">
           Isso ajuda contratantes a te encontrar na busca por instrumento e
           gênero. Dá pra editar isso depois também.
         </p>
@@ -90,7 +90,7 @@ export function ArtistOnboarding() {
       <h1 className="mb-2 text-3xl font-semibold tracking-tight">
         Criar perfil de artista
       </h1>
-      <p className="mb-6 text-zinc-500 dark:text-zinc-400">
+      <p className="mb-6 text-zinc-500 ">
         Preencha os dados abaixo para aparecer nas buscas e começar a receber
         solicitações de contratação.
       </p>

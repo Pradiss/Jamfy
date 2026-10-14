@@ -11,6 +11,8 @@ import { secondaryButtonClass } from "@/lib/ui";
 export function ArtistContactSection(props: {
   artistId: string;
   ownerUserId: string;
+  cidade: string;
+  estado: string;
 }) {
   return (
     <Suspense fallback={null}>
@@ -22,9 +24,13 @@ export function ArtistContactSection(props: {
 function ArtistContactSectionInner({
   artistId,
   ownerUserId,
+  cidade,
+  estado,
 }: {
   artistId: string;
   ownerUserId: string;
+  cidade: string;
+  estado: string;
 }) {
   const { user } = useAuth();
   const searchParams = useSearchParams();
@@ -41,18 +47,22 @@ function ArtistContactSectionInner({
   }
 
   return (
-    <div className="flex flex-col items-start gap-3">
+    <div className="flex flex-col items-start">
       <HiringRequestForm
         artistId={artistId}
         artistUserId={ownerUserId}
         initialDate={initialDate}
+        cidade={cidade}
+        estado={estado}
       />
       {user ? (
-        <ReportDialog
-          tipo="USUARIO"
-          referenciaId={ownerUserId}
-          triggerLabel="Denunciar est perfil"
-        />
+        <div className="mt-6">
+          <ReportDialog
+            tipo="USUARIO"
+            referenciaId={ownerUserId}
+            triggerLabel="Denunciar est perfil"
+          />
+        </div>
       ) : null}
     </div>
   );

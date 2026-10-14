@@ -31,7 +31,7 @@ export default function MeusAnunciosPage() {
 
   if (loading || !user) {
     return (
-      <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 dark:text-zinc-400">
+      <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 ">
         Carregando...
       </div>
     );
@@ -49,11 +49,11 @@ export default function MeusAnunciosPage() {
       </div>
 
       {anuncios === null ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-zinc-500 ">
           Carregando...
         </p>
       ) : anuncios.length === 0 ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-zinc-500 ">
           Você ainda não publicou nenhum anúncio.
         </p>
       ) : (
@@ -62,7 +62,7 @@ export default function MeusAnunciosPage() {
             <Link
               key={anuncio.id}
               href={`/anuncios/${anuncio.id}`}
-              className={`flex items-center gap-4 p-4 transition hover:bg-black/[.02] dark:hover:bg-white/[.04] ${cardClass}`}
+              className={`flex items-center gap-4 p-4 transition hover:bg-black/[.02] ${cardClass}`}
             >
               <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-surface">
                 {anuncio.fotos[0] ? (
@@ -78,7 +78,7 @@ export default function MeusAnunciosPage() {
 
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium">{anuncio.titulo}</p>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                <p className="text-sm text-zinc-500 ">
                   {TIPO_ANUNCIO_LABELS[anuncio.tipo]} · {anuncio.cidade},{" "}
                   {anuncio.estado}
                 </p>

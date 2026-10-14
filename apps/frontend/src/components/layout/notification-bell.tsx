@@ -122,11 +122,11 @@ export function NotificationBell() {
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-label="Notificações"
-        className="relative flex items-center justify-center rounded-full p-2 text-zinc-600 transition hover:bg-black/[.04] dark:text-zinc-400 dark:hover:bg-white/[.06]"
+        className="relative flex items-center justify-center rounded-full p-2 text-zinc-600 transition hover:bg-black/[.04] "
       >
         <BellIcon />
         {unreadCount > 0 ? (
-          <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-medium text-white ring-2 ring-white dark:ring-black">
+          <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-medium text-white ring-2 ring-white ">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         ) : null}
@@ -134,7 +134,7 @@ export function NotificationBell() {
 
       {open ? (
         <div
-          className="fixed inset-x-4 top-16 z-10 rounded-2xl border border-black/5 bg-white/95 p-2 shadow-xl backdrop-blur-xl sm:absolute sm:inset-x-auto sm:top-full sm:right-0 sm:mt-2 sm:w-80 dark:border-white/10 dark:bg-zinc-900/95"
+          className="fixed inset-x-4 top-16 z-10 rounded-2xl border border-black/5 bg-white/95 p-2 shadow-xl backdrop-blur-xl sm:absolute sm:inset-x-auto sm:top-full sm:right-0 sm:mt-2 sm:w-80 "
         >
           <div className="flex items-center justify-between px-2 py-1.5">
             <span className="text-sm font-semibold tracking-tight">
@@ -152,7 +152,7 @@ export function NotificationBell() {
           </div>
 
           {notifications.length === 0 ? (
-            <p className="px-2 py-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="px-2 py-4 text-center text-sm text-zinc-500 ">
               Nenhuma notificação por enquanto.
             </p>
           ) : (
@@ -162,12 +162,12 @@ export function NotificationBell() {
                   <button
                     type="button"
                     onClick={() => handleNotificationClick(notification)}
-                    className={`w-full rounded-xl px-2.5 py-2 text-left text-sm transition hover:bg-black/[.04] dark:hover:bg-white/[.06] ${
+                    className={`w-full rounded-xl px-2.5 py-2 text-left text-sm transition hover:bg-black/[.04] ${
                       notification.lida ? "opacity-60" : ""
                     }`}
                   >
                     <p className="font-medium">{notification.titulo}</p>
-                    <p className="text-zinc-500 dark:text-zinc-400">
+                    <p className="text-zinc-500 ">
                       {notification.mensagem}
                     </p>
                   </button>

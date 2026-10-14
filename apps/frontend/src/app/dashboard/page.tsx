@@ -22,7 +22,7 @@ function ArtistDashboard() {
   }, []);
 
   if (loading) {
-    return <p className="text-zinc-500 dark:text-zinc-400">Carregando...</p>;
+    return <p className="text-zinc-500 ">Carregando...</p>;
   }
 
   if (!slug) {
@@ -40,14 +40,14 @@ function ArtistDashboard() {
         </Link>
       </div>
 
-      <div className="mb-6 flex gap-1 rounded-full border border-black/10 p-1 text-sm font-medium dark:border-white/15">
+      <div className="mb-6 flex gap-1 rounded-full border border-black/10 p-1 text-sm font-medium ">
         <button
           type="button"
           onClick={() => setTab("recebidas")}
           className={`flex-1 rounded-full px-4 py-2 transition ${
             tab === "recebidas"
               ? "bg-accent text-accent-foreground"
-              : "text-zinc-600 hover:bg-black/[.03] dark:text-zinc-400 dark:hover:bg-white/[.06]"
+              : "text-zinc-600 hover:bg-black/[.03] "
           }`}
         >
           Recebidas
@@ -58,7 +58,7 @@ function ArtistDashboard() {
           className={`flex-1 rounded-full px-4 py-2 transition ${
             tab === "enviadas"
               ? "bg-accent text-accent-foreground"
-              : "text-zinc-600 hover:bg-black/[.03] dark:text-zinc-400 dark:hover:bg-white/[.06]"
+              : "text-zinc-600 hover:bg-black/[.03] "
           }`}
         >
           Enviadas
@@ -69,7 +69,7 @@ function ArtistDashboard() {
         <ReceivedHiringRequests />
       ) : (
         <>
-          <p className="mb-6 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mb-6 text-sm text-zinc-500 ">
             Além de receber solicitações no seu perfil, você também pode
             chamar outros músicos e bandas — as solicitações que você enviar
             aparecem aqui.
@@ -97,7 +97,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <p className="text-zinc-500 dark:text-zinc-400">
+    <p className="text-zinc-500 ">
       Este painel ainda não está disponível para o seu tipo de usuário.
     </p>
   );

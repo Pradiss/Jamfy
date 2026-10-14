@@ -23,7 +23,7 @@ export default function ConversasLayout({
 
   if (loading || !user) {
     return (
-      <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 dark:text-zinc-400">
+      <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 ">
         Carregando...
       </div>
     );
@@ -38,9 +38,9 @@ export default function ConversasLayout({
     <div
       className={`${containerClass} flex h-[calc(100dvh-7.75rem)] flex-col sm:h-[calc(100dvh-3.75rem)] sm:px-6 sm:py-6`}
     >
-      <div className="flex min-h-0 flex-1 overflow-hidden border-black/5 sm:rounded-2xl sm:border sm:dark:border-white/10">
+      <div className="flex min-h-0 flex-1 overflow-hidden border-black/5 sm:rounded-2xl sm:border ">
         <div
-          className={`min-h-0 w-full shrink-0 flex-col border-black/5 dark:border-white/10 sm:flex sm:w-80 sm:border-r ${
+          className={`min-h-0 w-full shrink-0 flex-col border-black/5 sm:flex sm:w-80 sm:border-r ${
             hasActiveThread ? "hidden sm:flex" : "flex"
           }`}
         >

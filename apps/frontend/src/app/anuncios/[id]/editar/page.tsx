@@ -34,7 +34,7 @@ export default function EditarAnuncioPage() {
 
   if (loading || !user || (!anuncio && !notFound)) {
     return (
-      <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 dark:text-zinc-400">
+      <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 ">
         Carregando...
       </div>
     );
@@ -42,7 +42,7 @@ export default function EditarAnuncioPage() {
 
   if (notFound || !anuncio) {
     return (
-      <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 dark:text-zinc-400">
+      <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 ">
         Anúncio não encontrado.
       </div>
     );
@@ -50,7 +50,7 @@ export default function EditarAnuncioPage() {
 
   if (anuncio.usuarioId !== user.id) {
     return (
-      <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 dark:text-zinc-400">
+      <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 ">
         Você não tem permissão para editar este anúncio.
       </div>
     );
@@ -118,9 +118,9 @@ export default function EditarAnuncioPage() {
           onSubmit={handleUpdate}
         />
 
-        <div className="mt-6 border-t border-black/5 pt-6 dark:border-white/10">
+        <div className="mt-6 border-t border-black/5 pt-6 ">
           {deleteError ? (
-            <p className="mb-3 text-sm text-red-600 dark:text-red-400">
+            <p className="mb-3 text-sm text-red-600 ">
               {deleteError}
             </p>
           ) : null}
@@ -128,7 +128,7 @@ export default function EditarAnuncioPage() {
             type="button"
             onClick={handleDelete}
             disabled={deleting}
-            className={`${secondaryButtonClass} text-red-600 dark:text-red-400`}
+            className={`${secondaryButtonClass} text-red-600 `}
           >
             {deleting ? "Removendo..." : "Remover anúncio"}
           </button>

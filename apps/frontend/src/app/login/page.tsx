@@ -121,17 +121,17 @@ function LoginForm() {
           onChange={setPassword}
         />
 
-        <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+        <label className="flex items-center gap-2 text-sm text-zinc-600 ">
           <input
             type="checkbox"
             defaultChecked
-            className="h-4 w-4 rounded border-black/20 text-accent focus:ring-accent/30 dark:border-white/20"
+            className="h-4 w-4 rounded border-black/20 text-accent focus:ring-accent/30 "
           />
           Manter conectado(a)
         </label>
 
         {error ? (
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          <p className="text-sm text-red-600 ">{error}</p>
         ) : null}
 
         <button
@@ -147,7 +147,7 @@ function LoginForm() {
         <Link href="/esqueci-senha" className="text-accent hover:underline">
           Esqueci minha senha
         </Link>
-        <p className="text-zinc-500 dark:text-zinc-400">
+        <p className="text-zinc-500 ">
           Não tem conta?{" "}
           <Link
             href={redirectTo ? `/cadastro?redirect=${encodeURIComponent(redirectTo)}` : "/cadastro"}

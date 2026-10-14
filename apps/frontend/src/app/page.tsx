@@ -85,14 +85,14 @@ export default async function Home() {
               ]}
             />
 
-            <p className="mt-6 max-w-md text-lg text-zinc-500 dark:text-zinc-400">
+            <p className="mt-6 max-w-md text-lg text-zinc-500 ">
               Busque por cidade, gênero e instrumento. Veja a agenda em tempo
               real e contrate em minutos.
             </p>
 
             <HeroSearch />
 
-            <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="mt-6 text-sm text-zinc-500 ">
               Sem comissão sobre o cachê. Contato liberado direto no WhatsApp
               assim que o artista aceita.
             </p>
@@ -163,7 +163,7 @@ export default async function Home() {
           <h2 className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-tight sm:text-6xl">
             Contratação sem enrolação.
           </h2>
-          <p className="mx-auto mt-5 max-w-md text-base text-zinc-500 dark:text-zinc-400 sm:text-lg">
+          <p className="mx-auto mt-5 max-w-md text-base text-zinc-500 sm:text-lg">
             Envie a solicitação, o artista aceita, e o contato é liberado na
             hora — direto pelo WhatsApp.
           </p>

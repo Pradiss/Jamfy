@@ -89,7 +89,7 @@ export function FilterSheet({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 rounded-xl border border-black/10 px-4 text-sm font-medium whitespace-nowrap transition hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06]"
+        className="flex items-center gap-2 rounded-xl border border-black/10 px-4 text-sm font-medium whitespace-nowrap transition hover:bg-black/[.03] "
       >
         <FilterIcon className="h-4 w-4" />
         Filtros
@@ -107,7 +107,7 @@ export function FilterSheet({
             onClick={() => setOpen(false)}
           />
 
-          <div className="relative z-10 max-h-[85vh] w-full overflow-y-auto rounded-t-3xl bg-white p-6 shadow-xl sm:max-w-md sm:rounded-3xl dark:bg-zinc-900">
+          <div className="relative z-10 max-h-[85vh] w-full overflow-y-auto rounded-t-3xl bg-white p-6 shadow-xl sm:max-w-md sm:rounded-3xl ">
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-lg font-semibold tracking-tight">
                 Filtros
@@ -116,7 +116,7 @@ export function FilterSheet({
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Fechar"
-                className="text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-50"
+                className="text-zinc-400 hover:text-zinc-950 "
               >
                 ✕
               </button>
@@ -124,7 +124,7 @@ export function FilterSheet({
 
             <div className="flex flex-col gap-5">
               <div>
-                <p className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <p className="mb-2 text-sm font-medium text-zinc-700 ">
                   Tipo
                 </p>
                 <div className="flex gap-2">
@@ -135,8 +135,8 @@ export function FilterSheet({
                       onClick={() => setTipo(option.value)}
                       className={`flex-1 rounded-xl border px-3 py-2 text-sm transition ${
                         tipo === option.value
-                          ? "border-zinc-950 bg-zinc-950 text-white dark:border-zinc-50 dark:bg-zinc-50 dark:text-zinc-950"
-                          : "border-black/10 dark:border-white/15"
+                          ? "border-zinc-950 bg-zinc-950 text-white "
+                          : "border-black/10 "
                       }`}
                     >
                       {option.label}
@@ -155,7 +155,7 @@ export function FilterSheet({
 
               <div className="grid grid-cols-2 gap-3">
                 <label className="flex flex-col gap-1.5 text-sm">
-                  <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                  <span className="font-medium text-zinc-700 ">
                     Cachê mín. (R$)
                   </span>
                   <input
@@ -167,7 +167,7 @@ export function FilterSheet({
                   />
                 </label>
                 <label className="flex flex-col gap-1.5 text-sm">
-                  <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                  <span className="font-medium text-zinc-700 ">
                     Cachê máx. (R$)
                   </span>
                   <input
@@ -180,7 +180,7 @@ export function FilterSheet({
                 </label>
               </div>
 
-              <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+              <label className="flex items-center gap-2 text-sm text-zinc-700 ">
                 <input
                   type="checkbox"
                   checked={disponivel}
@@ -202,7 +202,7 @@ export function FilterSheet({
               <button
                 type="button"
                 onClick={clear}
-                className="text-sm text-zinc-500 hover:underline dark:text-zinc-400"
+                className="text-sm text-zinc-500 hover:underline "
               >
                 Limpar
               </button>

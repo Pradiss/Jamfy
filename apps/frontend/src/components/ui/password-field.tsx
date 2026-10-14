@@ -21,7 +21,7 @@ export function PasswordField({
 
   return (
     <label className="flex flex-col gap-1.5 text-sm">
-      <span className="font-medium text-zinc-700 dark:text-zinc-300">
+      <span className="font-medium text-zinc-700 ">
         {label}
       </span>
       <div className="relative">
@@ -37,7 +37,7 @@ export function PasswordField({
           type="button"
           onClick={() => setVisible((current) => !current)}
           aria-label={visible ? "Ocultar senha" : "Mostrar senha"}
-          className="absolute inset-y-0 right-3 flex items-center text-zinc-400 transition hover:text-zinc-600 dark:hover:text-zinc-300"
+          className="absolute inset-y-0 right-3 flex items-center text-zinc-400 transition hover:text-zinc-600 "
         >
           {visible ? (
             <EyeOff className="h-4 w-4" />

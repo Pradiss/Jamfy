@@ -6,10 +6,10 @@ import { CheckCircle2, Clock, Eye, Star } from "lucide-react";
 export function HeroMockup() {
   return (
     <div className="relative">
-      <div className="relative mx-auto w-full max-w-[290px] rounded-[2.5rem] border-[10px] border-zinc-950 bg-zinc-950 shadow-2xl shadow-black/30 dark:border-zinc-800">
-        <div className="absolute top-0 left-1/2 z-10 h-6 w-28 -translate-x-1/2 rounded-b-2xl bg-zinc-950 dark:bg-zinc-800" />
+      <div className="relative mx-auto w-full max-w-[290px] rounded-[2.5rem] border-[10px] border-zinc-950 bg-zinc-950 shadow-2xl shadow-black/30 ">
+        <div className="absolute top-0 left-1/2 z-10 h-6 w-28 -translate-x-1/2 rounded-b-2xl bg-zinc-950 " />
 
-        <div className="overflow-hidden rounded-[2rem] bg-white dark:bg-zinc-900">
+        <div className="overflow-hidden rounded-[2rem] bg-white ">
           <div className="flex flex-col gap-4 p-5 pt-9">
             <div className="text-center">
               <p className="text-[11px] font-medium tracking-wide text-zinc-400">
@@ -46,14 +46,14 @@ export function HeroMockup() {
               </svg>
               <div className="min-w-0">
                 <p className="text-sm font-semibold">3 shows este mês</p>
-                <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
+                <p className="truncate text-xs text-zinc-500 ">
                   2 confirmados, 1 pendente
                 </p>
               </div>
             </div>
 
             <ul className="flex flex-col gap-2">
-              <li className="flex items-center gap-2.5 rounded-xl border border-black/5 px-3 py-2.5 text-sm dark:border-white/10">
+              <li className="flex items-center gap-2.5 rounded-xl border border-black/5 px-3 py-2.5 text-sm ">
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
                 <span className="min-w-0 flex-1 truncate">
                   Casa de Shows Vitrola
@@ -70,14 +70,14 @@ export function HeroMockup() {
             </ul>
 
             <div className="grid grid-cols-2 gap-2.5">
-              <div className="rounded-xl bg-black/[.03] p-3 dark:bg-white/[.06]">
-                <p className="flex items-center gap-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+              <div className="rounded-xl bg-black/[.03] p-3 ">
+                <p className="flex items-center gap-1 text-[11px] text-zinc-500 ">
                   <Star className="h-3 w-3" /> Avaliação
                 </p>
                 <p className="mt-0.5 text-lg font-semibold">4.9</p>
               </div>
-              <div className="rounded-xl bg-black/[.03] p-3 dark:bg-white/[.06]">
-                <p className="flex items-center gap-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+              <div className="rounded-xl bg-black/[.03] p-3 ">
+                <p className="flex items-center gap-1 text-[11px] text-zinc-500 ">
                   <Eye className="h-3 w-3" /> Visitas
                 </p>
                 <p className="mt-0.5 text-lg font-semibold">238</p>
@@ -87,12 +87,12 @@ export function HeroMockup() {
         </div>
       </div>
 
-      <div className="hero-float-1 absolute -left-6 top-10 hidden w-56 rounded-2xl border border-black/5 bg-white p-3.5 shadow-lg dark:border-white/10 dark:bg-zinc-900 sm:block">
+      <div className="hero-float-1 absolute -left-6 top-10 hidden w-56 rounded-2xl border border-black/5 bg-white p-3.5 shadow-lg sm:block">
         <p className="text-xs font-semibold text-accent">Nova solicitação</p>
         <p className="mt-0.5 text-sm">João quer te contratar pro dia 20/11.</p>
       </div>
 
-      <div className="hero-float-2 absolute -right-6 bottom-10 hidden w-52 rounded-2xl border border-black/5 bg-white p-3.5 shadow-lg dark:border-white/10 dark:bg-zinc-900 sm:block">
+      <div className="hero-float-2 absolute -right-6 bottom-10 hidden w-52 rounded-2xl border border-black/5 bg-white p-3.5 shadow-lg sm:block">
         <p className="text-xs font-semibold text-emerald-600">
           Proposta aceita
         </p>

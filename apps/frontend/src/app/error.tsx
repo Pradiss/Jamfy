@@ -29,7 +29,7 @@ export default function Error({
       <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
         Algo deu errado
       </h1>
-      <p className="mt-3 max-w-md text-zinc-500 dark:text-zinc-400">
+      <p className="mt-3 max-w-md text-zinc-500 ">
         Tente novamente — se o problema continuar, volte mais tarde.
       </p>
       <div className="mt-8 flex gap-3">

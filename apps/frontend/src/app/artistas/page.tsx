@@ -182,7 +182,7 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
 
       {generoNome ? (
         <div className="mb-7 flex items-center gap-2 text-sm">
-          <span className="text-zinc-500 dark:text-zinc-400">
+          <span className="text-zinc-500 ">
             Estilo:{" "}
             <span className="font-medium text-accent">{generoNome}</span>
           </span>
@@ -197,7 +197,7 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
               precoMin,
               precoMax,
             })}`}
-            className="text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-50"
+            className="text-zinc-400 hover:text-zinc-950 "
           >
             ✕
           </Link>
@@ -205,9 +205,9 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
       ) : null}
 
       {error ? (
-        <p className="text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-red-600 ">{error}</p>
       ) : data && data.artistas.length === 0 ? (
-        <p className="text-zinc-500 dark:text-zinc-400">
+        <p className="text-zinc-500 ">
           Nenhum artista encontrado com esses filtros.
         </p>
       ) : data ? (
@@ -222,7 +222,7 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
             <div className="mt-12 flex items-center justify-center gap-4 text-sm">
               <Link
                 href={`/artistas?${toQueryString({ ...allFilters, page: String(data.paginacao.pagina - 1) })}`}
-                className={`rounded-full border border-black/10 px-4 py-1.5 transition hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06] ${
+                className={`rounded-full border border-black/10 px-4 py-1.5 transition hover:bg-black/[.03] ${
                   data.paginacao.pagina <= 1
                     ? "pointer-events-none opacity-40"
                     : ""
@@ -230,12 +230,12 @@ export default async function ArtistasPage(props: PageProps<"/artistas">) {
               >
                 Anterior
               </Link>
-              <span className="text-zinc-500 dark:text-zinc-400">
+              <span className="text-zinc-500 ">
                 Página {data.paginacao.pagina} de {data.paginacao.totalPaginas}
               </span>
               <Link
                 href={`/artistas?${toQueryString({ ...allFilters, page: String(data.paginacao.pagina + 1) })}`}
-                className={`rounded-full border border-black/10 px-4 py-1.5 transition hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06] ${
+                className={`rounded-full border border-black/10 px-4 py-1.5 transition hover:bg-black/[.03] ${
                   data.paginacao.pagina >= data.paginacao.totalPaginas
                     ? "pointer-events-none opacity-40"
                     : ""

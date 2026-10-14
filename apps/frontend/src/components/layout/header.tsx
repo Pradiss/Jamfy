@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { SearchIconLink } from "@/components/layout/search-icon-link";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { UserMenu } from "@/components/layout/user-menu";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 import { containerClass } from "@/lib/ui";
@@ -35,8 +34,8 @@ export function Header() {
     <header
       className={`sticky top-0 z-40 border-b transition-colors duration-300 ${
         scrolled
-          ? "border-black/5 bg-white/80 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-black/80"
-          : "border-transparent bg-white/40 backdrop-blur-md dark:bg-black/40"
+          ? "border-black/5 bg-white/80 shadow-sm backdrop-blur-xl "
+          : "border-transparent bg-white/40 backdrop-blur-md "
       }`}
     >
       <div
@@ -53,20 +52,17 @@ export function Header() {
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/anuncios"
-            className="hidden text-sm font-medium text-zinc-600 transition hover:text-zinc-950 sm:inline dark:text-zinc-400 dark:hover:text-zinc-50"
+            className="hidden text-sm font-medium text-zinc-600 transition hover:text-zinc-950 sm:inline "
           >
             Comprar e vender
           </Link>
           <Link
             href="/anuncios?tipo=ALUGUEL"
-            className="hidden text-sm font-medium text-zinc-600 transition hover:text-zinc-950 sm:inline dark:text-zinc-400 dark:hover:text-zinc-50"
+            className="hidden text-sm font-medium text-zinc-600 transition hover:text-zinc-950 sm:inline "
           >
             Alugar
           </Link>
           <SearchIconLink />
-          {/* Logged-in users control the theme from Configurações instead —
-              keeping it here too would just be a redundant second control. */}
-          {!loading && !user ? <ThemeToggle /> : null}
 
           {loading ? null : user ? (
             <>
@@ -77,7 +73,7 @@ export function Header() {
             <div className="flex items-center gap-2">
               <Link
                 href="/login"
-                className="rounded-full px-4 py-1.5 text-sm font-medium text-zinc-600 transition hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50"
+                className="rounded-full px-4 py-1.5 text-sm font-medium text-zinc-600 transition hover:text-zinc-950 "
               >
                 Entrar
               </Link>

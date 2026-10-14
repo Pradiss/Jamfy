@@ -145,7 +145,7 @@ export function AnuncioForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div>
-        <p className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <p className="mb-2 text-sm font-medium text-zinc-700 ">
           O que você quer fazer?
         </p>
         <div className="flex gap-2">
@@ -157,7 +157,7 @@ export function AnuncioForm({
               className={`flex-1 rounded-xl border px-3 py-2 text-sm font-medium transition ${
                 values.tipo === tipo
                   ? "border-accent bg-accent text-accent-foreground"
-                  : "border-black/10 hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06]"
+                  : "border-black/10 hover:bg-black/[.03] "
               }`}
             >
               {TIPO_ANUNCIO_LABELS[tipo]}
@@ -175,7 +175,7 @@ export function AnuncioForm({
       />
 
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-700 dark:text-zinc-300">
+        <span className="font-medium text-zinc-700 ">
           Categoria
         </span>
         <input
@@ -194,7 +194,7 @@ export function AnuncioForm({
       </label>
 
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-700 dark:text-zinc-300">
+        <span className="font-medium text-zinc-700 ">
           Descrição
         </span>
         <textarea
@@ -223,7 +223,7 @@ export function AnuncioForm({
       />
 
       <div>
-        <p className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <p className="mb-2 text-sm font-medium text-zinc-700 ">
           Fotos ({values.fotos.length}/{MAX_FOTOS})
         </p>
         <div className="flex flex-wrap gap-3">
@@ -257,7 +257,7 @@ export function AnuncioForm({
                 type="button"
                 onClick={() => inputRef.current?.click()}
                 disabled={uploading}
-                className="flex h-24 w-24 items-center justify-center rounded-xl border border-dashed border-black/15 text-sm text-zinc-500 transition hover:bg-black/[.03] disabled:opacity-50 dark:border-white/20 dark:text-zinc-400 dark:hover:bg-white/[.06]"
+                className="flex h-24 w-24 items-center justify-center rounded-xl border border-dashed border-black/15 text-sm text-zinc-500 transition hover:bg-black/[.03] disabled:opacity-50 "
               >
                 {uploading ? "..." : "+ Foto"}
               </button>
@@ -267,7 +267,7 @@ export function AnuncioForm({
       </div>
 
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-600 ">{error}</p>
       ) : null}
 
       <button

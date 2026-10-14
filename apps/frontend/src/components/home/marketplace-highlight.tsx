@@ -42,7 +42,7 @@ export function MarketplaceHighlight() {
     <section className="px-6 py-20 sm:py-28">
       <div className={containerClass}>
         <div className="mb-10 max-w-xl">
-          <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-black/5 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:bg-white/10 dark:text-zinc-300">
+          <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-black/5 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-zinc-600 uppercase ">
             <i
               className="hero-dot h-1.5 w-1.5 rounded-full bg-accent"
               aria-hidden="true"
@@ -75,7 +75,7 @@ export function MarketplaceHighlight() {
                   <h3 className="text-xl font-semibold tracking-tight">
                     {item.title}
                   </h3>
-                  <p className="mt-1.5 text-sm text-zinc-600 dark:text-zinc-300">
+                  <p className="mt-1.5 text-sm text-zinc-600 ">
                     {item.description}
                   </p>
                 </div>

@@ -81,7 +81,7 @@ export function ArtistSettingsTabs() {
 
   if (loading) {
     return (
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="text-sm text-zinc-500 ">
         Carregando perfil de artista...
       </p>
     );
@@ -93,7 +93,7 @@ export function ArtistSettingsTabs() {
 
   return (
     <div>
-      <div className="mb-5 flex gap-1 rounded-full bg-black/5 p-1 dark:bg-white/10">
+      <div className="mb-5 flex gap-1 rounded-full bg-black/5 p-1 ">
         {TABS.map((item) => (
           <button
             key={item.key}
@@ -101,8 +101,8 @@ export function ArtistSettingsTabs() {
             onClick={() => setTab(item.key)}
             className={`flex-1 rounded-full px-4 py-2 text-sm font-medium transition ${
               tab === item.key
-                ? "bg-white shadow-sm dark:bg-zinc-900"
-                : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+                ? "bg-white shadow-sm "
+                : "text-zinc-500 hover:text-zinc-800 "
             }`}
           >
             {item.label}

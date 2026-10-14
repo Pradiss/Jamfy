@@ -57,7 +57,7 @@ export function MessageComposer({
         }}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="max-h-[7.5rem] min-h-10 flex-1 resize-none rounded-3xl border border-black/10 bg-black/[.03] px-4 py-2.5 text-sm outline-none transition focus:border-accent focus:bg-white focus:ring-4 focus:ring-accent/15 dark:border-white/15 dark:bg-white/[.06] dark:focus:bg-zinc-900"
+        className="max-h-[7.5rem] min-h-10 flex-1 resize-none rounded-3xl border border-black/10 bg-black/[.03] px-4 py-2.5 text-sm outline-none transition focus:border-accent focus:bg-white focus:ring-4 focus:ring-accent/15 "
       />
       <button
         type="submit"

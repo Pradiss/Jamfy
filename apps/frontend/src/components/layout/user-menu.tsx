@@ -45,7 +45,7 @@ export function UserMenu() {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="flex items-center gap-2 rounded-full py-1 pr-2 pl-1 transition hover:bg-black/[.04] dark:hover:bg-white/[.06]"
+        className="flex items-center gap-2 rounded-full py-1 pr-2 pl-1 transition hover:bg-black/[.04] "
       >
         {user.fotoUrl ? (
           <Image
@@ -56,63 +56,63 @@ export function UserMenu() {
             className="h-7 w-7 rounded-full object-cover"
           />
         ) : (
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-950 text-xs font-semibold text-white dark:bg-white dark:text-zinc-950">
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-950 text-xs font-semibold text-white ">
             {initial}
           </span>
         )}
-        <span className="hidden text-sm text-zinc-600 sm:inline dark:text-zinc-400">
+        <span className="hidden text-sm text-zinc-600 sm:inline ">
           {user.nome.split(" ")[0]}
         </span>
       </button>
 
       {open ? (
-        <div className="absolute right-0 z-10 mt-2 w-52 rounded-2xl border border-black/5 bg-white p-1.5 shadow-lg dark:border-white/10 dark:bg-zinc-900">
+        <div className="absolute right-0 z-10 mt-2 w-52 rounded-2xl border border-black/5 bg-white p-1.5 shadow-lg ">
           <Link
             href={profileHref(user)}
             onClick={() => setOpen(false)}
-            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] dark:hover:bg-white/[.06]"
+            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] "
           >
             {profileLabel(user)}
           </Link>
           <Link
             href="/perfil/editar"
             onClick={() => setOpen(false)}
-            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] dark:hover:bg-white/[.06]"
+            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] "
           >
             Editar perfil
           </Link>
           <Link
             href="/anuncios/meus"
             onClick={() => setOpen(false)}
-            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] dark:hover:bg-white/[.06]"
+            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] "
           >
             Meus anúncios
           </Link>
           <Link
             href="/conversas"
             onClick={() => setOpen(false)}
-            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] dark:hover:bg-white/[.06]"
+            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] "
           >
             Conversas
           </Link>
           <Link
             href="/esqueci-senha"
             onClick={() => setOpen(false)}
-            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] dark:hover:bg-white/[.06]"
+            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] "
           >
             Trocar senha
           </Link>
           <Link
             href="/configuracoes"
             onClick={() => setOpen(false)}
-            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] dark:hover:bg-white/[.06]"
+            className="block rounded-xl px-3 py-2 text-sm transition hover:bg-black/[.04] "
           >
             Configurações
           </Link>
           <button
             type="button"
             onClick={handleLogout}
-            className="block w-full rounded-xl px-3 py-2 text-left text-sm text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+            className="block w-full rounded-xl px-3 py-2 text-left text-sm text-red-600 transition hover:bg-red-50 "
           >
             Sair
           </button>

@@ -65,7 +65,7 @@ export function AvatarUploader({ ownerUserId }: { ownerUserId: string }) {
         type="button"
         onClick={() => inputRef.current?.click()}
         aria-label="Alterar foto de perfil"
-        className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-zinc-950 text-white shadow-sm transition hover:opacity-90 dark:border-zinc-900 dark:bg-white dark:text-zinc-950"
+        className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-zinc-950 text-white shadow-sm transition hover:opacity-90 "
       >
         <CameraIcon />
       </button>

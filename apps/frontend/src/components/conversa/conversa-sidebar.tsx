@@ -10,10 +10,10 @@ const POLL_INTERVAL_MS = 15_000;
 
 const STATUS_BADGE_STYLES: Record<ConversaSummary["status"], string> = {
   PENDENTE:
-    "bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-400",
+    "bg-amber-100 text-amber-800 ",
   ACEITA:
-    "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400",
-  RECUSADA: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
+    "bg-emerald-100 text-emerald-800 ",
+  RECUSADA: "bg-zinc-100 text-zinc-600 ",
 };
 
 export function ConversaSidebar({ activeId }: { activeId?: string }) {
@@ -41,17 +41,17 @@ export function ConversaSidebar({ activeId }: { activeId?: string }) {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="shrink-0 border-b border-black/5 px-4 py-3.5 dark:border-white/10">
+      <div className="shrink-0 border-b border-black/5 px-4 py-3.5 ">
         <h1 className="text-lg font-semibold tracking-tight">Mensagens</h1>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {conversas === null ? (
-          <p className="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="px-4 py-3 text-sm text-zinc-500 ">
             Carregando...
           </p>
         ) : conversas.length === 0 ? (
-          <p className="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="px-4 py-3 text-sm text-zinc-500 ">
             Você ainda não tem nenhuma conversa.
           </p>
         ) : (
@@ -62,8 +62,8 @@ export function ConversaSidebar({ activeId }: { activeId?: string }) {
                 href={`/conversas/${conversa.id}`}
                 className={`flex items-center gap-3 border-l-2 px-4 py-3 transition ${
                   conversa.id === activeId
-                    ? "border-accent bg-black/[.03] dark:bg-white/[.06]"
-                    : "border-transparent hover:bg-black/[.02] dark:hover:bg-white/[.04]"
+                    ? "border-accent bg-black/[.03] "
+                    : "border-transparent hover:bg-black/[.02] "
                 }`}
               >
                 {conversa.counterpart.fotoUrl ? (
@@ -91,7 +91,7 @@ export function ConversaSidebar({ activeId }: { activeId?: string }) {
                       </span>
                     ) : null}
                   </div>
-                  <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
+                  <p className="truncate text-xs text-zinc-500 ">
                     {conversa.anuncio.titulo}
                   </p>
                   <div className="mt-1 flex items-center gap-2">

@@ -116,8 +116,8 @@ export default async function AnunciosPage(props: PageProps<"/anuncios">) {
             href={`/anuncios?${toQueryString({ ...allFilters, tipo: option.value || undefined })}`}
             className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition ${
               (tipo ?? "") === option.value
-                ? "border-zinc-950 bg-zinc-950 text-white dark:border-zinc-50 dark:bg-zinc-50 dark:text-zinc-950"
-                : "border-black/10 hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06]"
+                ? "border-zinc-950 bg-zinc-950 text-white "
+                : "border-black/10 hover:bg-black/[.03] "
             }`}
           >
             {option.label}
@@ -126,9 +126,9 @@ export default async function AnunciosPage(props: PageProps<"/anuncios">) {
       </div>
 
       {error ? (
-        <p className="text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-red-600 ">{error}</p>
       ) : data && data.anuncios.length === 0 ? (
-        <p className="text-zinc-500 dark:text-zinc-400">
+        <p className="text-zinc-500 ">
           Nenhum anúncio encontrado com esses filtros.
         </p>
       ) : data ? (
@@ -143,7 +143,7 @@ export default async function AnunciosPage(props: PageProps<"/anuncios">) {
             <div className="mt-12 flex items-center justify-center gap-4 text-sm">
               <Link
                 href={`/anuncios?${toQueryString({ ...allFilters, page: String(data.paginacao.pagina - 1) })}`}
-                className={`rounded-full border border-black/10 px-4 py-1.5 transition hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06] ${
+                className={`rounded-full border border-black/10 px-4 py-1.5 transition hover:bg-black/[.03] ${
                   data.paginacao.pagina <= 1
                     ? "pointer-events-none opacity-40"
                     : ""
@@ -151,12 +151,12 @@ export default async function AnunciosPage(props: PageProps<"/anuncios">) {
               >
                 Anterior
               </Link>
-              <span className="text-zinc-500 dark:text-zinc-400">
+              <span className="text-zinc-500 ">
                 Página {data.paginacao.pagina} de {data.paginacao.totalPaginas}
               </span>
               <Link
                 href={`/anuncios?${toQueryString({ ...allFilters, page: String(data.paginacao.pagina + 1) })}`}
-                className={`rounded-full border border-black/10 px-4 py-1.5 transition hover:bg-black/[.03] dark:border-white/15 dark:hover:bg-white/[.06] ${
+                className={`rounded-full border border-black/10 px-4 py-1.5 transition hover:bg-black/[.03] ${
                   data.paginacao.pagina >= data.paginacao.totalPaginas
                     ? "pointer-events-none opacity-40"
                     : ""

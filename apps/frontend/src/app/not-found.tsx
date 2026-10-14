@@ -19,7 +19,7 @@ export default function NotFound() {
       <h1 className="mt-10 text-3xl font-semibold tracking-tight sm:text-4xl">
         Essa página não existe
       </h1>
-      <p className="mt-3 max-w-md text-zinc-500 dark:text-zinc-400">
+      <p className="mt-3 max-w-md text-zinc-500 ">
         O link pode estar errado, ou a página pode ter sido removida.
       </p>
 

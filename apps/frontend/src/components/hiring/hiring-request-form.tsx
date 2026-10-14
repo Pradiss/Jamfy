@@ -5,13 +5,8 @@ import Link from "next/link";
 
 import { apiFetch, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
-import {
-  TIPO_EVENTO_LABELS,
-  type PublicAgendaEntry,
-  type TipoEvento,
-} from "@/lib/types";
+import type { PublicAgendaEntry } from "@/lib/types";
 import { inputClass } from "@/components/ui/form-field";
-import { EstadoCidadeFields } from "@/components/ui/estado-cidade-fields";
 import { primaryButtonClass, cardClass } from "@/lib/ui";
 
 const DURACAO_SET_OPTIONS = [
@@ -45,6 +40,13 @@ const HOUR_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "America/Sao_Paulo",
 });
 
+const DATE_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
+  weekday: "long",
+  day: "2-digit",
+  month: "long",
+  timeZone: "UTC",
+});
+
 function formatDuration(minutos: number) {
   const horas = Math.floor(minutos / 60);
   const resto = minutos % 60;
@@ -57,30 +59,33 @@ export function HiringRequestForm({
   artistId,
   artistUserId,
   initialDate,
+  cidade,
+  estado,
 }: {
   artistId: string;
   artistUserId: string;
+  // The day is always chosen by clicking it on the artist's agenda — this
+  // form no longer has its own date picker. Cidade/estado ride along
+  // silently (the artist's own city), since the backend still requires a
+  // location but asking for it again here would just repeat what picking
+  // this artist already implied.
   initialDate?: string;
+  cidade: string;
+  estado: string;
 }) {
   const { user, loading } = useAuth();
-  const [open, setOpen] = useState(Boolean(initialDate));
   const [descricao, setDescricao] = useState("");
-  const [tipoEvento, setTipoEvento] = useState<TipoEvento | "">("");
-  const [dataEvento, setDataEvento] = useState(initialDate ?? "");
   const [horaEvento, setHoraEvento] = useState("20:00");
   const [numeroSets, setNumeroSets] = useState(1);
   const [duracaoSetMinutos, setDuracaoSetMinutos] = useState(120);
   const [intervaloMinutos, setIntervaloMinutos] = useState(0);
-  const [cidade, setCidade] = useState("");
-  const [estado, setEstado] = useState("");
-  const [orcamento, setOrcamento] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [busyWindows, setBusyWindows] = useState<PublicAgendaEntry[]>([]);
 
   useEffect(() => {
-    if (!dataEvento) {
+    if (!initialDate) {
       return;
     }
 
@@ -88,7 +93,7 @@ export function HiringRequestForm({
 
     // Brazil is fixed at UTC-3 — shift the day's UTC-midnight boundaries by
     // +3h to get the real [Brazil midnight, Brazil midnight next day) window.
-    const dayStartUtc = new Date(`${dataEvento}T00:00:00.000Z`);
+    const dayStartUtc = new Date(`${initialDate}T00:00:00.000Z`);
     const de = new Date(dayStartUtc.getTime() + BRAZIL_UTC_OFFSET_MS);
     const ate = new Date(de.getTime() + 24 * 60 * 60 * 1000);
 
@@ -109,7 +114,7 @@ export function HiringRequestForm({
     return () => {
       active = false;
     };
-  }, [artistId, dataEvento]);
+  }, [artistId, initialDate]);
 
   if (loading) {
     return null;
@@ -132,7 +137,7 @@ export function HiringRequestForm({
 
   if (sent) {
     return (
-      <div className="mt-10 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm shadow-sm dark:border-emerald-900 dark:bg-emerald-500/10">
+      <div className="mt-10 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm shadow-sm ">
         Solicitação enviada! Acompanhe o status em{" "}
         <Link href="/dashboard" className="font-medium underline">
           Minhas solicitações
@@ -142,13 +147,17 @@ export function HiringRequestForm({
     );
   }
 
+  if (!initialDate) {
+    return null;
+  }
+
   const totalMinutos =
     numeroSets * duracaoSetMinutos + (numeroSets - 1) * intervaloMinutos;
 
   let horarioFim: string | null = null;
 
-  if (dataEvento && horaEvento) {
-    const inicio = new Date(`${dataEvento}T${horaEvento}:00`);
+  if (horaEvento) {
+    const inicio = new Date(`${initialDate}T${horaEvento}:00`);
     horarioFim = HOUR_FORMATTER.format(
       new Date(inicio.getTime() + totalMinutos * 60 * 1000),
     );
@@ -165,16 +174,12 @@ export function HiringRequestForm({
         body: {
           artistaId: artistId,
           descricao,
-          tipoEvento: tipoEvento || undefined,
-          dataEvento: dataEvento
-            ? `${dataEvento}T${horaEvento || "20:00"}:00`
-            : undefined,
+          dataEvento: `${initialDate}T${horaEvento || "20:00"}:00`,
           numeroSets,
           duracaoSetMinutos,
           intervaloMinutos,
           cidade,
           estado: estado.toUpperCase(),
-          orcamento: orcamento ? Number(orcamento) : undefined,
         },
       });
 
@@ -190,27 +195,22 @@ export function HiringRequestForm({
     }
   }
 
-  if (!open) {
-    return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className={`mt-10 ${primaryButtonClass}`}
-      >
-        Solicitar contratação
-      </button>
-    );
-  }
+  const dataLabel = DATE_FORMATTER.format(new Date(`${initialDate}T12:00:00Z`));
 
   return (
     <form
       onSubmit={handleSubmit}
-      className={``}
+      className={` flex flex-col gap-4  `}
     >
-      <h3 className="font-semibold tracking-tight">Solicitar contratação</h3>
+      <div>
+        <h3 className="font-semibold tracking-tight">Solicitar contratação</h3>
+        <p className="mt-0.5 text-sm text-zinc-500 capitalize ">
+          {dataLabel}
+        </p>
+      </div>
 
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-700 dark:text-zinc-300">
+        <span className="font-medium text-zinc-700 ">
           Descreva o evento
         </span>
         <textarea
@@ -224,54 +224,19 @@ export function HiringRequestForm({
       </label>
 
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-700 dark:text-zinc-300">
-          Tipo de evento
+        <span className="font-medium text-zinc-700 ">
+          Horário de início
         </span>
-        <select
-          value={tipoEvento}
-          onChange={(event) =>
-            setTipoEvento(event.target.value as TipoEvento | "")
-          }
+        <input
+          type="time"
+          value={horaEvento}
+          onChange={(event) => setHoraEvento(event.target.value)}
           className={inputClass}
-        >
-          <option value="">Selecione</option>
-          {Object.entries(TIPO_EVENTO_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
+        />
       </label>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-medium text-zinc-700 dark:text-zinc-300">
-            Data do evento
-          </span>
-          <input
-            type="date"
-            value={dataEvento}
-            onChange={(event) => setDataEvento(event.target.value)}
-            className={inputClass}
-          />
-        </label>
-
-        <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-medium text-zinc-700 dark:text-zinc-300">
-            Horário de início
-          </span>
-          <input
-            type="time"
-            value={horaEvento}
-            onChange={(event) => setHoraEvento(event.target.value)}
-            disabled={!dataEvento}
-            className={`${inputClass} disabled:opacity-50`}
-          />
-        </label>
-      </div>
-
-      {dataEvento && busyWindows.length > 0 ? (
-        <div className="-mt-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900 dark:bg-amber-500/10 dark:text-amber-400">
+      {busyWindows.length > 0 ? (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 ">
           Já ocupado nesse dia:{" "}
           {busyWindows
             .map((entry) =>
@@ -283,9 +248,9 @@ export function HiringRequestForm({
         </div>
       ) : null}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-medium text-zinc-700 dark:text-zinc-300">
+          <span className="font-medium text-zinc-700 ">
             Duração de cada set
           </span>
           <select
@@ -304,7 +269,7 @@ export function HiringRequestForm({
         </label>
 
         <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-medium text-zinc-700 dark:text-zinc-300">
+          <span className="font-medium text-zinc-700 ">
             Quantos sets
           </span>
           <select
@@ -321,7 +286,7 @@ export function HiringRequestForm({
         </label>
 
         <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-medium text-zinc-700 dark:text-zinc-300">
+          <span className="font-medium text-zinc-700 ">
             Intervalo entre sets
           </span>
           <select
@@ -341,52 +306,24 @@ export function HiringRequestForm({
         </label>
       </div>
 
-      <p className="-mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="text-xs text-zinc-500 ">
         Duração total: {formatDuration(totalMinutos)}
         {horarioFim ? ` (termina por volta das ${horarioFim})` : ""}. O
         horário ajuda o artista a ver se tem outro compromisso só numa parte
         do dia, em vez de bloquear o dia inteiro.
       </p>
 
-      <div>
-        <p className="mb-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Cidade do evento
-        </p>
-        <EstadoCidadeFields
-          state={estado}
-          city={cidade}
-          onStateChange={setEstado}
-          onCityChange={setCidade}
-        />
-      </div>
-
-      <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-700 dark:text-zinc-300">
-          Orçamento (R$, opcional)
-        </span>
-        <input
-          type="number"
-          min={0}
-          value={orcamento}
-          onChange={(event) => setOrcamento(event.target.value)}
-          className={inputClass}
-        />
-      </label>
-
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-600 ">{error}</p>
       ) : null}
 
-      <div className="flex items-center gap-3">
-        <button type="submit" disabled={submitting} className={primaryButtonClass}>
-          {submitting ? "Enviando..." : "Enviar solicitação"}
-        </button>
+      <div className="mt-2 flex flex-wrap items-center gap-3 border-t border-black/5 pt-5 pb-1 ">
         <button
-          type="button"
-          onClick={() => setOpen(false)}
-          className="text-sm text-zinc-500 hover:underline dark:text-zinc-400"
+          type="submit"
+          disabled={submitting}
+          className={primaryButtonClass}
         >
-          Cancelar
+          {submitting ? "Enviando..." : "Enviar solicitação"}
         </button>
       </div>
     </form>

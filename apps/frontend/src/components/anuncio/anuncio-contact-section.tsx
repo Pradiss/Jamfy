@@ -95,7 +95,7 @@ export function AnuncioContactSection({ anuncioId }: { anuncioId: string }) {
 
   if (!user) {
     return (
-      <div className="rounded-2xl border border-black/5 bg-surface p-4 text-sm dark:border-white/10 dark:bg-white/[.03]">
+      <div className="rounded-2xl border border-black/5 bg-surface p-4 text-sm ">
         <Link href="/login" className="font-medium text-accent underline">
           Entre na sua conta
         </Link>{" "}
@@ -157,7 +157,7 @@ export function AnuncioContactSection({ anuncioId }: { anuncioId: string }) {
             className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
               conteudo === sugestao
                 ? "border-accent bg-accent text-accent-foreground"
-                : "border-black/10 text-zinc-600 hover:bg-black/[.03] dark:border-white/15 dark:text-zinc-400 dark:hover:bg-white/[.06]"
+                : "border-black/10 text-zinc-600 hover:bg-black/[.03] "
             }`}
           >
             {sugestao}
@@ -174,7 +174,7 @@ export function AnuncioContactSection({ anuncioId }: { anuncioId: string }) {
       />
 
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-600 ">{error}</p>
       ) : null}
 
       <ReportDialog

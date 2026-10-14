@@ -46,7 +46,7 @@ export function ArtistReviewsSection({
       <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold tracking-tight">
         <StarIcon />
         {Number(avaliacao).toFixed(1)}{" "}
-        <span className="text-sm font-normal text-zinc-500 dark:text-zinc-400">
+        <span className="text-sm font-normal text-zinc-500 ">
           ({quantidadeAvaliacoes}{" "}
           {quantidadeAvaliacoes === 1 ? "avaliação" : "avaliações"})
         </span>
@@ -56,7 +56,7 @@ export function ArtistReviewsSection({
         {reviews.map((review) => (
           <div
             key={review.id}
-            className="rounded-2xl border border-black/5 p-4 dark:border-white/10"
+            className="rounded-2xl border border-black/5 p-4 "
           >
             <div className="flex items-center justify-between gap-2">
               <p className="font-medium">{review.contratante.nome}</p>
@@ -67,7 +67,7 @@ export function ArtistReviewsSection({
               </div>
             </div>
             {review.comentario ? (
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+              <p className="mt-2 text-sm text-zinc-600 ">
                 {review.comentario}
               </p>
             ) : null}

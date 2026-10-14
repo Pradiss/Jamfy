@@ -31,8 +31,8 @@ export function InstrumentChips({
             href={href}
             className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition ${
               isActive
-                ? "border-zinc-950 bg-zinc-950 text-white dark:border-zinc-50 dark:bg-zinc-50 dark:text-zinc-950"
-                : "border-black/10 text-zinc-600 hover:bg-black/[.03] dark:border-white/15 dark:text-zinc-400 dark:hover:bg-white/[.06]"
+                ? "border-zinc-950 bg-zinc-950 text-white "
+                : "border-black/10 text-zinc-600 hover:bg-black/[.03] "
             }`}
           >
             {instrument.nome}

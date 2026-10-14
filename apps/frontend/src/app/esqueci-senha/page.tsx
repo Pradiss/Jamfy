@@ -41,20 +41,20 @@ export default function EsqueciSenhaPage() {
     >
       <div className="w-full max-w-md">
       <h1 className="text-2xl font-semibold tracking-tight">Trocar senha</h1>
-      <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="mt-2 text-sm text-zinc-500 ">
         Informe seu e-mail e enviaremos um link para você definir uma nova
         senha.
       </p>
 
       {sent ? (
-        <p className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm dark:border-emerald-900 dark:bg-emerald-500/10">
+        <p className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm ">
           Se esse e-mail estiver cadastrado, você vai receber um link para
           redefinir a senha em instantes. Confira também a caixa de spam.
         </p>
       ) : (
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
           <label className="flex flex-col gap-1.5 text-sm">
-            <span className="font-medium text-zinc-700 dark:text-zinc-300">
+            <span className="font-medium text-zinc-700 ">
               E-mail
             </span>
             <input
@@ -68,7 +68,7 @@ export default function EsqueciSenhaPage() {
           </label>
 
           {error ? (
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <p className="text-sm text-red-600 ">{error}</p>
           ) : null}
 
           <button

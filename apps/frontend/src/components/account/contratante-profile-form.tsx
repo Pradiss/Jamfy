@@ -69,7 +69,7 @@ export function ContratanteProfileForm() {
 
   if (loading) {
     return (
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="text-sm text-zinc-500 ">
         Carregando...
       </p>
     );
@@ -80,16 +80,16 @@ export function ContratanteProfileForm() {
       onSubmit={handleSubmit}
       className={`flex flex-col gap-4 p-5 ${cardClass}`}
     >
-      <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+      <p className="text-xs font-medium text-zinc-500 ">
         Dados de quem contrata
       </p>
-      <p className="-mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="-mt-2 text-xs text-zinc-500 ">
         Essas informações ajudam o artista a saber quem está chamando —
         aparecem pra ele quando você envia uma solicitação.
       </p>
 
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-700 dark:text-zinc-300">
+        <span className="font-medium text-zinc-700 ">
           Nome do responsável (opcional)
         </span>
         <input
@@ -100,7 +100,7 @@ export function ContratanteProfileForm() {
       </label>
 
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-700 dark:text-zinc-300">
+        <span className="font-medium text-zinc-700 ">
           Empresa (opcional)
         </span>
         <input
@@ -120,11 +120,11 @@ export function ContratanteProfileForm() {
       />
 
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-600 ">{error}</p>
       ) : null}
 
       {success ? (
-        <p className="text-sm text-emerald-600 dark:text-emerald-400">
+        <p className="text-sm text-emerald-600 ">
           Dados atualizados com sucesso.
         </p>
       ) : null}

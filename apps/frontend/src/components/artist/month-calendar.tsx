@@ -6,7 +6,7 @@ export const STATUS_COLORS: Record<StatusAgenda, string> = {
   DISPONIVEL: "bg-emerald-500",
   PENDENTE: "bg-amber-400",
   RESERVADO: "bg-red-500",
-  INDISPONIVEL: "bg-zinc-400 dark:bg-zinc-600",
+  INDISPONIVEL: "bg-zinc-400 ",
 };
 
 export const STATUS_LABELS: Record<StatusAgenda, string> = {
@@ -33,10 +33,10 @@ const SIMPLE_STATUS_LABELS: Record<StatusAgenda, string> = {
 };
 
 const STATUS_TEXT_COLORS: Record<StatusAgenda, string> = {
-  DISPONIVEL: "text-emerald-600 dark:text-emerald-400",
-  PENDENTE: "text-amber-600 dark:text-amber-400",
-  RESERVADO: "text-red-600 dark:text-red-400",
-  INDISPONIVEL: "text-zinc-500 dark:text-zinc-400",
+  DISPONIVEL: "text-emerald-600 ",
+  PENDENTE: "text-amber-600 ",
+  RESERVADO: "text-red-600 ",
+  INDISPONIVEL: "text-zinc-500 ",
 };
 
 // A day with just a specific-time booking shouldn't look as "fully blocked"
@@ -44,17 +44,17 @@ const STATUS_TEXT_COLORS: Record<StatusAgenda, string> = {
 // but a plain neutral cell made that reservation too easy to miss. A light
 // tint in the status color flags it clearly without claiming the whole day.
 const STATUS_TINTS: Record<StatusAgenda, string> = {
-  DISPONIVEL: "bg-emerald-50 text-emerald-900 dark:bg-emerald-500/10 dark:text-emerald-100",
-  PENDENTE: "bg-amber-50 text-amber-900 dark:bg-amber-500/10 dark:text-amber-100",
-  RESERVADO: "bg-red-50 text-red-900 dark:bg-red-500/10 dark:text-red-100",
-  INDISPONIVEL: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
+  DISPONIVEL: "bg-emerald-50 text-emerald-900 ",
+  PENDENTE: "bg-amber-50 text-amber-900 ",
+  RESERVADO: "bg-red-50 text-red-900 ",
+  INDISPONIVEL: "bg-zinc-100 text-zinc-700 ",
 };
 
 const SIMPLE_STATUS_TINTS: Record<StatusAgenda, string> = {
-  DISPONIVEL: "bg-emerald-50 text-emerald-900 dark:bg-emerald-500/10 dark:text-emerald-100",
-  PENDENTE: "bg-red-50 text-red-900 dark:bg-red-500/10 dark:text-red-100",
-  RESERVADO: "bg-red-50 text-red-900 dark:bg-red-500/10 dark:text-red-100",
-  INDISPONIVEL: "bg-red-50 text-red-900 dark:bg-red-500/10 dark:text-red-100",
+  DISPONIVEL: "bg-emerald-50 text-emerald-900 ",
+  PENDENTE: "bg-red-50 text-red-900 ",
+  RESERVADO: "bg-red-50 text-red-900 ",
+  INDISPONIVEL: "bg-red-50 text-red-900 ",
 };
 
 export function startOfMonth(date: Date) {
@@ -222,7 +222,7 @@ export function MonthCalendar({
 
   return (
     <div>
-      <div className="grid grid-cols-7 gap-1 text-center text-xs text-zinc-500 dark:text-zinc-400">
+      <div className="grid grid-cols-7 gap-1 text-center text-xs text-zinc-500 ">
         {WEEKDAYS.map((day, index) => (
           <span key={index}>{day}</span>
         ))}
@@ -246,7 +246,7 @@ export function MonthCalendar({
               ? `${colors[entry!.status]} text-white`
               : entry
                 ? tints[entry.status]
-                : "bg-black/[.03] text-zinc-700 dark:bg-white/[.06] dark:text-zinc-300"
+                : "bg-black/[.03] text-zinc-700 "
           } ${clickable ? "cursor-pointer hover:ring-2 hover:ring-accent" : ""}`;
 
           const dot =
@@ -320,7 +320,7 @@ export function WeekView({
   );
 
   return (
-    <div className="flex flex-col divide-y divide-black/5 overflow-hidden rounded-2xl border border-black/5 dark:divide-white/10 dark:border-white/10">
+    <div className="flex flex-col divide-y divide-black/5 overflow-hidden rounded-2xl border border-black/5 ">
       {days.map((day) => {
         const dayEntries = getEntriesForDay(day, entries);
         const wholeDay = dayEntries.find((entry) => entry.diaInteiro);
@@ -332,7 +332,7 @@ export function WeekView({
             key={day.getTime()}
             onClick={clickable ? () => onDayClick?.(day) : undefined}
             className={`flex items-start gap-3 p-3 transition ${
-              clickable ? "cursor-pointer hover:bg-black/[.02] dark:hover:bg-white/[.04]" : ""
+              clickable ? "cursor-pointer hover:bg-black/[.02] " : ""
             } ${isToday ? "bg-accent/5" : ""}`}
           >
             <div className="flex w-12 shrink-0 flex-col items-center">
@@ -356,7 +356,7 @@ export function WeekView({
                   Dia todo: {labels[wholeDay.status]}
                 </span>
               ) : dayEntries.length === 0 ? (
-                <span className="font-medium text-emerald-600 dark:text-emerald-400">
+                <span className="font-medium text-emerald-600 ">
                   Livre o dia todo
                 </span>
               ) : (
@@ -389,7 +389,7 @@ export function AgendaLegend({ simplified }: { simplified?: boolean } = {}) {
     : (Object.keys(STATUS_LABELS) as StatusAgenda[]);
 
   return (
-    <div className="flex flex-col gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+    <div className="flex flex-col gap-1.5 text-xs text-zinc-500 ">
       <div className="flex flex-wrap gap-4">
         {statuses.map((status) => (
           <span key={status} className="flex items-center gap-1.5">

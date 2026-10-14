@@ -38,9 +38,9 @@ export function EstadoCidadeFields({
   }, [state]);
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-700 dark:text-zinc-300">
+        <span className="font-medium text-zinc-700 ">
           Estado
         </span>
         <select
@@ -61,9 +61,9 @@ export function EstadoCidadeFields({
         </select>
       </label>
 
-      <div className="col-span-2">
+      <div className="sm:col-span-2">
         <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-medium text-zinc-700 dark:text-zinc-300">
+          <span className="font-medium text-zinc-700 ">
             Cidade
           </span>
           <select

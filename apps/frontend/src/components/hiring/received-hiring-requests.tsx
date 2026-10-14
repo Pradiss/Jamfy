@@ -56,11 +56,11 @@ export function ReceivedHiringRequests() {
   return (
     <section>
       {error ? (
-        <p className="text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-red-600 ">{error}</p>
       ) : requests === null ? (
-        <p className="text-zinc-500 dark:text-zinc-400">Carregando...</p>
+        <p className="text-zinc-500 ">Carregando...</p>
       ) : requests.length === 0 ? (
-        <p className="text-zinc-500 dark:text-zinc-400">
+        <p className="text-zinc-500 ">
           Nenhuma solicitação recebida ainda.
         </p>
       ) : (

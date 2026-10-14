@@ -120,20 +120,20 @@ export function SocialLinksForm({ artist }: { artist: SocialLinksData }) {
   return (
     <form onSubmit={handleSubmit} className={`flex flex-col gap-4 p-5 ${cardClass}`}>
       <h3 className="font-semibold tracking-tight">Redes sociais</h3>
-      <p className="-mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="-mt-2 text-xs text-zinc-500 ">
         Digite só o seu usuário em cada rede, sem precisar colar o link.
       </p>
 
       <div className="grid gap-4 sm:grid-cols-2">
         {FIELDS.map((field) => (
           <label key={field.key} className="flex flex-col gap-1.5 text-sm">
-            <span className="font-medium text-zinc-700 dark:text-zinc-300">
+            <span className="font-medium text-zinc-700 ">
               {field.label}
             </span>
             <div
               className={`flex items-center overflow-hidden p-0 ${inputClass}`}
             >
-              <span className="shrink-0 border-r border-black/10 bg-surface px-3 py-2.5 text-sm text-zinc-500 dark:border-white/10 dark:text-zinc-400">
+              <span className="shrink-0 border-r border-black/10 bg-surface px-3 py-2.5 text-sm text-zinc-500 ">
                 {field.prefix}
               </span>
               <input
@@ -153,11 +153,11 @@ export function SocialLinksForm({ artist }: { artist: SocialLinksData }) {
       </div>
 
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-600 ">{error}</p>
       ) : null}
 
       {success ? (
-        <p className="text-sm text-emerald-600 dark:text-emerald-400">
+        <p className="text-sm text-emerald-600 ">
           Redes sociais atualizadas.
         </p>
       ) : null}

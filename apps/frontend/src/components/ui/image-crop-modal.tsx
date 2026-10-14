@@ -223,7 +223,7 @@ export function ImageCropModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60" onClick={onCancel} />
 
-      <div className="relative z-10 flex w-full max-w-sm flex-col items-center gap-5 rounded-3xl bg-white p-6 shadow-xl dark:bg-zinc-900">
+      <div className="relative z-10 flex w-full max-w-sm flex-col items-center gap-5 rounded-3xl bg-white p-6 shadow-xl ">
         <h2 className="self-start text-lg font-semibold tracking-tight">
           {title}
         </h2>
@@ -241,7 +241,7 @@ export function ImageCropModal({
         />
 
         <div className="flex w-full items-center gap-3">
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">−</span>
+          <span className="text-xs text-zinc-500 ">−</span>
           <input
             type="range"
             min={1}
@@ -251,15 +251,15 @@ export function ImageCropModal({
             onChange={(event) => handleZoomChange(Number(event.target.value))}
             className="flex-1 accent-accent"
           />
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">+</span>
+          <span className="text-xs text-zinc-500 ">+</span>
         </div>
 
-        <p className="text-xs text-zinc-400 dark:text-zinc-500">
+        <p className="text-xs text-zinc-400 ">
           Arraste para posicionar e use o controle para dar zoom.
         </p>
 
         {error ? (
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          <p className="text-sm text-red-600 ">{error}</p>
         ) : null}
 
         <div className="flex w-full items-center gap-3">
@@ -274,7 +274,7 @@ export function ImageCropModal({
           <button
             type="button"
             onClick={onCancel}
-            className="text-sm text-zinc-500 hover:underline dark:text-zinc-400"
+            className="text-sm text-zinc-500 hover:underline "
           >
             Cancelar
           </button>

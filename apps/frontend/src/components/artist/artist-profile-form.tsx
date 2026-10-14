@@ -89,7 +89,7 @@ export function ArtistProfileForm({
       />
 
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-700 dark:text-zinc-300">
+        <span className="font-medium text-zinc-700 ">
           Biografia
         </span>
         <textarea
@@ -108,7 +108,7 @@ export function ArtistProfileForm({
         onChange={(event) => update("fee", event.target.value)}
       />
 
-      <div className="flex flex-wrap gap-6 text-sm text-zinc-700 dark:text-zinc-300">
+      <div className="flex flex-wrap gap-6 text-sm text-zinc-700 ">
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
@@ -132,11 +132,11 @@ export function ArtistProfileForm({
       </div>
 
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-600 ">{error}</p>
       ) : null}
 
       {success ? (
-        <p className="text-sm text-emerald-600 dark:text-emerald-400">
+        <p className="text-sm text-emerald-600 ">
           Perfil salvo com sucesso.
         </p>
       ) : null}
@@ -150,7 +150,7 @@ export function ArtistProfileForm({
           <button
             type="button"
             onClick={onCancel}
-            className="text-sm text-zinc-500 hover:underline dark:text-zinc-400"
+            className="text-sm text-zinc-500 hover:underline "
           >
             Cancelar
           </button>

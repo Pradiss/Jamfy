@@ -52,12 +52,12 @@ export function EditProfileForm({ user }: { user: AuthenticatedUser }) {
       onSubmit={handleSubmit}
       className={`flex flex-col gap-4 p-5 ${cardClass}`}
     >
-      <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+      <p className="text-xs font-medium text-zinc-500 ">
         Editar perfil
       </p>
 
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-700 dark:text-zinc-300">
+        <span className="font-medium text-zinc-700 ">
           Nome
         </span>
         <input
@@ -69,7 +69,7 @@ export function EditProfileForm({ user }: { user: AuthenticatedUser }) {
       </label>
 
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-700 dark:text-zinc-300">
+        <span className="font-medium text-zinc-700 ">
           E-mail
         </span>
         <input
@@ -82,7 +82,7 @@ export function EditProfileForm({ user }: { user: AuthenticatedUser }) {
       </label>
 
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-700 dark:text-zinc-300">
+        <span className="font-medium text-zinc-700 ">
           Telefone
         </span>
         <input
@@ -94,7 +94,7 @@ export function EditProfileForm({ user }: { user: AuthenticatedUser }) {
       </label>
 
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-700 dark:text-zinc-300">
+        <span className="font-medium text-zinc-700 ">
           WhatsApp (opcional)
         </span>
         <input
@@ -105,11 +105,11 @@ export function EditProfileForm({ user }: { user: AuthenticatedUser }) {
       </label>
 
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-600 ">{error}</p>
       ) : null}
 
       {success ? (
-        <p className="text-sm text-emerald-600 dark:text-emerald-400">
+        <p className="text-sm text-emerald-600 ">
           Perfil atualizado com sucesso.
         </p>
       ) : null}

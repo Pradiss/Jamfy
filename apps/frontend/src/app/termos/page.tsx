@@ -74,7 +74,7 @@ export default function TermosPage() {
       <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
         Termos de Uso
       </h1>
-      <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="mt-3 text-sm text-zinc-500 ">
         Última atualização: outubro de 2026
       </p>
 
@@ -87,7 +87,7 @@ export default function TermosPage() {
             {section.paragraphs.map((paragraph, index) => (
               <p
                 key={index}
-                className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300"
+                className="mt-2 text-sm leading-relaxed text-zinc-600 "
               >
                 {paragraph}
               </p>

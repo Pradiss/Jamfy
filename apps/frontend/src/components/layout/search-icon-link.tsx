@@ -5,7 +5,7 @@ export function SearchIconLink() {
     <Link
       href="/artistas"
       aria-label="Buscar artistas"
-      className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-600 transition hover:bg-black/[.04] dark:text-zinc-400 dark:hover:bg-white/[.06]"
+      className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-600 transition hover:bg-black/[.04] "
     >
       <svg
         viewBox="0 0 24 24"

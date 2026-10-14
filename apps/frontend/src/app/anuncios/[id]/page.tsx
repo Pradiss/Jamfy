@@ -76,7 +76,7 @@ export default async function AnuncioDetailPage(
             {anuncio.titulo}
           </h1>
 
-          <p className="mt-1 text-zinc-500 dark:text-zinc-400">
+          <p className="mt-1 text-zinc-500 ">
             {anuncio.categoria} · {anuncio.cidade}, {anuncio.estado}
           </p>
 
@@ -86,11 +86,11 @@ export default async function AnuncioDetailPage(
               : "A combinar"}
           </p>
 
-          <p className="mt-6 whitespace-pre-line text-zinc-700 dark:text-zinc-300">
+          <p className="mt-6 whitespace-pre-line text-zinc-700 ">
             {anuncio.descricao}
           </p>
 
-          <div className="mt-6 flex items-center gap-3 border-t border-black/5 pt-6 dark:border-white/10">
+          <div className="mt-6 flex items-center gap-3 border-t border-black/5 pt-6 ">
             {anuncio.usuario.fotoUrl ? (
               <Image
                 src={anuncio.usuario.fotoUrl}
@@ -106,7 +106,7 @@ export default async function AnuncioDetailPage(
             )}
             <div className="text-sm">
               <p className="font-medium">{anuncio.usuario.nome}</p>
-              <p className="text-zinc-500 dark:text-zinc-400">Anunciante</p>
+              <p className="text-zinc-500 ">Anunciante</p>
             </div>
           </div>
 
