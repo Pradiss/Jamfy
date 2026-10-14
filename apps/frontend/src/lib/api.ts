@@ -28,11 +28,25 @@ type ApiFetchOptions = {
   // (those carry the session cookie and must always hit the backend fresh).
   cache?: RequestCache;
   next?: { revalidate?: number | false; tags?: string[] };
+  // Overrides the default abort timeout below — only needed for a request
+  // that's expected to legitimately take longer (none currently do).
+  timeoutMs?: number;
 };
 
 function isFormData(value: unknown): value is FormData {
   return typeof FormData !== "undefined" && value instanceof FormData;
 }
+
+// Without this, a backend that's unreachable or cold-starting (common on
+// free-tier hosts) leaves `fetch` hanging indefinitely — on the homepage,
+// which fetches at build time, that stalled Next's static generation of
+// "/" past its own timeout and failed the whole production build. Callers
+// that already wrap apiFetch in try/catch (every build-time page fetch
+// does) now get a fast, catchable failure instead of a multi-minute hang.
+// File/video uploads get a much longer budget since those legitimately
+// take a while on a slow connection.
+const DEFAULT_TIMEOUT_MS = 8000;
+const UPLOAD_TIMEOUT_MS = 120000;
 
 export async function apiFetch<T>(
   path: string,
@@ -40,6 +54,8 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const hasBody = options.body !== undefined;
   const isForm = isFormData(options.body);
+  const timeoutMs =
+    options.timeoutMs ?? (isForm ? UPLOAD_TIMEOUT_MS : DEFAULT_TIMEOUT_MS);
 
   const response = await fetch(`${API_URL}${path}`, {
     method: options.method ?? "GET",
@@ -55,6 +71,7 @@ export async function apiFetch<T>(
     credentials: "include",
     cache: options.cache,
     next: options.next,
+    signal: AbortSignal.timeout(timeoutMs),
   });
 
   const text = await response.text();

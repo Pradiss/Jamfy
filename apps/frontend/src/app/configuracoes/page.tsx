@@ -20,6 +20,7 @@ export default function ConfiguracoesPage() {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
   const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -46,10 +47,14 @@ export default function ConfiguracoesPage() {
 
   async function handleExportData() {
     setExporting(true);
+    setExportError(null);
 
     try {
+      // A full data export can take a while to generate — longer than the
+      // default request timeout, which is sized for ordinary reads.
       const result = await apiFetch<{ dados: unknown }>(
         "/api/auth/me/export",
+        { timeoutMs: 60000 },
       );
       const blob = new Blob([JSON.stringify(result.dados, null, 2)], {
         type: "application/json",
@@ -60,8 +65,12 @@ export default function ConfiguracoesPage() {
       link.download = "jamfy-meus-dados.json";
       link.click();
       URL.revokeObjectURL(url);
-    } catch {
-      // Nothing was downloaded — the button staying enabled lets them try again.
+    } catch (err) {
+      setExportError(
+        err instanceof ApiError
+          ? err.message
+          : "Não foi possível exportar seus dados agora. Tente novamente.",
+      );
     } finally {
       setExporting(false);
     }
@@ -157,6 +166,9 @@ export default function ConfiguracoesPage() {
             Excluir minha conta
           </button>
         </div>
+        {exportError ? (
+          <p className="mt-3 text-sm text-red-600">{exportError}</p>
+        ) : null}
       </div>
 
       <button

@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase-browser";
+import { withTimeout } from "@/lib/with-timeout";
 import { inputClass } from "@/components/ui/form-field";
 import { primaryButtonClass, containerClass } from "@/lib/ui";
 
@@ -24,13 +25,15 @@ export default function RedefinirSenhaPage() {
       }
     });
 
-    supabaseBrowser.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        setReady(true);
-      } else {
-        setInvalid(true);
-      }
-    });
+    withTimeout(supabaseBrowser.auth.getSession(), 8000)
+      .then(({ data }) => {
+        if (data.session) {
+          setReady(true);
+        } else {
+          setInvalid(true);
+        }
+      })
+      .catch(() => setInvalid(true));
 
     return () => subscription.unsubscribe();
   }, []);
@@ -46,19 +49,27 @@ export default function RedefinirSenhaPage() {
 
     setSubmitting(true);
 
-    const { error: updateError } = await supabaseBrowser.auth.updateUser({
-      password: newPassword,
-    });
+    try {
+      const { error: updateError } = await withTimeout(
+        supabaseBrowser.auth.updateUser({ password: newPassword }),
+        8000,
+      );
 
-    setSubmitting(false);
+      if (updateError) {
+        setError(updateError.message);
+        return;
+      }
 
-    if (updateError) {
-      setError(updateError.message);
-      return;
+      await withTimeout(supabaseBrowser.auth.signOut(), 8000).catch(() => {
+        // Password was already updated — a slow/failed sign-out shouldn't
+        // block the success screen.
+      });
+      setSuccess(true);
+    } catch {
+      setError("Não foi possível salvar agora. Tente novamente.");
+    } finally {
+      setSubmitting(false);
     }
-
-    await supabaseBrowser.auth.signOut();
-    setSuccess(true);
   }
 
   if (success) {
