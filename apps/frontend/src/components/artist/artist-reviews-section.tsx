@@ -38,11 +38,15 @@ export function ArtistReviewsSection({
   }, [artistId, quantidadeAvaliacoes]);
 
   if (quantidadeAvaliacoes === 0) {
-    return null;
+    return (
+      <p className="text-sm text-zinc-500">
+        Esse artista ainda não recebeu avaliações.
+      </p>
+    );
   }
 
   return (
-    <section className="mt-10">
+    <section>
       <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold tracking-tight">
         <StarIcon />
         {Number(avaliacao).toFixed(1)}{" "}

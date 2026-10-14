@@ -114,10 +114,8 @@ function ArtistAvailabilityInner({
   }
 
   return (
-    <section className="mt-10">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold tracking-tight">Agenda</h2>
-
+    <section>
+      <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
         {view === "week" ? (
           <div className="flex items-center gap-1 text-sm">
             <button

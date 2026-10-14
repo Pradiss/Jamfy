@@ -20,11 +20,7 @@ export function ArtistAgendaSection({
   const { user } = useAuth();
 
   if (user?.id === ownerUserId) {
-    return (
-      <div className="mt-10">
-        <AgendaManager />
-      </div>
-    );
+    return <AgendaManager />;
   }
 
   return (

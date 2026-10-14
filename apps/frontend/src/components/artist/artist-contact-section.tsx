@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { HiringRequestForm } from "@/components/hiring/hiring-request-form";
-import { ReportDialog } from "@/components/ui/report-dialog";
 import { secondaryButtonClass } from "@/lib/ui";
 
 export function ArtistContactSection(props: {
@@ -47,23 +46,12 @@ function ArtistContactSectionInner({
   }
 
   return (
-    <div className="flex flex-col items-start">
-      <HiringRequestForm
-        artistId={artistId}
-        artistUserId={ownerUserId}
-        initialDate={initialDate}
-        cidade={cidade}
-        estado={estado}
-      />
-      {user ? (
-        <div className="mt-6">
-          <ReportDialog
-            tipo="USUARIO"
-            referenciaId={ownerUserId}
-            triggerLabel="Denunciar est perfil"
-          />
-        </div>
-      ) : null}
-    </div>
+    <HiringRequestForm
+      artistId={artistId}
+      artistUserId={ownerUserId}
+      initialDate={initialDate}
+      cidade={cidade}
+      estado={estado}
+    />
   );
 }

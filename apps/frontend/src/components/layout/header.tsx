@@ -49,16 +49,16 @@ export function Header() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1 sm:gap-2">
           <Link
             href="/anuncios"
-            className="hidden text-sm font-medium text-zinc-600 transition hover:text-zinc-950 sm:inline "
+            className="hidden rounded-full px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-black/[.04] sm:inline"
           >
             Comprar e vender
           </Link>
           <Link
             href="/anuncios?tipo=ALUGUEL"
-            className="hidden text-sm font-medium text-zinc-600 transition hover:text-zinc-950 sm:inline "
+            className="hidden rounded-full px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-black/[.04] sm:inline"
           >
             Alugar
           </Link>
@@ -70,10 +70,10 @@ export function Header() {
               <UserMenu />
             </>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 pl-1">
               <Link
                 href="/login"
-                className="rounded-full px-4 py-1.5 text-sm font-medium text-zinc-600 transition hover:text-zinc-950 "
+                className="rounded-full px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-black/[.04]"
               >
                 Entrar
               </Link>

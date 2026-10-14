@@ -137,31 +137,27 @@ export function PortfolioManager({
   }
 
   return (
-    <section className="mt-10">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold tracking-tight">Portfólio</h2>
-
-        {isOwner ? (
-          <>
-            <input
-              ref={inputRef}
-              type="file"
-              accept="image/*,video/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              disabled={uploading}
-              className="flex shrink-0 items-center gap-1.5 rounded-full border border-black/10 px-3.5 py-1.5 text-sm font-medium transition hover:bg-black/[.03] disabled:opacity-50 "
-            >
-              <PlusIcon />
-              {uploading ? "Enviando..." : "Adicionar foto ou vídeo"}
-            </button>
-          </>
-        ) : null}
-      </div>
+    <section>
+      {isOwner ? (
+        <div className="mb-4 flex items-center justify-end gap-3">
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*,video/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={uploading}
+            className="flex shrink-0 items-center gap-1.5 rounded-full border border-black/10 px-3.5 py-1.5 text-sm font-medium transition hover:bg-black/[.03] disabled:opacity-50"
+          >
+            <PlusIcon />
+            {uploading ? "Enviando..." : "Adicionar foto ou vídeo"}
+          </button>
+        </div>
+      ) : null}
 
       {error ? (
         <p className="mb-4 text-sm text-red-600 ">{error}</p>
