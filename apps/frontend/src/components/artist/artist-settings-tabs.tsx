@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, ApiError } from "@/lib/api";
 import {
   ArtistProfileForm,
   type ArtistProfileFormValues,
@@ -63,14 +63,26 @@ type TabKey = (typeof TABS)[number]["key"];
 export function ArtistSettingsTabs() {
   const [profile, setProfile] = useState<ArtistProfileMe | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
   const [tab, setTab] = useState<TabKey>("perfil");
 
   useEffect(() => {
     apiFetch<ArtistProfileMe>("/api/artist-profile/me")
-      .then((data) => setProfile(data))
-      .catch(() => setProfile(null))
+      .then((data) => {
+        setProfile(data);
+        setLoadError(null);
+      })
+      .catch((err) => {
+        setProfile(null);
+        setLoadError(
+          err instanceof ApiError
+            ? err.message
+            : "Não foi possível carregar seu perfil de artista agora.",
+        );
+      })
       .finally(() => setLoading(false));
-  }, []);
+  }, [reloadKey]);
 
   async function handleUpdate(values: ArtistProfileFormValues) {
     await apiFetch("/api/artist-profile", {
@@ -88,7 +100,20 @@ export function ArtistSettingsTabs() {
   }
 
   if (!profile) {
-    return null;
+    return (
+      <div>
+        <p className="text-sm text-red-600">
+          {loadError ?? "Não foi possível carregar seu perfil de artista."}
+        </p>
+        <button
+          type="button"
+          onClick={() => setReloadKey((value) => value + 1)}
+          className="mt-2 text-sm font-medium text-accent hover:underline"
+        >
+          Tentar de novo
+        </button>
+      </div>
+    );
   }
 
   return (

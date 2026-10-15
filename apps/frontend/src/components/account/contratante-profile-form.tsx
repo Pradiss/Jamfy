@@ -32,8 +32,16 @@ export function ContratanteProfileForm() {
         setCidade(data.cidade ?? "");
         setEstado(data.estado ?? "");
       })
-      .catch(() => {
-        // No profile yet — keep the blank form, user is creating it now.
+      .catch((err) => {
+        // A 404 just means there's no profile yet — keep the blank form,
+        // the user is creating it now. Anything else (timeout, 500) is a
+        // real failed load, and saving the blank form would silently wipe
+        // out whatever was already there.
+        if (!(err instanceof ApiError) || err.status !== 404) {
+          setError(
+            "Não foi possível carregar seus dados agora. Atualize a página antes de salvar.",
+          );
+        }
       })
       .finally(() => setLoading(false));
   }, []);

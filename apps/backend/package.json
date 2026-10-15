@@ -7,7 +7,8 @@
     "dev": "tsx watch src/server.ts",
     "build": "pnpm --filter @jamfy/shared build && prisma generate && tsc",
     "start": "node dist/src/server.js",
-    "seed:catalog": "tsx prisma/seed-catalog.ts"
+    "seed:catalog": "tsx prisma/seed-catalog.ts",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
@@ -40,6 +41,7 @@
     "@types/pg": "^8.20.0",
     "prisma": "^7.8.0",
     "tsx": "^4.23.1",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
   }
 }

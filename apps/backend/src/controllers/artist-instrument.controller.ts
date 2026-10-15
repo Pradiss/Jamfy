@@ -2,16 +2,17 @@ import type { NextFunction, Request, Response } from "express";
 
 import { artistInstrumentService } from "../services/artist-instrument.service.js";
 
-import {
-  removeArtistInstrumentSchema,
-  saveArtistInstrumentsSchema,
+import type {
+  RemoveArtistInstrumentInput,
+  SaveArtistInstrumentsInput,
 } from "@jamfy/shared";
 
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-  };
-}
+type AuthenticatedRequest<
+  Params = Record<string, string>,
+  Body = unknown,
+> = Request<Params, unknown, Body> & {
+  user?: { id: string };
+};
 
 class ArtistInstrumentController {
   async list(
@@ -37,7 +38,10 @@ class ArtistInstrumentController {
   }
 
   async save(
-    req: AuthenticatedRequest,
+    req: AuthenticatedRequest<
+      Record<string, string>,
+      SaveArtistInstrumentsInput
+    >,
     res: Response,
     next: NextFunction,
   ) {
@@ -48,13 +52,9 @@ class ArtistInstrumentController {
         throw new Error("Usuário não autenticado.");
       }
 
-      const { body } = saveArtistInstrumentsSchema.parse({
-        body: req.body,
-      });
-
       const instruments = await artistInstrumentService.save(
         userId,
-        body,
+        req.body,
       );
 
       return res.status(200).json({
@@ -67,7 +67,7 @@ class ArtistInstrumentController {
   }
 
   async remove(
-    req: AuthenticatedRequest,
+    req: AuthenticatedRequest<RemoveArtistInstrumentInput>,
     res: Response,
     next: NextFunction,
   ) {
@@ -78,13 +78,9 @@ class ArtistInstrumentController {
         throw new Error("Usuário não autenticado.");
       }
 
-      const { params } = removeArtistInstrumentSchema.parse({
-        params: req.params,
-      });
-
       const result = await artistInstrumentService.remove(
         userId,
-        params.instrumentId,
+        req.params.instrumentId,
       );
 
       return res.status(200).json(result);

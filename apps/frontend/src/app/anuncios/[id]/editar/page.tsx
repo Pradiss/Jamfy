@@ -17,6 +17,8 @@ export default function EditarAnuncioPage() {
   const params = useParams<{ id: string }>();
   const [anuncio, setAnuncio] = useState<AnuncioDetail | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
@@ -28,11 +30,27 @@ export default function EditarAnuncioPage() {
 
   useEffect(() => {
     apiFetch<AnuncioDetail>(`/api/anuncios/${params.id}`)
-      .then((data) => setAnuncio(data))
-      .catch(() => setNotFound(true));
-  }, [params.id]);
+      .then((data) => {
+        setAnuncio(data);
+        setNotFound(false);
+        setLoadError(null);
+      })
+      .catch((err) => {
+        if (err instanceof ApiError && err.status === 404) {
+          setNotFound(true);
+          setLoadError(null);
+        } else {
+          setLoadError(
+            err instanceof ApiError
+              ? err.message
+              : "Não foi possível carregar o anúncio agora.",
+          );
+          setNotFound(false);
+        }
+      });
+  }, [params.id, reloadKey]);
 
-  if (loading || !user || (!anuncio && !notFound)) {
+  if (loading || !user || (!anuncio && !notFound && !loadError)) {
     return (
       <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 ">
         Carregando...
@@ -40,10 +58,25 @@ export default function EditarAnuncioPage() {
     );
   }
 
-  if (notFound || !anuncio) {
+  if (notFound) {
     return (
       <div className="flex flex-1 items-center justify-center py-24 text-zinc-500 ">
         Anúncio não encontrado.
+      </div>
+    );
+  }
+
+  if (loadError || !anuncio) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 py-24 text-center text-zinc-500 ">
+        <p>{loadError ?? "Não foi possível carregar o anúncio agora."}</p>
+        <button
+          type="button"
+          onClick={() => setReloadKey((value) => value + 1)}
+          className="text-sm font-medium text-accent hover:underline"
+        >
+          Tentar de novo
+        </button>
       </div>
     );
   }
