@@ -163,7 +163,7 @@ export default async function ArtistaPage(
         <CoverUploader ownerUserId={artist.usuarioId} />
       </div>
 
-      <div className={`${containerClass} px-6 pb-10`}>
+      <div className={`${containerClass} px-4 pb-10 sm:px-6`}>
         <div className="relative -mt-12 h-24 w-24 sm:-mt-16 sm:h-32 sm:w-32">
           <div className="relative h-full w-full overflow-hidden rounded-full border-4 border-white bg-surface shadow-md ">
             {artist.usuario.fotoUrl ? (
@@ -186,7 +186,7 @@ export default async function ArtistaPage(
         </div>
 
         <div className="mt-4">
-          <h1 className="flex items-center gap-2 text-4xl font-semibold tracking-tight">
+          <h1 className="flex flex-wrap items-center gap-2 text-4xl font-semibold tracking-tight break-words">
             {artist.nomeArtistico}
             {artist.verificado ? (
               <span className="text-base text-emerald-600">✓</span>

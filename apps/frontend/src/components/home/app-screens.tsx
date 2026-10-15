@@ -92,7 +92,7 @@ export function AppScreens() {
           </h2>
         </div>
 
-        <div className="relative flex h-[280px] items-center justify-center sm:h-[320px]">
+        <div className="relative flex h-[280px] items-center justify-center overflow-hidden sm:h-[320px]">
           {SCREENS.map((screen, index) => {
             const offset = index - active;
             if (Math.abs(offset) > 2) return null;
