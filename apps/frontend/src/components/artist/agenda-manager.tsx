@@ -310,6 +310,29 @@ export function AgendaManager() {
     }
   }
 
+  async function cancelSolicitacao(solicitacaoId: string) {
+    if (
+      !window.confirm(
+        "Tem certeza que deseja cancelar essa contratação já confirmada? Isso não pode ser desfeito.",
+      )
+    ) {
+      return;
+    }
+
+    setResolvingDay(true);
+
+    try {
+      await apiFetch(`/api/hiring-requests/${solicitacaoId}/cancel`, {
+        method: "PATCH",
+      });
+      await load();
+    } catch {
+      setActionError("Não foi possível cancelar agora. Tente de novo.");
+    } finally {
+      setResolvingDay(false);
+    }
+  }
+
   const pendingDayEntries = pendingDay
     ? getEntriesForDay(pendingDay, entries ?? [])
     : [];
@@ -518,6 +541,15 @@ export function AgendaManager() {
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
+                      ) : entry.status === "RESERVADO" && entry.solicitacaoId ? (
+                        <button
+                          type="button"
+                          disabled={resolvingDay}
+                          onClick={() => cancelSolicitacao(entry.solicitacaoId!)}
+                          className="shrink-0 rounded-full border border-red-200 px-3.5 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+                        >
+                          Cancelar contratação
+                        </button>
                       ) : null}
                     </div>
                   ))}
