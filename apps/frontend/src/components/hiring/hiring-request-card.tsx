@@ -99,6 +99,16 @@ export function HiringRequestCard({
     }
   }
 
+  function handleCancelAccepted() {
+    if (
+      window.confirm(
+        "Tem certeza que deseja cancelar essa contratação já confirmada? Isso não pode ser desfeito.",
+      )
+    ) {
+      void handleAction(onCancel);
+    }
+  }
+
   return (
     <div className={`flex flex-col gap-4 p-4 ${cardClass}`}>
       <div className="flex items-start justify-between gap-3">
@@ -256,6 +266,17 @@ export function HiringRequestCard({
                 artistName={request.artista?.nomeArtistico ?? "o artista"}
                 onRated={() => onRated?.()}
               />
+            ) : null}
+
+            {request.status === "ACEITA" && onCancel ? (
+              <button
+                type="button"
+                disabled={pending}
+                onClick={handleCancelAccepted}
+                className="rounded-full border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
+              >
+                Cancelar contratação
+              </button>
             ) : null}
           </div>
 

@@ -185,12 +185,39 @@ export default async function Home() {
                 Criar perfil grátis
               </MagneticButton>
             </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex -space-x-2.5">
+                {["#f472b6", "#22d3ee", "#facc15", "#34d399"].map((color) => (
+                  <span
+                    key={color}
+                    className="h-8 w-8 rounded-full border-2 border-accent"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+              <p className="text-sm text-accent-foreground/70">
+                Músicos e bandas de todo o Brasil já estão por aqui.
+              </p>
+            </div>
           </div>
 
           <div className="relative hidden min-h-64 flex-1 overflow-hidden bg-zinc-950 md:block">
-            <div className="animate-float-orb absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.35)_0%,transparent_55%)]" />
+            <div
+              className="cta-blob h-56 w-56 bg-fuchsia-500/70"
+              style={{ top: "-10%", left: "-5%" }}
+            />
+            <div
+              className="cta-blob h-64 w-64 bg-cyan-400/60"
+              style={{ bottom: "-15%", right: "-10%", animationDelay: "-5s" }}
+            />
+            <div
+              className="cta-blob h-40 w-40 bg-yellow-300/60"
+              style={{ top: "35%", left: "30%", animationDelay: "-10s" }}
+            />
+
             <div className="absolute inset-0 flex items-center justify-center">
-              <Music className="h-24 w-24 text-white/20" strokeWidth={1} />
+              <Music className="h-24 w-24 text-white/25" strokeWidth={1} />
             </div>
           </div>
         </section>

@@ -79,9 +79,33 @@ button {
   }
 }
 
+/* Final CTA panel — a handful of soft, oversized color blobs drifting past
+   each other behind the "Criar perfil grátis" card. Pure CSS (no Lottie/SVG
+   asset), so it stays on-brand and costs nothing to load. */
+@keyframes cta-blob-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(6%, -8%) scale(1.08);
+  }
+  66% {
+    transform: translate(-5%, 6%) scale(0.95);
+  }
+}
+
+.cta-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(40px);
+  animation: cta-blob-drift 16s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-page-in,
-  .animate-float-orb {
+  .animate-float-orb,
+  .cta-blob {
     animation: none;
   }
 }

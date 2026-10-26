@@ -345,6 +345,11 @@ class HiringRequestService {
     return this.resolveAsArtist(userId, id, StatusSolicitacao.RECUSADA);
   }
 
+  // Either side can cancel — before acceptance (a plan that fell through)
+  // or after (an imprevisto once it's already confirmed). Once accepted,
+  // the two sides already coordinate directly over WhatsApp, so this is a
+  // one-sided, immediate action rather than a request the other side has
+  // to approve — it just needs to free the agenda and let them know.
   async cancel(userId: string, id: string) {
     const request = await prisma.solicitacaoContratacao.findUnique({
       where: {
@@ -362,15 +367,26 @@ class HiringRequestService {
       },
     });
 
-    if (!request || request.contratanteId !== userId) {
+    const isContratante = request?.contratanteId === userId;
+    const isArtista = request?.artista.usuarioId === userId;
+
+    if (!request || (!isContratante && !isArtista)) {
       throw new Error("Solicitação de contratação não encontrada.");
     }
 
-    if (request.status !== StatusSolicitacao.PENDENTE) {
-      throw new Error(
-        "Somente solicitações pendentes podem ser canceladas.",
-      );
+    if (
+      request.status !== StatusSolicitacao.PENDENTE &&
+      request.status !== StatusSolicitacao.ACEITA
+    ) {
+      throw new Error("Essa solicitação não pode mais ser cancelada.");
     }
+
+    const recipientId = isContratante
+      ? request.artista.usuarioId
+      : request.contratanteId;
+    const mensagem = isContratante
+      ? "O contratante cancelou a contratação."
+      : "O artista cancelou a contratação.";
 
     return prisma.$transaction(async (transaction) => {
       const updated = await transaction.solicitacaoContratacao.update({
@@ -391,9 +407,9 @@ class HiringRequestService {
       await transaction.notificacao.create({
         data: {
           tipo: TipoNotificacao.SOLICITACAO_CANCELADA,
-          titulo: "Solicitação cancelada",
-          mensagem: "O contratante cancelou a solicitação de contratação.",
-          usuarioId: request.artista.usuarioId,
+          titulo: "Contratação cancelada",
+          mensagem,
+          usuarioId: recipientId,
           solicitacaoId: id,
         },
       });

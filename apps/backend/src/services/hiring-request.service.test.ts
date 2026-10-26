@@ -101,7 +101,21 @@ describe("hiringRequestService.cancel", () => {
     vi.clearAllMocks();
   });
 
-  it("rejects when the caller isn't the request's hirer", async () => {
+  function mockTransaction() {
+    const transactionClient = {
+      solicitacaoContratacao: { update: vi.fn().mockResolvedValue({}) },
+      agendaArtista: { deleteMany: vi.fn().mockResolvedValue({}) },
+      notificacao: { create: vi.fn().mockResolvedValue({}) },
+    };
+    vi.mocked(prisma.$transaction).mockImplementation((callback) =>
+      (
+        callback as unknown as (tx: typeof transactionClient) => unknown
+      )(transactionClient) as never,
+    );
+    return transactionClient;
+  }
+
+  it("rejects when the caller is neither the hirer nor the artist", async () => {
     vi.mocked(prisma.solicitacaoContratacao.findUnique).mockResolvedValue(
       pendingRequestForArtist() as never,
     );
@@ -113,15 +127,59 @@ describe("hiringRequestService.cancel", () => {
     expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 
-  it("rejects when the request is no longer pending", async () => {
+  it("rejects once the request is already settled (declined/canceled)", async () => {
     vi.mocked(prisma.solicitacaoContratacao.findUnique).mockResolvedValue(
-      pendingRequestForArtist({ status: StatusSolicitacao.ACEITA }) as never,
+      pendingRequestForArtist({
+        status: StatusSolicitacao.RECUSADA,
+      }) as never,
     );
 
     await expect(
       hiringRequestService.cancel(HIRER_ID, REQUEST_ID),
-    ).rejects.toThrow("Somente solicitações pendentes podem ser canceladas.");
+    ).rejects.toThrow("Essa solicitação não pode mais ser cancelada.");
 
     expect(prisma.$transaction).not.toHaveBeenCalled();
+  });
+
+  it("lets the hirer cancel a pending request", async () => {
+    vi.mocked(prisma.solicitacaoContratacao.findUnique).mockResolvedValue(
+      pendingRequestForArtist() as never,
+    );
+    const transactionClient = mockTransaction();
+
+    await hiringRequestService.cancel(HIRER_ID, REQUEST_ID);
+
+    expect(transactionClient.solicitacaoContratacao.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: REQUEST_ID },
+        data: { status: StatusSolicitacao.CANCELADA },
+      }),
+    );
+    expect(transactionClient.notificacao.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ usuarioId: ARTIST_OWNER_ID }),
+      }),
+    );
+  });
+
+  it("lets either side cancel an already-accepted booking, notifying the other side", async () => {
+    vi.mocked(prisma.solicitacaoContratacao.findUnique).mockResolvedValue(
+      pendingRequestForArtist({ status: StatusSolicitacao.ACEITA }) as never,
+    );
+    const transactionClient = mockTransaction();
+
+    await hiringRequestService.cancel(ARTIST_OWNER_ID, REQUEST_ID);
+
+    expect(transactionClient.solicitacaoContratacao.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { status: StatusSolicitacao.CANCELADA } }),
+    );
+    expect(transactionClient.agendaArtista.deleteMany).toHaveBeenCalledWith({
+      where: { solicitacaoId: REQUEST_ID },
+    });
+    expect(transactionClient.notificacao.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ usuarioId: HIRER_ID }),
+      }),
+    );
   });
 });

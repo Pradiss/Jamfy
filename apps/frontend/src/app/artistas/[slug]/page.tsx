@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { Star, Music2, Guitar, Mic2 } from "lucide-react";
+import { Star, Guitar, Mic2 } from "lucide-react";
 import type { Metadata } from "next";
 
 import { apiFetch, ApiError } from "@/lib/api";
@@ -196,6 +196,19 @@ export default async function ArtistaPage(
             {artist.cidade}, {artist.estado}
           </p>
 
+          {artist.generos.length ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {artist.generos.map(({ genero }) => (
+                <span
+                  key={genero.nome}
+                  className="rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-accent-foreground"
+                >
+                  {genero.nome}
+                </span>
+              ))}
+            </div>
+          ) : null}
+
           {artist.quantidadeAvaliacoes > 0 ? (
             <p className="mt-1.5 flex items-center gap-1.5 text-sm">
               <Star className="h-4 w-4 fill-current text-accent" />
@@ -254,14 +267,6 @@ export default async function ArtistaPage(
           sobre={
             <div className="flex flex-col gap-8">
               <div className="flex flex-col gap-2">
-                {artist.generos.length ? (
-                  <TagGroup
-                    label="Gêneros"
-                    icon={Music2}
-                    tone="accent"
-                    items={artist.generos.map(({ genero }) => genero.nome)}
-                  />
-                ) : null}
                 {artist.instrumentos.length ? (
                   <TagGroup
                     label="Instrumentos"

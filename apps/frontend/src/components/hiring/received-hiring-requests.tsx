@@ -53,6 +53,11 @@ export function ReceivedHiringRequests() {
     await load();
   }
 
+  async function cancel(id: string) {
+    await apiFetch(`/api/hiring-requests/${id}/cancel`, { method: "PATCH" });
+    await load();
+  }
+
   return (
     <section>
       {error ? (
@@ -72,6 +77,7 @@ export function ReceivedHiringRequests() {
               perspective="artist"
               onAccept={(id) => respond(id, "accept")}
               onDecline={(id) => respond(id, "decline")}
+              onCancel={cancel}
             />
           ))}
         </div>
