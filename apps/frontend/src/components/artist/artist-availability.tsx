@@ -2,7 +2,6 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { X } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import {
@@ -193,21 +192,14 @@ function ArtistAvailabilityInner({
       {requestDate ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
           <div className="absolute inset-0 bg-black/40" onClick={closeRequestModal} />
-          <div className="relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-white p-5 shadow-xl sm:rounded-3xl sm:p-6 ">
-            <button
-              type="button"
-              onClick={closeRequestModal}
-              aria-label="Fechar"
-              className="absolute top-4 right-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-400 transition hover:bg-black/5 hover:text-zinc-700 "
-            >
-              <X className="h-4 w-4" />
-            </button>
+          <div className="relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-white p-5 shadow-xl sm:rounded-3xl sm:p-6">
             <HiringRequestForm
               artistId={artistId}
               artistUserId={ownerUserId}
               initialDate={requestDate}
               cidade={cidade}
               estado={estado}
+              onClose={closeRequestModal}
             />
           </div>
         </div>

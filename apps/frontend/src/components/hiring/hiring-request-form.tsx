@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { X } from "lucide-react";
 
 import { apiFetch, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -47,6 +48,19 @@ const DATE_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "UTC",
 });
 
+function CloseButton({ onClose }: { onClose: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClose}
+      aria-label="Fechar"
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-400 transition hover:bg-black/5 hover:text-zinc-700"
+    >
+      <X className="h-4 w-4" />
+    </button>
+  );
+}
+
 function formatDuration(minutos: number) {
   const horas = Math.floor(minutos / 60);
   const resto = minutos % 60;
@@ -61,6 +75,7 @@ export function HiringRequestForm({
   initialDate,
   cidade,
   estado,
+  onClose,
 }: {
   artistId: string;
   artistUserId: string;
@@ -72,6 +87,10 @@ export function HiringRequestForm({
   initialDate?: string;
   cidade: string;
   estado: string;
+  // Only set when rendered inside the agenda's modal — renders a close
+  // button as part of the title row instead of relying on the caller to
+  // absolutely-position one over it (which could overlap a long title).
+  onClose?: () => void;
 }) {
   const { user, loading } = useAuth();
   const [descricao, setDescricao] = useState("");
@@ -122,11 +141,14 @@ export function HiringRequestForm({
 
   if (!user) {
     return (
-      <div className={`mt-10 p-4 text-sm ${cardClass}`}>
-        <Link href="/login" className="font-medium text-accent underline">
-          Entre na sua conta
-        </Link>{" "}
-        para solicitar a contratação deste artista.
+      <div className={`mt-10 flex items-start justify-between gap-3 p-4 text-sm ${cardClass}`}>
+        <p>
+          <Link href="/login" className="font-medium text-accent underline">
+            Entre na sua conta
+          </Link>{" "}
+          para solicitar a contratação deste artista.
+        </p>
+        {onClose ? <CloseButton onClose={onClose} /> : null}
       </div>
     );
   }
@@ -137,12 +159,15 @@ export function HiringRequestForm({
 
   if (sent) {
     return (
-      <div className="mt-10 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm shadow-sm ">
-        Solicitação enviada! Acompanhe o status em{" "}
-        <Link href="/dashboard" className="font-medium underline">
-          Minhas solicitações
-        </Link>
-        .
+      <div className="mt-10 flex items-start justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm shadow-sm">
+        <p>
+          Solicitação enviada! Acompanhe o status em{" "}
+          <Link href="/dashboard" className="font-medium underline">
+            Minhas solicitações
+          </Link>
+          .
+        </p>
+        {onClose ? <CloseButton onClose={onClose} /> : null}
       </div>
     );
   }
@@ -202,11 +227,16 @@ export function HiringRequestForm({
       onSubmit={handleSubmit}
       className={` flex flex-col gap-4  `}
     >
-      <div>
-        <h3 className="font-semibold tracking-tight">Solicitar contratação</h3>
-        <p className="mt-0.5 text-sm text-zinc-500 capitalize ">
-          {dataLabel}
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="font-semibold tracking-tight">
+            Solicitar contratação
+          </h3>
+          <p className="mt-0.5 text-sm text-zinc-500 capitalize">
+            {dataLabel}
+          </p>
+        </div>
+        {onClose ? <CloseButton onClose={onClose} /> : null}
       </div>
 
       <label className="flex flex-col gap-1.5 text-sm">
