@@ -3,10 +3,12 @@
 import { useAuth } from "@/lib/auth-context";
 import { primaryButtonClass } from "@/lib/ui";
 
-// Mobile-only — the "Solicitar contratação" action otherwise sits at the
-// very bottom of a long profile (past portfolio, reviews and agenda), so
-// a visitor has to scroll past everything to find it. Sits just above the
-// site's own mobile tab bar, not over it.
+// Mobile-only — a persistent shortcut back to the agenda calendar while
+// browsing Portfólio/Sobre/Avaliações, so a visitor doesn't have to hunt
+// for the Agenda tab again. Links to #agenda (the calendar itself, always
+// populated) rather than #contratar (the hiring form, which only renders
+// once a day is picked and would otherwise land on an empty area). Sits
+// just above the site's own mobile tab bar, not over it.
 export function StickyHireBar({
   ownerUserId,
   cache,
@@ -26,7 +28,7 @@ export function StickyHireBar({
       style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom))" }}
     >
       <a
-        href="#contratar"
+        href="#agenda"
         className={`flex w-full items-center justify-center gap-2 ${primaryButtonClass} py-2.5`}
       >
         Solicitar contratação

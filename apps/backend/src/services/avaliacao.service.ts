@@ -28,7 +28,9 @@ class AvaliacaoService {
 
     if (solicitacao.status !== StatusSolicitacao.ACEITA) {
       throw new Error(
-        "Só é possível avaliar solicitações que foram aceitas.",
+        solicitacao.status === StatusSolicitacao.CANCELADA
+          ? "Essa contratação foi cancelada e não pode mais ser avaliada."
+          : "Só é possível avaliar solicitações que foram aceitas.",
       );
     }
 

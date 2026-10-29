@@ -19,15 +19,31 @@ export function ArtistProfileTabs({
 }: Record<TabKey, ReactNode>) {
   const [active, setActive] = useState<TabKey>("agenda");
 
-  // "Solicitar contratação" (sticky bar) links to #contratar and the mobile
-  // tab bar links to #agenda — both live inside the Agenda tab, which is
-  // already the default, so this effect only has to do the actual
-  // scrolling once that content is in the DOM.
+  // The "Solicitar contratação" sticky bar and the mobile tab bar both link
+  // to #agenda, which lives inside the Agenda tab. Agenda is already the
+  // default tab, so on first load this only needs to scroll (no setState).
   useEffect(() => {
     const hash = window.location.hash;
     if (hash === "#agenda" || hash === "#contratar") {
       document.getElementById(hash.slice(1))?.scrollIntoView();
     }
+
+    // A click on one of those links *during* the same visit (e.g. after
+    // switching to Sobre or Portfólio) only changes the URL hash — it
+    // doesn't remount this component — so without this listener the tab
+    // would never switch back once the visitor has moved to another tab.
+    function handleHashChange() {
+      const newHash = window.location.hash;
+      if (newHash === "#agenda" || newHash === "#contratar") {
+        setActive("agenda");
+        requestAnimationFrame(() => {
+          document.getElementById(newHash.slice(1))?.scrollIntoView();
+        });
+      }
+    }
+
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
   const content: Record<TabKey, ReactNode> = {
